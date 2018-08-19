@@ -1,5 +1,6 @@
 # MDA
 **Message Driven Architecture**
+
 旨在让开发一个基于消息的响应式系统变得无比的简单化。
 
 最简单、最本质的开发模式：
