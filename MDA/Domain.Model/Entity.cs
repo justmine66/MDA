@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using MDA.Common;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MDA.Domain.Model
@@ -29,7 +30,7 @@ namespace MDA.Domain.Model
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return HashCodeHelper.CombineHashCodes(GetIdentityComponents());
         }
     }
 }
