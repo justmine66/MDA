@@ -9,14 +9,14 @@
             where TMessage : IMessage
             where TMessageHandler : IMessageHandler;
 
-        void Subscribe<TMessageHandler>(string messageName)
-            where TMessageHandler : IDynamicMessageHandler;
-
-        void UnsubscribeDynamic<TMessageHandler>(string eventName)
+        void SubscribeDynamic<TMessageHandler>(string messageName)
             where TMessageHandler : IDynamicMessageHandler;
 
         void Unsubscribe<TMessage, TMessageHandler>()
             where TMessage : IMessage
             where TMessageHandler : IMessageHandler;
+
+        void UnsubscribeDynamic<TMessageHandler>(string messageName)
+            where TMessageHandler : IDynamicMessageHandler;
     }
 }
