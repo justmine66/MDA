@@ -24,12 +24,12 @@ namespace MDA.Messaging.Impl
             _subscribers.Clear();
         }
 
-        public IEnumerable<MessageSubscriberInfo> GetHandlersForMessage<TMessage>() where TMessage : IMessage
+        public IEnumerable<MessageSubscriberInfo> GetSubscribers<TMessage>() where TMessage : IMessage
         {
             return _subscribers[GetMessageName<TMessage>()];
         }
 
-        public IEnumerable<MessageSubscriberInfo> GetHandlersForMessage(string messageName)
+        public IEnumerable<MessageSubscriberInfo> GetSubscribers(string messageName)
         {
             Assert.NotNullOrEmpty(messageName, nameof(messageName));
 
@@ -42,13 +42,13 @@ namespace MDA.Messaging.Impl
             return typeof(TMessage).Name;
         }
 
-        public bool HasSubscriberForMessage<TMessage>()
+        public bool HasSubscriber<TMessage>()
             where TMessage : IMessage
         {
             return _subscribers[GetMessageName<TMessage>()].Any();
         }
 
-        public bool HasSubscriberForMessage(string messageName)
+        public bool HasSubscriber(string messageName)
         {
             Assert.NotNullOrEmpty(messageName, nameof(messageName));
 
