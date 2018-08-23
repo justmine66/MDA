@@ -5,9 +5,7 @@
     /// </summary>
     public interface IMessageBus :
         IMessagePublisher,
-        IMessageSubscriber,
-        IMessageHandler,
-        IDynamicMessageHandler
+        IMessageSubscriber
     {
         string Name { get; }
     }
