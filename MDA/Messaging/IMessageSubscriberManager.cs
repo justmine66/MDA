@@ -9,13 +9,13 @@ namespace MDA.Messaging
     {
         bool IsEmpty { get; }
 
-        bool HasSubscriberForMessage<TMessage>()
+        bool HasSubscriber<TMessage>()
             where TMessage : IMessage;
-        bool HasSubscriberForMessage(string messageName);
+        bool HasSubscriber(string messageName);
 
-        IEnumerable<MessageSubscriberInfo> GetHandlersForMessage<TMessage>()
+        IEnumerable<MessageSubscriberInfo> GetSubscribers<TMessage>()
             where TMessage : IMessage;
-        IEnumerable<MessageSubscriberInfo> GetHandlersForMessage(string messageName);
+        IEnumerable<MessageSubscriberInfo> GetSubscribers(string messageName);
 
         void Clear();
 
