@@ -10,11 +10,11 @@ namespace MDA.Messaging.Impl
     /// </summary>
     public class InMemoryMessageSubscriberManager : IMessageSubscriberManager
     {
-        private readonly Dictionary<string, List<MessageSubscriberInfo>> _subscribers;
+        private readonly Dictionary<string, List<MessageSubscriberDescriptor>> _subscribers;
 
         public InMemoryMessageSubscriberManager()
         {
-            _subscribers = new Dictionary<string, List<MessageSubscriberInfo>>();
+            _subscribers = new Dictionary<string, List<MessageSubscriberDescriptor>>();
         }
 
         public bool IsEmpty => _subscribers.Any();
@@ -24,12 +24,12 @@ namespace MDA.Messaging.Impl
             _subscribers.Clear();
         }
 
-        public IEnumerable<MessageSubscriberInfo> GetSubscribers<TMessage>() where TMessage : IMessage
+        public IEnumerable<MessageSubscriberDescriptor> GetSubscribers<TMessage>() where TMessage : IMessage
         {
             return _subscribers[GetMessageName<TMessage>()];
         }
 
-        public IEnumerable<MessageSubscriberInfo> GetSubscribers(string messageName)
+        public IEnumerable<MessageSubscriberDescriptor> GetSubscribers(string messageName)
         {
             Assert.NotNullOrEmpty(messageName, nameof(messageName));
 
@@ -71,13 +71,13 @@ namespace MDA.Messaging.Impl
             where TMessage : IMessage
             where TMessageHandler : IMessageHandler
         {
-            DoRemoveSubcriber(GetMessageName<TMessage>(), MessageSubscriberInfo.Typed(typeof(TMessageHandler)));
+            DoRemoveSubcriber(GetMessageName<TMessage>(), MessageSubscriberDescriptor.Typed(typeof(TMessageHandler)));
         }
 
         public void UnsubscribeDynamic<TMessageHandler>(string messageName)
             where TMessageHandler : IDynamicMessageHandler
         {
-            DoRemoveSubcriber(messageName, MessageSubscriberInfo.Dynamic(typeof(TMessageHandler)));
+            DoRemoveSubcriber(messageName, MessageSubscriberDescriptor.Dynamic(typeof(TMessageHandler)));
         }
 
         private void DoAddSubscriber(
@@ -90,7 +90,7 @@ namespace MDA.Messaging.Impl
 
             if (!_subscribers.ContainsKey(messageName))
             {
-                _subscribers.Add(messageName, new List<MessageSubscriberInfo>());
+                _subscribers.Add(messageName, new List<MessageSubscriberDescriptor>());
             }
             else
             {
@@ -102,16 +102,16 @@ namespace MDA.Messaging.Impl
 
                 if (isDynamic)
                 {
-                    _subscribers[messageName].Add(MessageSubscriberInfo.Dynamic(handlerType));
+                    _subscribers[messageName].Add(MessageSubscriberDescriptor.Dynamic(handlerType));
                 }
                 else
                 {
-                    _subscribers[messageName].Add(MessageSubscriberInfo.Typed(handlerType));
+                    _subscribers[messageName].Add(MessageSubscriberDescriptor.Typed(handlerType));
                 }
             }
         }
 
-        private void DoRemoveSubcriber(string messageName, MessageSubscriberInfo subsToRemove)
+        private void DoRemoveSubcriber(string messageName, MessageSubscriberDescriptor subsToRemove)
         {
             if (string.IsNullOrEmpty(messageName) ||
                 subsToRemove == null) return;
