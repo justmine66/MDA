@@ -6,8 +6,8 @@ namespace MDA.Messaging
     /// <summary>
     /// 表示一个消息处理器。
     /// </summary>
-    /// <typeparam name="TIMessage">消息</typeparam>
-    public interface IMessageHandler<TMessage> : IMessageHandler
+    /// <typeparam name="TMessage">消息类型</typeparam>
+    public interface IMessageHandler<in TMessage> : IMessageHandler
         where TMessage : IMessage
     {
         /// <summary>
