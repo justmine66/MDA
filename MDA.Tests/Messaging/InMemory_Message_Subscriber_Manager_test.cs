@@ -1,3 +1,4 @@
+using MDA.Messaging;
 using MDA.Messaging.Impl;
 using Xunit;
 
@@ -8,15 +9,16 @@ namespace MDA.Tests.Messaging
     /// </summary>
     public class InMemory_Message_Subscriber_Manager_Test
     {
+        private readonly IMessageSubscriberManager _subscriberManager = new InMemoryMessageSubscriberManager(new DefaultMessageSubscriberCollection());
         /// <summary>
         /// 第一次创建，订阅者应该为空。
         /// </summary>
         [Fact]
         public void After_Creation_Should_Be_Empty()
         {
-            var manager = new InMemoryMessageSubscriberManager();
+            var subscriberManager = new InMemoryMessageSubscriberManager(new DefaultMessageSubscriberCollection());
 
-            Assert.True(manager.IsEmpty);
+            Assert.True(_subscriberManager.IsEmpty);
         }
 
         /// <summary>
@@ -25,12 +27,11 @@ namespace MDA.Tests.Messaging
         [Fact]
         public void After_One_Subscriber_Should_Contain_The_Subscriber()
         {
-            var manager = new InMemoryMessageSubscriberManager();
-            manager.Subscribe<TestMessage, TestMessageHandler>();
-            manager.SubscribeDynamic<TestDynamicMessageHandler>("TestDynamicMessageHandler");
+            _subscriberManager.Subscribe<TestMessage, TestMessageHandler>();
+            _subscriberManager.SubscribeDynamic<TestDynamicMessageHandler>("TestDynamicMessageHandler");
 
-            Assert.True(manager.HasSubscriber<TestMessage>());
-            Assert.True(manager.HasSubscriber("TestDynamicMessageHandler"));
+            Assert.True(_subscriberManager.HasSubscriber<TestMessage>());
+            Assert.True(_subscriberManager.HasSubscriber("TestDynamicMessageHandler"));
         }
     }
 }
