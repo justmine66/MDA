@@ -13,9 +13,9 @@ namespace MDA.Messaging
             where TMessage : IMessage;
         bool HasSubscriber(string messageName);
 
-        IEnumerable<MessageSubscriberInfo> GetSubscribers<TMessage>()
+        IEnumerable<MessageSubscriberDescriptor> GetSubscribers<TMessage>()
             where TMessage : IMessage;
-        IEnumerable<MessageSubscriberInfo> GetSubscribers(string messageName);
+        IEnumerable<MessageSubscriberDescriptor> GetSubscribers(string messageName);
 
         void Clear();
 
