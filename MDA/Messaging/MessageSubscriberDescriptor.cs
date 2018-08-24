@@ -8,43 +8,59 @@ namespace MDA.Messaging
     public class MessageSubscriberDescriptor
     {
         /// <summary>
-        /// 是否动态消息
+        /// 是否为动态订阅者
         /// </summary>
         public bool IsDynamic { get; }
         /// <summary>
-        /// 处理者类型
+        /// 消息名称
         /// </summary>
-        public Type HandlerType { get; }
+        public string MessageName { get; }
+        /// <summary>
+        /// 消息类型
+        /// </summary>
+        public Type MessageType { get; }
+        /// <summary>
+        /// 消息处理者类型
+        /// </summary>
+        public Type MessageHandlerType { get; }
 
         /// <summary>
         /// 初始化一个 <see cref="MessageSubscriberDescriptor"/> 实例。
         /// </summary>
-        /// <param name="isDynamic">是否动态消息</param>
-        /// <param name="handlerType">处理者类型</param>
-        public MessageSubscriberDescriptor(bool isDynamic, Type handlerType)
+        /// <param name="messageName">消息名称</param>
+        /// <param name="messageType">消息类型</param>
+        /// <param name="handlerType">消息处理者类型</param>
+        public MessageSubscriberDescriptor(
+            string messageName,
+            Type messageType,
+            Type handlerType)
         {
-            IsDynamic = isDynamic;
-            HandlerType = handlerType;
+            IsDynamic = messageType == null;
+            MessageType = messageType;
+            MessageHandlerType = handlerType;
+            MessageName = messageName;
         }
 
         /// <summary>
-        /// 动态订阅者。
+        /// 创建一个动态订阅者。
         /// </summary>
+        /// <param name="messageName">消息名称</param>
         /// <param name="handlerType">处理者类型</param>
         /// <returns></returns>
-        public static MessageSubscriberDescriptor Dynamic(Type handlerType)
+        public static MessageSubscriberDescriptor Dynamic(string messageName, Type handlerType)
         {
-            return new MessageSubscriberDescriptor(true, handlerType);
+            return new MessageSubscriberDescriptor(messageName, null, handlerType);
         }
 
         /// <summary>
-        /// 类型化订阅者。
+        /// 创建一个类型化订阅者。
         /// </summary>
+        /// <param name="messageType">消息类型</param>
         /// <param name="handlerType">处理者类型</param>
         /// <returns></returns>
-        public static MessageSubscriberDescriptor Typed(Type handlerType)
+        public static MessageSubscriberDescriptor Typed(Type messageType, Type handlerType)
         {
-            return new MessageSubscriberDescriptor(false, handlerType);
+            return new MessageSubscriberDescriptor(messageType.Name, messageType, handlerType);
         }
     }
 }
