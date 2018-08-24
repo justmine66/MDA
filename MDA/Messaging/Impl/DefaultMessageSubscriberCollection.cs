@@ -5,9 +5,16 @@ namespace MDA.Messaging.Impl
 {
     public class DefaultMessageSubscriberCollection : IMessageSubscriberCollection
     {
+        private readonly List<MessageSubscriberDescriptor> _descriptors;
+
+        public DefaultMessageSubscriberCollection()
+        {
+            _descriptors = new List<MessageSubscriberDescriptor>();
+        }
+
         public IEnumerator<MessageSubscriberDescriptor> GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            return _descriptors.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -17,50 +24,50 @@ namespace MDA.Messaging.Impl
 
         public void Add(MessageSubscriberDescriptor item)
         {
-            throw new System.NotImplementedException();
+           _descriptors.Add(item);
         }
 
         public void Clear()
         {
-            throw new System.NotImplementedException();
+            _descriptors.Clear();
         }
 
         public bool Contains(MessageSubscriberDescriptor item)
         {
-            throw new System.NotImplementedException();
+            return _descriptors.Contains(item);
         }
 
         public void CopyTo(MessageSubscriberDescriptor[] array, int arrayIndex)
         {
-            throw new System.NotImplementedException();
+            _descriptors.CopyTo(array, arrayIndex);
         }
 
         public bool Remove(MessageSubscriberDescriptor item)
         {
-            throw new System.NotImplementedException();
+            return _descriptors.Remove(item);
         }
 
-        public int Count { get; }
-        public bool IsReadOnly { get; }
+        public int Count => _descriptors.Count;
+        public bool IsReadOnly => false;
         public int IndexOf(MessageSubscriberDescriptor item)
         {
-            throw new System.NotImplementedException();
+            return _descriptors.IndexOf(item);
         }
 
         public void Insert(int index, MessageSubscriberDescriptor item)
         {
-            throw new System.NotImplementedException();
+            _descriptors.Insert(index, item);
         }
 
         public void RemoveAt(int index)
         {
-            throw new System.NotImplementedException();
+            _descriptors.RemoveAt(index);
         }
 
         public MessageSubscriberDescriptor this[int index]
         {
-            get => throw new System.NotImplementedException();
-            set => throw new System.NotImplementedException();
+            get => _descriptors[index];
+            set => _descriptors[index] = value;
         }
     }
 }
