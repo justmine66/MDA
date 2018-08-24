@@ -3,9 +3,9 @@
 namespace MDA.Messaging
 {
     /// <summary>
-    /// 消息订阅者信息。
+    /// 描述一个消息订阅者。
     /// </summary>
-    public class MessageSubscriberInfo
+    public class MessageSubscriberDescriptor
     {
         /// <summary>
         /// 是否动态消息
@@ -17,11 +17,11 @@ namespace MDA.Messaging
         public Type HandlerType { get; }
 
         /// <summary>
-        /// 初始化一个 <see cref="MessageSubscriberInfo"/> 实例。
+        /// 初始化一个 <see cref="MessageSubscriberDescriptor"/> 实例。
         /// </summary>
         /// <param name="isDynamic">是否动态消息</param>
         /// <param name="handlerType">处理者类型</param>
-        public MessageSubscriberInfo(bool isDynamic, Type handlerType)
+        public MessageSubscriberDescriptor(bool isDynamic, Type handlerType)
         {
             IsDynamic = isDynamic;
             HandlerType = handlerType;
@@ -32,9 +32,9 @@ namespace MDA.Messaging
         /// </summary>
         /// <param name="handlerType">处理者类型</param>
         /// <returns></returns>
-        public static MessageSubscriberInfo Dynamic(Type handlerType)
+        public static MessageSubscriberDescriptor Dynamic(Type handlerType)
         {
-            return new MessageSubscriberInfo(true, handlerType);
+            return new MessageSubscriberDescriptor(true, handlerType);
         }
 
         /// <summary>
@@ -42,9 +42,9 @@ namespace MDA.Messaging
         /// </summary>
         /// <param name="handlerType">处理者类型</param>
         /// <returns></returns>
-        public static MessageSubscriberInfo Typed(Type handlerType)
+        public static MessageSubscriberDescriptor Typed(Type handlerType)
         {
-            return new MessageSubscriberInfo(false, handlerType);
+            return new MessageSubscriberDescriptor(false, handlerType);
         }
     }
 }
