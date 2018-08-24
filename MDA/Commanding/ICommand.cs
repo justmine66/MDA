@@ -5,7 +5,7 @@ namespace MDA.Commanding
     /// <summary>
     /// 表示一个命令。
     /// </summary>
-    public interface ICommand : IMessage
+    public interface ICommand : ISequenceMessage
     {
 
     }
