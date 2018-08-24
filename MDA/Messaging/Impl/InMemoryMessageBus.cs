@@ -97,7 +97,7 @@ namespace MDA.Messaging.Impl
 
             var subscribers = _subscriberManager.GetSubscribers(messageName);
 
-            if (subscribers.Any())
+            if (subscribers != null && subscribers.Any())
             {
                 foreach (var subcriber in subscribers)
                 {
@@ -108,7 +108,7 @@ namespace MDA.Messaging.Impl
                     }
                     else
                     {
-                        handler = _serviceProvider.GetService(subcriber.MessageHandlerType) as IMessageHandler;
+                        handler = _serviceProvider.GetService(subcriber.MessageHandlerType) as IMessageHandler<IMessage>;
                     }
 
                     if (handler != null)
