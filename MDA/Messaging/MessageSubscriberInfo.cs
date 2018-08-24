@@ -17,7 +17,7 @@ namespace MDA.Messaging
         public Type HandlerType { get; }
 
         /// <summary>
-        /// 初始化一个 <see cref="SubscriberInfo"/> 实例。
+        /// 初始化一个 <see cref="MessageSubscriberInfo"/> 实例。
         /// </summary>
         /// <param name="isDynamic">是否动态消息</param>
         /// <param name="handlerType">处理者类型</param>
