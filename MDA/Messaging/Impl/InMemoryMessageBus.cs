@@ -104,11 +104,11 @@ namespace MDA.Messaging.Impl
                     dynamic handler;
                     if (subcriber.IsDynamic)
                     {
-                        handler = _serviceProvider.GetService(subcriber.HandlerType) as IDynamicMessageHandler;
+                        handler = _serviceProvider.GetService(subcriber.MessageHandlerType) as IDynamicMessageHandler;
                     }
                     else
                     {
-                        handler = _serviceProvider.GetService(subcriber.HandlerType) as IMessageHandler;
+                        handler = _serviceProvider.GetService(subcriber.MessageHandlerType) as IMessageHandler;
                     }
 
                     if (handler != null)
