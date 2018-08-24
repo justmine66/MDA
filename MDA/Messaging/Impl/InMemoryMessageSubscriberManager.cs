@@ -10,11 +10,13 @@ namespace MDA.Messaging.Impl
     /// </summary>
     public class InMemoryMessageSubscriberManager : IMessageSubscriberManager
     {
-        private readonly Dictionary<string, List<MessageSubscriberDescriptor>> _subscribers;
+        private readonly Dictionary<string, IMessageSubscriberCollection> _subscribers;
+        private readonly IMessageSubscriberCollection _subscriberCollection;
 
-        public InMemoryMessageSubscriberManager()
+        public InMemoryMessageSubscriberManager(IMessageSubscriberCollection subscriberCollection)
         {
-            _subscribers = new Dictionary<string, List<MessageSubscriberDescriptor>>();
+            _subscriberCollection = subscriberCollection;
+            _subscribers = new Dictionary<string, IMessageSubscriberCollection>();
         }
 
         public bool IsEmpty => _subscribers.Any();
@@ -24,7 +26,8 @@ namespace MDA.Messaging.Impl
             _subscribers.Clear();
         }
 
-        public IEnumerable<MessageSubscriberDescriptor> GetSubscribers<TMessage>() where TMessage : IMessage
+        public IEnumerable<MessageSubscriberDescriptor> GetSubscribers<TMessage>()
+            where TMessage : IMessage
         {
             return _subscribers[GetMessageName<TMessage>()];
         }
@@ -59,29 +62,30 @@ namespace MDA.Messaging.Impl
             where TMessage : IMessage
             where TMessageHandler : IMessageHandler
         {
-            DoAddSubscriber(typeof(TMessageHandler), GetMessageName<TMessage>(), isDynamic: false);
+            DoAddSubscriber(typeof(TMessageHandler), typeof(TMessage), GetMessageName<TMessage>(), isDynamic: false);
         }
 
         public void SubscribeDynamic<TMessageHandler>(string messageName) where TMessageHandler : IDynamicMessageHandler
         {
-            DoAddSubscriber(typeof(TMessageHandler), messageName, isDynamic: true);
+            DoAddSubscriber(typeof(TMessageHandler), null, messageName, isDynamic: true);
         }
 
         public void Unsubscribe<TMessage, TMessageHandler>()
             where TMessage : IMessage
             where TMessageHandler : IMessageHandler
         {
-            DoRemoveSubcriber(GetMessageName<TMessage>(), MessageSubscriberDescriptor.Typed(typeof(TMessageHandler)));
+            DoRemoveSubcriber(GetMessageName<TMessage>(), MessageSubscriberDescriptor.Typed(typeof(TMessage), typeof(TMessageHandler)));
         }
 
         public void UnsubscribeDynamic<TMessageHandler>(string messageName)
             where TMessageHandler : IDynamicMessageHandler
         {
-            DoRemoveSubcriber(messageName, MessageSubscriberDescriptor.Dynamic(typeof(TMessageHandler)));
+            DoRemoveSubcriber(messageName, MessageSubscriberDescriptor.Dynamic(messageName, typeof(TMessageHandler)));
         }
 
         private void DoAddSubscriber(
             Type handlerType,
+            Type messageType,
             string messageName,
             bool isDynamic)
         {
@@ -90,11 +94,11 @@ namespace MDA.Messaging.Impl
 
             if (!_subscribers.ContainsKey(messageName))
             {
-                _subscribers.Add(messageName, new List<MessageSubscriberDescriptor>());
+                _subscribers.Add(messageName, _subscriberCollection);
             }
             else
             {
-                if (_subscribers[messageName].Any(s => s.HandlerType == handlerType))
+                if (_subscribers[messageName].Any(s => s.MessageHandlerType == handlerType))
                 {
                     throw new ArgumentException(
                     $"Handler Type {handlerType.Name} already registered for '{messageName}'", nameof(handlerType));
@@ -102,11 +106,13 @@ namespace MDA.Messaging.Impl
 
                 if (isDynamic)
                 {
-                    _subscribers[messageName].Add(MessageSubscriberDescriptor.Dynamic(handlerType));
+                    _subscribers[messageName].Add(MessageSubscriberDescriptor.Dynamic(messageName, handlerType));
                 }
                 else
                 {
-                    _subscribers[messageName].Add(MessageSubscriberDescriptor.Typed(handlerType));
+                    Assert.NotNull(messageType, nameof(messageType));
+
+                    _subscribers[messageName].Add(MessageSubscriberDescriptor.Typed(messageType, handlerType));
                 }
             }
         }
