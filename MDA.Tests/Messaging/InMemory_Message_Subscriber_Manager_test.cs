@@ -10,10 +10,8 @@ namespace MDA.Tests.Messaging
     public class InMemory_Message_Subscriber_Manager_Test
     {
         private readonly IMessageSubscriberManager _subscriberManager = new InMemoryMessageSubscriberManager(new DefaultMessageSubscriberCollection());
-        /// <summary>
-        /// 第一次创建，订阅者应该为空。
-        /// </summary>
-        [Fact]
+
+        [Fact(DisplayName = "第一次创建，订阅者应该为空")]
         public void After_Creation_Should_Be_Empty()
         {
             var subscriberManager = new InMemoryMessageSubscriberManager(new DefaultMessageSubscriberCollection());
@@ -21,10 +19,7 @@ namespace MDA.Tests.Messaging
             Assert.True(_subscriberManager.IsEmpty);
         }
 
-        /// <summary>
-        /// 添加一个订阅者后，应该包含该订阅者。
-        /// </summary>
-        [Fact]
+        [Fact(DisplayName = "添加一个订阅者后，应该包含该订阅者。")]
         public void After_One_Subscriber_Should_Contain_The_Subscriber()
         {
             _subscriberManager.Subscribe<TestMessage, TestMessageHandler>();
