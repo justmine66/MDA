@@ -96,24 +96,22 @@ namespace MDA.Messaging.Impl
             {
                 _subscribers.Add(messageName, _subscriberCollection);
             }
+
+            if (_subscribers[messageName].Any(s => s.MessageHandlerType == handlerType))
+            {
+                throw new ArgumentException(
+                $"Handler Type {handlerType.Name} already registered for '{messageName}'", nameof(handlerType));
+            }
+
+            if (isDynamic)
+            {
+                _subscribers[messageName].Add(MessageSubscriberDescriptor.Dynamic(messageName, handlerType));
+            }
             else
             {
-                if (_subscribers[messageName].Any(s => s.MessageHandlerType == handlerType))
-                {
-                    throw new ArgumentException(
-                    $"Handler Type {handlerType.Name} already registered for '{messageName}'", nameof(handlerType));
-                }
+                Assert.NotNull(messageType, nameof(messageType));
 
-                if (isDynamic)
-                {
-                    _subscribers[messageName].Add(MessageSubscriberDescriptor.Dynamic(messageName, handlerType));
-                }
-                else
-                {
-                    Assert.NotNull(messageType, nameof(messageType));
-
-                    _subscribers[messageName].Add(MessageSubscriberDescriptor.Typed(messageType, handlerType));
-                }
+                _subscribers[messageName].Add(MessageSubscriberDescriptor.Typed(messageType, handlerType));
             }
         }
 
