@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MDA.Common;
+using System;
 
 namespace MDA.Messaging
 {
@@ -61,6 +62,20 @@ namespace MDA.Messaging
         public static MessageSubscriberDescriptor Typed(Type messageType, Type handlerType)
         {
             return new MessageSubscriberDescriptor(messageType.Name, messageType, handlerType);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is MessageSubscriberDescriptor other &&
+                IsDynamic == other.IsDynamic &&
+                MessageName == other.MessageName &&
+                MessageType == other.MessageType &&
+                MessageHandlerType == other.MessageHandlerType;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCodeHelper.CombineHashCodes(new object[] { IsDynamic, MessageName, MessageType, MessageHandlerType });
         }
     }
 }
