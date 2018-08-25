@@ -12,6 +12,11 @@ namespace MDA.Messaging.Impl
             _descriptors = new List<MessageSubscriberDescriptor>();
         }
 
+        public IMessageSubscriberCollection New()
+        {
+            return new DefaultMessageSubscriberCollection();
+        }
+
         public IEnumerator<MessageSubscriberDescriptor> GetEnumerator()
         {
             return _descriptors.GetEnumerator();

@@ -8,6 +8,6 @@ namespace MDA.Messaging
     /// </summary>
     public interface IMessageSubscriberCollection : IList<MessageSubscriberDescriptor>, ICollection<MessageSubscriberDescriptor>, IEnumerable<MessageSubscriberDescriptor>, IEnumerable
     {
-
+        IMessageSubscriberCollection New();
     }
 }
