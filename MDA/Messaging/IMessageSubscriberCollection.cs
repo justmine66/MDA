@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace MDA.Messaging
 {
     /// <summary>
-    /// A collection of message subsriber descriptor.
+    /// 订阅者注册表.
     /// </summary>
     public interface IMessageSubscriberCollection : IList<MessageSubscriberDescriptor>, ICollection<MessageSubscriberDescriptor>, IEnumerable<MessageSubscriberDescriptor>, IEnumerable
     {
