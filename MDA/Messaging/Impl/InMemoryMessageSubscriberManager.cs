@@ -19,7 +19,7 @@ namespace MDA.Messaging.Impl
             _subscribers = new Dictionary<string, IMessageSubscriberCollection>();
         }
 
-        public bool IsEmpty => _subscribers.Any();
+        public bool IsEmpty => !_subscribers.Any();
 
         public void Clear()
         {
@@ -94,7 +94,7 @@ namespace MDA.Messaging.Impl
 
             if (!_subscribers.ContainsKey(messageName))
             {
-                _subscribers.Add(messageName, _subscriberCollection);
+                _subscribers.Add(messageName, _subscriberCollection.New());
             }
 
             if (_subscribers[messageName].Any(s => s.MessageHandlerType == handlerType))
