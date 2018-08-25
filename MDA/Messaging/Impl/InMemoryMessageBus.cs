@@ -1,4 +1,5 @@
 ﻿using MDA.Common;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -14,18 +15,18 @@ namespace MDA.Messaging.Impl
     {
         private readonly ILogger<InMemoryMessageBus> _logger;
         private readonly IMessageSubscriberManager _subscriberManager;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly MessagingOptions _options;
 
         public InMemoryMessageBus(
             IMessageSubscriberManager subscriberManager,
             ILogger<InMemoryMessageBus> logger,
-            IServiceProvider serviceProvider,
+            IServiceScopeFactory serviceScopeFactory,
             MessagingOptions options)
         {
             _logger = logger;
             _subscriberManager = subscriberManager;
-            _serviceProvider = serviceProvider;
+            _serviceScopeFactory = serviceScopeFactory;
             _options = options;
         }
 
@@ -99,42 +100,45 @@ namespace MDA.Messaging.Impl
 
             if (subscribers != null && subscribers.Any())
             {
-                foreach (var subcriber in subscribers)
+                using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    dynamic handler;
-                    if (subcriber.IsDynamic)
+                    foreach (var subcriber in subscribers)
                     {
-                        handler = _serviceProvider.GetService(subcriber.MessageHandlerType) as IDynamicMessageHandler;
-                    }
-                    else
-                    {
-                        handler = _serviceProvider.GetService(subcriber.MessageHandlerType) as IMessageHandler<IMessage>;
-                    }
-
-                    if (handler != null)
-                    {
-                        if (_options.WatchSlowMessage)
+                        dynamic handler;
+                        if (subcriber.IsDynamic)
                         {
-                            var start = DateTime.UtcNow;
-
-                            await handler.HandleAsync(message);
-
-                            var elapsed = DateTime.UtcNow - start;
-                            if (elapsed > _options.SlowMsgThreshold)
-                            {
-                                _logger.LogTrace("SLOW BUS MSG [{0}]: {1} - {2}ms. Handler: {3}.", Name, messageName, elapsed.TotalMilliseconds, (string)handler.GetType().Name);
-                            }
+                            handler = scope.ServiceProvider.GetService(subcriber.MessageHandlerType) as IDynamicMessageHandler;
                         }
                         else
                         {
-                            await handler.HandleAsync(message);
+                            handler = scope.ServiceProvider.GetService(subcriber.MessageHandlerType) as IMessageHandler<IMessage>;
                         }
 
-                        _logger.LogInformation($"MESSAGE BUS[{Name}]: the message[{messageName}] had been hanlded[{(string)handler.GetType().Name}].");
-                    }
-                    else
-                    {
-                        _logger.LogWarning($"the message[{messageName}] has not the handler.");
+                        if (handler != null)
+                        {
+                            if (_options.WatchSlowMessage)
+                            {
+                                var start = DateTime.UtcNow;
+
+                                await handler.HandleAsync(message);
+
+                                var elapsed = DateTime.UtcNow - start;
+                                if (elapsed > _options.SlowMsgThreshold)
+                                {
+                                    _logger.LogTrace("SLOW BUS MSG [{0}]: {1} - {2}ms. Handler: {3}.", Name, messageName, elapsed.TotalMilliseconds, (string)handler.GetType().Name);
+                                }
+                            }
+                            else
+                            {
+                                await handler.HandleAsync(message);
+                            }
+
+                            _logger.LogInformation($"MESSAGE BUS[{Name}]: the message[{messageName}] had been hanlded[{(string)handler.GetType().Name}].");
+                        }
+                        else
+                        {
+                            _logger.LogWarning($"the message[{messageName}] has not the handler.");
+                        }
                     }
                 }
             }
