@@ -2,6 +2,9 @@
 
 namespace MDA.Messaging
 {
+    /// <summary>
+    /// 消息配置项
+    /// </summary>
     public class MessagingOptions
     {
         /// <summary>
