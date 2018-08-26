@@ -60,7 +60,7 @@ namespace MDA.Messaging.Impl
 
         public void Subscribe<TMessage, TMessageHandler>()
             where TMessage : IMessage
-            where TMessageHandler : IMessageHandler
+            where TMessageHandler : IMessageHandler<TMessage>
         {
             DoAddSubscriber(typeof(TMessageHandler), typeof(TMessage), GetMessageName<TMessage>(), isDynamic: false);
         }
@@ -72,7 +72,7 @@ namespace MDA.Messaging.Impl
 
         public void Unsubscribe<TMessage, TMessageHandler>()
             where TMessage : IMessage
-            where TMessageHandler : IMessageHandler
+            where TMessageHandler : IMessageHandler<TMessage>
         {
             DoRemoveSubcriber(GetMessageName<TMessage>(), MessageSubscriberDescriptor.Typed(typeof(TMessage), typeof(TMessageHandler)));
         }
