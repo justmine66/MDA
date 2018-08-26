@@ -18,5 +18,19 @@ namespace MDA.Messaging.Extensions
 
             return services;
         }
+
+        public static IServiceCollection AddMessaging(this IServiceCollection services, MessagingOptions options, bool IsReigisterInMemoryBus = false)
+        {
+            services.AddSingleton(options);
+            services.AddSingleton<IMessageSubscriberCollection, DefaultMessageSubscriberCollection>();
+            services.AddSingleton<IMessageSubscriberManager, InMemoryMessageSubscriberManager>();
+
+            if (IsReigisterInMemoryBus)
+            {
+                services.AddSingleton<IMessageBus, InMemoryMessageBus>();
+            }
+
+            return services;
+        }
     }
 }
