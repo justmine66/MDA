@@ -69,7 +69,7 @@ namespace MDA.Messaging.Impl
 
         public void Subscribe<TMessage, TMessageHandler>()
             where TMessage : IMessage
-            where TMessageHandler : IMessageHandler
+            where TMessageHandler : IMessageHandler<TMessage>
         {
             _subscriberManager.Subscribe<TMessage, TMessageHandler>();
         }
@@ -81,7 +81,7 @@ namespace MDA.Messaging.Impl
 
         public void Unsubscribe<TMessage, TMessageHandler>()
             where TMessage : IMessage
-            where TMessageHandler : IMessageHandler
+            where TMessageHandler : IMessageHandler<TMessage>
         {
             _subscriberManager.Unsubscribe<TMessage, TMessageHandler>();
         }
@@ -91,7 +91,7 @@ namespace MDA.Messaging.Impl
             _subscriberManager.UnsubscribeDynamic<TMessageHandler>(messageName);
         }
 
-        private async Task DoPublishAsync(string messageName, IMessage message)
+        private async Task DoPublishAsync(string messageName, dynamic message)
         {
             Assert.NotNullOrEmpty(messageName, nameof(messageName));
             Assert.NotNull(message, nameof(message));
@@ -104,26 +104,18 @@ namespace MDA.Messaging.Impl
                 {
                     foreach (var subcriber in subscribers)
                     {
-                        dynamic handler;
-                        if (subcriber.IsDynamic)
-                        {
-                            handler = scope.ServiceProvider.GetService(subcriber.MessageHandlerType) as IDynamicMessageHandler;
-                        }
-                        else
-                        {
-                            handler = scope.ServiceProvider.GetService(subcriber.MessageHandlerType) as IMessageHandler<IMessage>;
-                        }
+                        dynamic handler = scope.ServiceProvider.GetService(subcriber.MessageHandlerType);
 
                         if (handler != null)
                         {
-                            if (_options.WatchSlowMessage)
+                            if (_options.MonitorSlowMessageHandler)
                             {
                                 var start = DateTime.UtcNow;
 
                                 await handler.HandleAsync(message);
 
                                 var elapsed = DateTime.UtcNow - start;
-                                if (elapsed > _options.SlowMsgThreshold)
+                                if (elapsed > _options.SlowMessageHandlerThreshold)
                                 {
                                     _logger.LogTrace("SLOW BUS MSG [{0}]: {1} - {2}ms. Handler: {3}.", Name, messageName, elapsed.TotalMilliseconds, (string)handler.GetType().Name);
                                 }
@@ -137,7 +129,7 @@ namespace MDA.Messaging.Impl
                         }
                         else
                         {
-                            _logger.LogWarning($"the message[{messageName}] has not the handler.");
+                            _logger.LogError($"MESSAGE BUS[{Name}]: the message[{messageName}] handler could not be found.");
                         }
                     }
                 }
