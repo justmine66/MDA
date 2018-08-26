@@ -2,12 +2,11 @@
 
 namespace MDA.Messaging
 {
-    public interface IMessageHandler { }
     /// <summary>
     /// 表示一个消息处理器。
     /// </summary>
     /// <typeparam name="TMessage">消息类型</typeparam>
-    public interface IMessageHandler<in TMessage> : IMessageHandler
+    public interface IMessageHandler<in TMessage>
         where TMessage : IMessage
     {
         /// <summary>
