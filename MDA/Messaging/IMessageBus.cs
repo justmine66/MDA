@@ -1,4 +1,6 @@
-﻿namespace MDA.Messaging
+﻿using System;
+
+namespace MDA.Messaging
 {
     /// <summary>
     /// 表示一个消息总线。
@@ -8,5 +10,7 @@
         IMessageSubscriber
     {
         string Name { get; }
+
+        event EventHandler<SlowMessageHandlerEventArgs> OnSlowMessageHandled;
     }
 }
