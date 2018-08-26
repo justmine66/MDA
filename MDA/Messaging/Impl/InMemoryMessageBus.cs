@@ -32,6 +32,8 @@ namespace MDA.Messaging.Impl
 
         public string Name { get; } = "InMemoryMessageBus";
 
+        public event EventHandler<SlowMessageHandlerEventArgs> OnSlowMessageHandled;
+
         public async Task PublishAllAsync<TMessage>(IEnumerable<TMessage> messages)
             where TMessage : IMessage
         {
@@ -118,6 +120,8 @@ namespace MDA.Messaging.Impl
                                 if (elapsed > _options.SlowMessageHandlerThreshold)
                                 {
                                     _logger.LogTrace("SLOW BUS MSG [{0}]: {1} - {2}ms. Handler: {3}.", Name, messageName, elapsed.TotalMilliseconds, (string)handler.GetType().Name);
+
+                                    OnSlowMessageHandled.Invoke(this, new SlowMessageHandlerEventArgs(messageName, subcriber.MessageHandlerType.Name, elapsed));
                                 }
                             }
                             else
