@@ -1,7 +1,5 @@
 ﻿using MDA.Messaging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MDA.Tests.Messaging
