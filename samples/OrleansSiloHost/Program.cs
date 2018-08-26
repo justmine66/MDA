@@ -14,8 +14,8 @@ namespace OrleansSiloHost
                 .UseLocalhostClustering()
                 .Configure<ClusterOptions>(options =>
                 {
-                    options.ClusterId = "dev";
-                    options.ServiceId = "HelloWorldApp";
+                    options.ClusterId = "samples";
+                    options.ServiceId = "OrleansSiloHost";
                 })
                 .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
                 .ConfigureLogging(logging => logging.AddConsole());

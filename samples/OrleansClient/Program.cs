@@ -14,8 +14,8 @@ namespace OrleansClient
               .UseLocalhostClustering()
               .Configure<ClusterOptions>(options =>
               {
-                  options.ClusterId = "dev";
-                  options.ServiceId = "HelloWorldApp";
+                  options.ClusterId = "samples";
+                  options.ServiceId = "OrleansSiloHost";
               })
               .ConfigureLogging(logging => logging.AddConsole())
               .Build();
