@@ -1,6 +1,7 @@
 ﻿using MDA.Messaging;
 using MDA.Messaging.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -17,9 +18,13 @@ namespace MDA.Tests.Messaging
         {
             var provider = new ServiceCollection()
                 .AddLogging()
-                .AddMessaging(IsReigisterInMemoryBus: true)
+                .AddMessaging(options: new MessagingOptions()
+                {
+                    MonitorSlowMessageHandler = true
+                }, IsReigisterInMemoryBus: true)
                 .AddScoped<TestMessageHandler>()
                 .AddScoped<TestDynamicMessageHandler>()
+                .AddScoped<TestSlowMessageHandler>()
                 .BuildServiceProvider();
 
             _messageBus = provider.GetService<IMessageBus>();
@@ -41,6 +46,23 @@ namespace MDA.Tests.Messaging
             await _messageBus.PublishDynamicAsync("TestMessage", new TestMessage());
 
             Assert.True(TestDynamicMessageHandler.ReceivedMessage);
+        }
+
+        [Fact(DisplayName = "监视慢消息")]
+        public async Task Monitor_Slow_Message_Handler()
+        {
+            var isSlowMessage = false;
+            _messageBus.OnSlowMessageHandled += delegate (object sender, SlowMessageHandlerEventArgs args)
+            {
+                Debugger.Log(2, "OnSlowMessageHandled", args.ToString());
+
+                isSlowMessage = true;
+            };
+
+            _messageBus.Subscribe<TestMessage, TestSlowMessageHandler>();
+            await _messageBus.PublishAsync(new TestMessage());
+
+            Assert.True(isSlowMessage);
         }
     }
 }
