@@ -3,12 +3,13 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Configuration;
 using System;
+using System.Threading.Tasks;
 
 namespace OrleansClient
 {
     class Program
     {
-        static async void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var client = new ClientBuilder()
               .UseLocalhostClustering()
