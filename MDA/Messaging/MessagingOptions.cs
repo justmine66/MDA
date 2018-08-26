@@ -5,15 +5,15 @@ namespace MDA.Messaging
     public class MessagingOptions
     {
         /// <summary>
-        /// 是否观察慢消息。
+        /// 是否监视慢的消息处理者。
         /// </summary>
         /// <remarks>
         /// 记录消息处理的时间，根据参数 <see cref="SlowMsgThreshold"/> 来衡量消息处理的快慢。
         /// </remarks>
-        public bool WatchSlowMessage { get; set; }
+        public bool MonitorSlowMessageHandler { get; set; }
         /// <summary>
-        /// 慢消息阈值。
+        /// 慢消息处理者阈值。
         /// </summary>
-        public TimeSpan SlowMsgThreshold { get; set; }
+        public TimeSpan SlowMessageHandlerThreshold { get; set; }
     }
 }
