@@ -14,6 +14,9 @@ namespace MDA.Messaging
         /// <summary>
         /// 慢消息处理者阈值。
         /// </summary>
-        public TimeSpan SlowMessageHandlerThreshold { get; set; }
+        /// <remarks>
+        /// 消息处理耗时，默认100毫秒。
+        /// </remarks>
+        public TimeSpan SlowMessageHandlerThreshold { get; set; } = TimeSpan.FromMilliseconds(100);
     }
 }
