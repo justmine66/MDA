@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.27703.2047
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA", "MDA\MDA.csproj", "{1832386A-745A-4472-AC7B-C67FD19B98D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDA.Tests", "MDA.Tests\MDA.Tests.csproj", "{B7D4064E-58C2-47B6-9418-2BD4826F405F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA.Tests", "MDA.Tests\MDA.Tests.csproj", "{B7D4064E-58C2-47B6-9418-2BD4826F405F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDA.Messaging.Orleans", "MDA.Messaging.Orleans\MDA.Messaging.Orleans.csproj", "{F2E850A3-1DDF-45C6-ABC1-F1E7CC339812}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{B7D4064E-58C2-47B6-9418-2BD4826F405F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7D4064E-58C2-47B6-9418-2BD4826F405F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7D4064E-58C2-47B6-9418-2BD4826F405F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2E850A3-1DDF-45C6-ABC1-F1E7CC339812}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2E850A3-1DDF-45C6-ABC1-F1E7CC339812}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2E850A3-1DDF-45C6-ABC1-F1E7CC339812}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2E850A3-1DDF-45C6-ABC1-F1E7CC339812}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
