@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Configuration;
-using System;
 using Polly;
-using Polly.Retry;
+using System;
 using System.Threading;
 
 namespace MDA.Messaging.Orleans
@@ -37,7 +36,7 @@ namespace MDA.Messaging.Orleans
               })
               .ConfigureLogging(logging => logging.AddConsole());
 
-            var policy = RetryPolicy.Handle<Exception>()
+            var policy = Policy.Handle<Exception>()
                 .WaitAndRetry(_retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
                 {
                     _logger.LogWarning(ex.ToString());
@@ -86,5 +85,4 @@ namespace MDA.Messaging.Orleans
             }
         }
     }
-}
 }
