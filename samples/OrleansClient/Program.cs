@@ -26,6 +26,8 @@ namespace OrleansClient
             var friend = client.GetGrain<IHello>(0);
             var response = await friend.SayHelloAsync("Good morning, my friend!");
             Console.WriteLine("\n\n{0}\n\n", response);
+
+            Console.Read();
         }
     }
 }

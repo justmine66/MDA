@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using Orleans.Configuration;
 using Orleans.Hosting;
 using System.Net;
@@ -23,6 +24,8 @@ namespace OrleansSiloHost
             var host = builder.Build();
 
             await host.StartAsync();
+
+            Console.Read();
         }
     }
 }
