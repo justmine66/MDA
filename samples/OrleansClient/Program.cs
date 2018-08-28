@@ -11,21 +11,29 @@ namespace OrleansClient
     {
         static async Task Main(string[] args)
         {
-            var client = new ClientBuilder()
-              .UseLocalhostClustering()
-              .Configure<ClusterOptions>(options =>
-              {
-                  options.ClusterId = "samples";
-                  options.ServiceId = "OrleansSiloHost";
-              })
-              .ConfigureLogging(logging => logging.AddConsole())
-              .Build();
+            unsafe
+            {
+                var num = SpanDemo.Test5();
+                Console.WriteLine(*num);
 
-            await client.Connect();
+                Console.WriteLine(*num);
+            }
 
-            var friend = client.GetGrain<IHello>(0);
-            var response = await friend.SayHelloAsync("Good morning, my friend!");
-            Console.WriteLine("\n\n{0}\n\n", response);
+            //var client = new ClientBuilder()
+            //  .UseLocalhostClustering()
+            //  .Configure<ClusterOptions>(options =>
+            //  {
+            //      options.ClusterId = "samples";
+            //      options.ServiceId = "OrleansSiloHost";
+            //  })
+            //  .ConfigureLogging(logging => logging.AddConsole())
+            //  .Build();
+
+            //await client.Connect();
+
+            //var friend = client.GetGrain<IHello>(0);
+            //var response = await friend.SayHelloAsync("Good morning, my friend!");
+            //Console.WriteLine("\n\n{0}\n\n", response);
 
             Console.Read();
         }
