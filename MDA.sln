@@ -11,13 +11,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA.Messaging.Orleans", "MD
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{2846544F-381E-4CB5-8025-A2C7C4C3CB6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrleansSiloHost", "samples\OrleansSiloHost\OrleansSiloHost.csproj", "{BE54B1A9-BBB1-4FB6-A792-A188790B016A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrleansSiloHost", "samples\OrleansSiloHost\OrleansSiloHost.csproj", "{BE54B1A9-BBB1-4FB6-A792-A188790B016A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrleansClient", "samples\OrleansClient\OrleansClient.csproj", "{B6C3938A-ECC1-4268-9F4D-73C1A07D0BF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrleansClient", "samples\OrleansClient\OrleansClient.csproj", "{B6C3938A-ECC1-4268-9F4D-73C1A07D0BF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grain.interfaces", "samples\Grain.interfaces\Grain.interfaces.csproj", "{28709647-4A97-4D6C-8F03-267E2D02600E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Grain.interfaces", "samples\Grain.interfaces\Grain.interfaces.csproj", "{28709647-4A97-4D6C-8F03-267E2D02600E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grain.Implementations", "samples\Grain.Implementations\Grain.Implementations.csproj", "{CDE743CA-9144-4366-8BC4-D98FEBC74673}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Grain.Implementations", "samples\Grain.Implementations\Grain.Implementations.csproj", "{CDE743CA-9144-4366-8BC4-D98FEBC74673}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PipelinesApp", "samples\PipelinesApp\PipelinesApp.csproj", "{40ED67C5-D383-4399-83BE-3B98AA8F4001}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{CDE743CA-9144-4366-8BC4-D98FEBC74673}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDE743CA-9144-4366-8BC4-D98FEBC74673}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDE743CA-9144-4366-8BC4-D98FEBC74673}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40ED67C5-D383-4399-83BE-3B98AA8F4001}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40ED67C5-D383-4399-83BE-3B98AA8F4001}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40ED67C5-D383-4399-83BE-3B98AA8F4001}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40ED67C5-D383-4399-83BE-3B98AA8F4001}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,6 +68,7 @@ Global
 		{B6C3938A-ECC1-4268-9F4D-73C1A07D0BF0} = {2846544F-381E-4CB5-8025-A2C7C4C3CB6B}
 		{28709647-4A97-4D6C-8F03-267E2D02600E} = {2846544F-381E-4CB5-8025-A2C7C4C3CB6B}
 		{CDE743CA-9144-4366-8BC4-D98FEBC74673} = {2846544F-381E-4CB5-8025-A2C7C4C3CB6B}
+		{40ED67C5-D383-4399-83BE-3B98AA8F4001} = {2846544F-381E-4CB5-8025-A2C7C4C3CB6B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DC9D9D4F-2190-4530-B529-2F3497D51EA0}
