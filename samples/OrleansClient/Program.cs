@@ -1,8 +1,4 @@
-﻿using Grain.interfaces;
-using Microsoft.Extensions.Logging;
-using Orleans;
-using Orleans.Configuration;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace OrleansClient
