@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrleansClient
@@ -7,13 +8,16 @@ namespace OrleansClient
     {
         static async Task Main(string[] args)
         {
-            unsafe
-            {
-                var num = SpanDemo.Test5();
-                Console.WriteLine(*num);
+            //unsafe
+            //{
+            //    var num = SpanDemo.Test5();
+            //    Console.WriteLine(*num);
 
-                Console.WriteLine(*num);
-            }
+            //    Console.WriteLine(*num);
+            //}
+
+            //MemoryDemo.GenerateIdSpan1();
+            var output = "123,1231,3123.2,52342".SplitWithSpan(',').ToArray();
 
             //var client = new ClientBuilder()
             //  .UseLocalhostClustering()
