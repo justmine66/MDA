@@ -1,4 +1,5 @@
-﻿using MDA.Messaging;
+﻿using MDA.Message;
+using MDA.Message.Abstractions;
 using System;
 using System.Threading.Tasks;
 
@@ -6,9 +7,9 @@ namespace MDA.Tests.Messaging
 {
     public class TestSlowMessageHandler : IMessageHandler<TestMessage>
     {
-        private readonly MessagingOptions _options;
+        private readonly MessageOptions _options;
 
-        public TestSlowMessageHandler(MessagingOptions options)
+        public TestSlowMessageHandler(MessageOptions options)
         {
             _options = options;
         }

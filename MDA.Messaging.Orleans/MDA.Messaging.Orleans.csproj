@@ -9,9 +9,5 @@
     <PackageReference Include="Microsoft.Orleans.Client" Version="2.0.3" />
     <PackageReference Include="Polly" Version="6.1.0" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\MDA\MDA.csproj" />
-  </ItemGroup>
 
 </Project>

@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using MDA.Messaging;
+﻿using MDA.Message.Abstractions;
+using System.Threading.Tasks;
 
 namespace MDA.Tests.Messaging
 {

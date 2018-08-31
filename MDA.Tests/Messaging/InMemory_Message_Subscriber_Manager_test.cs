@@ -1,7 +1,7 @@
-using MDA.Messaging;
-using MDA.Messaging.Impl;
-using Xunit;
+using MDA.Message;
+using MDA.Message.Abstractions;
 using System.Linq;
+using Xunit;
 
 namespace MDA.Tests.Messaging
 {

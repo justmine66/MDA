@@ -1,4 +1,4 @@
-﻿using MDA.Messaging;
+﻿using MDA.Message.Abstractions;
 using System;
 using System.Threading.Tasks;
 

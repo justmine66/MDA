@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MDA\MDA.csproj" />
+    <ProjectReference Include="..\MDA.Message\MDA.Message.csproj" />
   </ItemGroup>
 
 </Project>

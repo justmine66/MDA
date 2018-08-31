@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MDA.Common\MDA.Common.csproj" />
+    <ProjectReference Include="..\MDA.Event.Abstractions\MDA.Event.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

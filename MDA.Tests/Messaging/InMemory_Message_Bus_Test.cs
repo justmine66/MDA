@@ -1,5 +1,5 @@
-﻿using MDA.Messaging;
-using MDA.Messaging.Extensions;
+﻿using MDA.Message;
+using MDA.Message.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -18,7 +18,7 @@ namespace MDA.Tests.Messaging
         {
             var provider = new ServiceCollection()
                 .AddLogging()
-                .AddMessaging(options: new MessagingOptions()
+                .AddMessaging(options: new MessageOptions()
                 {
                     MonitorSlowMessageHandler = true
                 }, IsReigisterInMemoryBus: true)

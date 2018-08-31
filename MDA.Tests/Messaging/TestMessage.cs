@@ -1,5 +1,5 @@
-﻿using System;
-using MDA.Messaging;
+﻿using MDA.Message.Abstractions;
+using System;
 
 namespace MDA.Tests.Messaging
 {
