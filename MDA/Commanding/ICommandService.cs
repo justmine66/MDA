@@ -7,7 +7,7 @@ namespace MDA.Commanding
     /// </summary>
     public interface ICommandService : ICommandBus
     {
-        Task<CommandExcutedResult> ExcuteAsync<TCommand>(TCommand command)
+        Task<CommandResult> ExcuteAsync<TCommand>(TCommand command)
             where TCommand : ICommand;
     }
 }
