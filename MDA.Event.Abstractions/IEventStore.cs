@@ -1,6 +1,6 @@
 ﻿namespace MDA.Event.Abstractions
 {
-    public  interface IEventStore
+    public interface IEventStore
     {
         long CountStoredEvents();
         IStoredEvent[] GetAllStoredEventsSince(long storedEventId);
