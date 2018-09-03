@@ -1,10 +1,12 @@
-﻿namespace MDA.Event.Abstractions
+﻿using System.Threading.Tasks;
+
+namespace MDA.Event.Abstractions
 {
     public interface IEventStore
     {
-        long CountStoredEvents();
-        IStoredEvent[] GetAllStoredEventsSince(long storedEventId);
-        IStoredEvent[] GetAllStoredEventsBetween(long lowStoredEventId, long highStoredEventId);
-        IStoredEvent Append(IDomainEvent domainEvent);
+        Task<long> CountStoredEventsAsync();
+        Task<IStoredEvent[]> GetAllStoredEventsSinceAsync(long storedEventId);
+        Task<IStoredEvent[]> GetAllStoredEventsBetweenAsync(long lowStoredEventId, long highStoredEventId);
+        Task<IStoredEvent> AppendAsync(IDomainEvent domainEvent);
     }
 }
