@@ -34,14 +34,14 @@
     /// 表示一个泛型异步结果。
     /// </summary>
     /// <typeparam name="TDataType">数据类型</typeparam>
-    public class AsyncResult<TData> : AsyncResult
+    public class AsyncResult<TState> : AsyncResult
     {
         /// <summary>
         /// 初始化 <see cref="AsyncResult{TData}"/> 实例。
         /// </summary>
         /// <param name="status">状态。初始化 <see cref="Status"/> 属性。</param>
         public AsyncResult(AsyncStatus status)
-            : this(status, null, default(TData))
+            : this(status, null, default(TState))
         {
 
         }
@@ -50,9 +50,9 @@
         /// 初始化 <see cref="AsyncResult{TData}"/> 实例。
         /// </summary>
         /// <param name="status">状态。初始化 <see cref="Status"/> 属性。</param>
-        /// <param name="data">数据。初始化 <see cref="Data"/> 属性。</param>
-        public AsyncResult(AsyncStatus status, TData data)
-            : this(status, null, data)
+        /// <param name="stateInfo">状态信息。初始化 <see cref="StateInfo"/> 属性。</param>
+        public AsyncResult(AsyncStatus status, TState stateInfo)
+            : this(status, null, stateInfo)
         {
 
         }
@@ -62,17 +62,17 @@
         /// </summary>
         /// <param name="status">状态。初始化 <see cref="Status"/> 属性。</param>
         /// <param name="errorMessage">错误消息。初始化 <see cref="ErrorMessage"/> 属性。</param>
-        /// <param name="data">数据。初始化 <see cref="Data"/> 属性。</param>
-        public AsyncResult(AsyncStatus status, string errorMessage, TData data)
+        /// <param name="stateInfo">状态信息。初始化 <see cref="StateInfo"/> 属性。</param>
+        public AsyncResult(AsyncStatus status, string errorMessage, TState stateInfo)
             : base(status, errorMessage)
         {
-            Data = data;
+            StateInfo = stateInfo;
         }
 
         /// <summary>
-        /// 数据
+        /// 状态信息
         /// </summary>
-        public TData Data { get; private set; }
+        public TState StateInfo { get; private set; }
     }
     /// <summary>
     /// 异步状态
