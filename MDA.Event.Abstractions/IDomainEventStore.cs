@@ -13,21 +13,10 @@ namespace MDA.Event.Abstractions
             string aggregateRootTypeName,
             int sequence);
 
-        Task<IDomainEvent[]> GetAllAggregateStoredEventsSinceAsync<TType>(
-            TType aggregateRootId, 
-            string aggregateRootTypeName, 
-            int sequence);
-
         Task<IDomainEvent[]> GetAllAggregateStoredEventsBetweenAsync(
             string aggregateRootId,
             string aggregateRootTypeName,
             long lowSequence,
-            long highSequence);
-
-        Task<IDomainEvent[]> GetAllAggregateStoredEventsBetweenAsync<TType>(
-            TType aggregateRootId,
-            string aggregateRootTypeName, 
-            long lowSequence, 
             long highSequence);
 
         Task<AsyncResult<DomainEventAppendResult>> AppendAsync(IDomainEvent domainEvent);
