@@ -7,8 +7,6 @@ namespace MDA.Event.Abstractions
         string CommandId { get; set; }
         string AggregateRootId { get; set; }
         string AggregateRootTypeName { get; set; }
-
-        IDomainEventStore ToStoredEvent();
     }
 
     public interface IDomainEvent<TType> : IDomainEvent
