@@ -2,7 +2,8 @@
 {
     public enum DomainEventAppendResult
     {
-        DuplicateEvent = 1,
-        DuplicateCommand = 2
+        None = 1,
+        DuplicateEvent = 2,
+        DuplicateCommand = 3
     }
 }
