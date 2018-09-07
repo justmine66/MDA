@@ -23,6 +23,15 @@
         /// 初始化一个 <see cref="AsyncResult"/> 实例。
         /// </summary>
         /// <param name="status">状态。初始化 <see cref="Status"/> 属性。</param>
+        public AsyncResult(AsyncStatus status)
+        {
+            Status = status;
+        }
+
+        /// <summary>
+        /// 初始化一个 <see cref="AsyncResult"/> 实例。
+        /// </summary>
+        /// <param name="status">状态。初始化 <see cref="Status"/> 属性。</param>
         /// <param name="errorMessage">错误消息。初始化 <see cref="ErrorMessage"/> 属性。</param>
         public AsyncResult(AsyncStatus status, string errorMessage)
         {
@@ -55,6 +64,15 @@
             : this(status, null, stateInfo)
         {
 
+        }
+        /// <summary>
+        /// 初始化 <see cref="AsyncResult{TData}"/> 实例。
+        /// </summary>
+        /// <param name="status">状态。初始化 <see cref="Status"/> 属性。</param>
+        /// <param name="errorMessage">错误消息。初始化 <see cref="ErrorMessage"/> 属性。</param>
+        public AsyncResult(AsyncStatus status, string errorMessage)
+            : base(status, errorMessage)
+        {
         }
 
         /// <summary>
