@@ -1,7 +1,11 @@
-﻿using MDA.Common;
+﻿using Dapper;
+using MDA.Common;
 using MDA.Event.Abstractions;
+using MDA.EventStore.MySql.Port.Adapters.Input;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -17,14 +21,20 @@ namespace MDA.EventStore.MySql
         private readonly MySqlEventStoreOptions _options;
         private readonly IEventSerializer _serializer;
 
+        private string _versionIndexName;
+        private string _commandIndexName;
+
         public MySqlEventStore(
-            ILogger<MySqlEventStore> logger, 
+            ILogger<MySqlEventStore> logger,
             IOptions<MySqlEventStoreOptions> options,
             IEventSerializer serializer)
         {
             _logger = logger;
             _options = options.Value;
             _serializer = serializer;
+
+            _versionIndexName = "IX_EventStream_AggId_Version";
+            _commandIndexName = "IX_EventStream_AggId_CommandId";
         }
 
         public Task<AsyncResult<DomainEventAppendResult>> AppendAllAsync(IEnumerable<IDomainEvent> eventStream)
@@ -32,9 +42,48 @@ namespace MDA.EventStore.MySql
             throw new System.NotImplementedException();
         }
 
-        public Task<AsyncResult<DomainEventAppendResult>> AppendAsync(IDomainEvent domainEvent)
+        public async Task<AsyncResult<DomainEventAppendResult>> AppendAsync(IDomainEvent domainEvent)
         {
-            throw new System.NotImplementedException();
+            Assert.NotNull(domainEvent, nameof(domainEvent));
+            Assert.NotNullOrEmpty(domainEvent.Id, nameof(domainEvent.Id));
+            Assert.NotNullOrEmpty(domainEvent.AggregateRootId, nameof(domainEvent.AggregateRootId));
+            Assert.NotNullOrEmpty(domainEvent.AggregateRootTypeName, nameof(domainEvent.AggregateRootTypeName));
+            Assert.NotNullOrEmpty(domainEvent.CommandId, nameof(domainEvent.CommandId));
+            Assert.NotNullOrEmpty(_options.ConnectionString, nameof(_options.ConnectionString));
+
+            var storedEvent = StoredDomainEventAdapter.ToStoredDomainEvent(domainEvent, _serializer);
+            var sql = string.Format(InsertSql, $"{Table}_{domainEvent.AggregateRootTypeName}");
+
+            try
+            {
+                using (var connection = new MySqlConnection(_options.ConnectionString))
+                {
+                    await connection.ExecuteAsync(sql, storedEvent);
+                    return new AsyncResult<DomainEventAppendResult>(AsyncStatus.Success);
+                }
+            }
+            catch (MySqlException ex)
+            {
+                _logger.LogError("Append domain event has sql exception, eventInfo: " + domainEvent, ex);
+
+                if (ex.Number == 1062 && ex.Message.Contains(_versionIndexName))
+                {
+                    return new AsyncResult<DomainEventAppendResult>(AsyncStatus.Success, DomainEventAppendResult.DuplicateEvent);
+                }
+                else if (ex.Number == 1062 && ex.Message.Contains(_commandIndexName))
+                {
+                    return new AsyncResult<DomainEventAppendResult>(AsyncStatus.Success, DomainEventAppendResult.DuplicateCommand);
+                }
+                else
+                {
+                    return new AsyncResult<DomainEventAppendResult>(AsyncStatus.Failed);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Append domain event has sql unknown, eventInfo: " + domainEvent, ex);
+                return new AsyncResult<DomainEventAppendResult>(AsyncStatus.Failed, ex.Message);
+            }
         }
 
         public Task<long> CountStoredEventsAsync()
