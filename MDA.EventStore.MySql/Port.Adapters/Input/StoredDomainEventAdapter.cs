@@ -1,6 +1,7 @@
 ﻿using MDA.Event.Abstractions;
+using MDA.EventStore.MySql.Poes;
 
-namespace MDA.EventStore.MySql.Port.Adapters
+namespace MDA.EventStore.MySql.Port.Adapters.Input
 {
     public class StoredDomainEventAdapter
     {
