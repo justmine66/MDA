@@ -1,10 +1,7 @@
 ﻿using System;
 
-namespace MDA.Event.Abstractions
+namespace MDA.EventStore.MySql.Poes
 {
-    /// <summary>
-    /// 领域事件持久化对象
-    /// </summary>
     public class StoredDomainEvent
     {
         public string EventId { get; set; }
