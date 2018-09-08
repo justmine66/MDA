@@ -31,7 +31,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA.Command", "MDA.Command\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA.Event.Abstractions", "MDA.Event.Abstractions\MDA.Event.Abstractions.csproj", "{9B87D36C-A2C3-4B6F-A36C-0B2F32F65220}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDA.EventStore.MySql", "MDA.EventStore.MySql\MDA.EventStore.MySql.csproj", "{D8FD16BD-1300-48D5-964C-86312344199A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA.EventStore.MySql", "MDA.EventStore.MySql\MDA.EventStore.MySql.csproj", "{D8FD16BD-1300-48D5-964C-86312344199A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDA.EventStore.SqlServer", "MDA.EventStore.SqlServer\MDA.EventStore.SqlServer.csproj", "{A1A97786-DB74-49E1-A1CB-DF28E6CF9FFC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -95,6 +97,10 @@ Global
 		{D8FD16BD-1300-48D5-964C-86312344199A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8FD16BD-1300-48D5-964C-86312344199A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8FD16BD-1300-48D5-964C-86312344199A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1A97786-DB74-49E1-A1CB-DF28E6CF9FFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1A97786-DB74-49E1-A1CB-DF28E6CF9FFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1A97786-DB74-49E1-A1CB-DF28E6CF9FFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1A97786-DB74-49E1-A1CB-DF28E6CF9FFC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
