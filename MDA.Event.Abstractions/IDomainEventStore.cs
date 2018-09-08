@@ -1,22 +1,23 @@
 ﻿using MDA.Common;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MDA.Event.Abstractions
 {
     public interface IDomainEventStore
     {
-        Task<int> CountStoredEventsAsync();
+        Task<AsyncResult<int>> CountStoredEventsAsync();
 
-        Task<IDomainEvent[]> GetAllAggregateStoredEventsSinceAsync(
+        Task<AsyncResult<IEnumerable<IDomainEvent>>> GetAllAggregateStoredEventsSinceAsync(
             string aggregateRootId,
             string aggregateRootTypeName,
             int sequence);
 
-        Task<IDomainEvent[]> GetAllAggregateStoredEventsBetweenAsync(
+        Task<AsyncResult<IEnumerable<IDomainEvent>>> GetAllAggregateStoredEventsBetweenAsync(
             string aggregateRootId,
             string aggregateRootTypeName,
-            long lowSequence,
-            long highSequence);
+            int lowSequence,
+            int highSequence);
 
         Task<AsyncResult<DomainEventAppendResult>> AppendAsync(IDomainEvent domainEvent);
 
