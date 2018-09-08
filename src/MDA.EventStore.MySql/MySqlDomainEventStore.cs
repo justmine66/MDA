@@ -233,13 +233,13 @@ namespace MDA.EventStore.MySql
             }
             catch (MySqlException ex)
             {
-                _logger.LogError($"the {nameof(GetAllAggregateStoredEventsSinceAsync)} has a sql excetiopn, aggregateRootId: {aggregateRootId},aggregateRootTypeName: {aggregateRootTypeName},LowSequence: {lowSequence},HighSequence: {highSequence}", ex);
+                _logger.LogError($"the {nameof(GetAllAggregateStoredEventsBetweenAsync)} has a sql excetiopn, aggregateRootId: {aggregateRootId},aggregateRootTypeName: {aggregateRootTypeName},LowSequence: {lowSequence},HighSequence: {highSequence}", ex);
 
                 return new AsyncResult<IEnumerable<IDomainEvent>>(AsyncStatus.Failed);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"the {nameof(GetAllAggregateStoredEventsSinceAsync)} has a unknown excetiopn, aggregateRootId: {aggregateRootId},aggregateRootTypeName: {aggregateRootTypeName},LowSequence: {lowSequence},HighSequence: {highSequence}", ex);
+                _logger.LogError($"the {nameof(GetAllAggregateStoredEventsBetweenAsync)} has a unknown excetiopn, aggregateRootId: {aggregateRootId},aggregateRootTypeName: {aggregateRootTypeName},LowSequence: {lowSequence},HighSequence: {highSequence}", ex);
 
                 return new AsyncResult<IEnumerable<IDomainEvent>>(AsyncStatus.Failed);
             }
