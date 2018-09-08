@@ -88,7 +88,7 @@ namespace MDA.EventStore.MySql
             }
         }
 
-        public Task<long> CountStoredEventsAsync()
+        public Task<int> CountStoredEventsAsync()
         {
             throw new System.NotImplementedException();
         }

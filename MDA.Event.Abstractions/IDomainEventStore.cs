@@ -6,7 +6,7 @@ namespace MDA.Event.Abstractions
 {
     public interface IDomainEventStore
     {
-        Task<long> CountStoredEventsAsync();
+        Task<int> CountStoredEventsAsync();
 
         Task<IDomainEvent[]> GetAllAggregateStoredEventsSinceAsync(
             string aggregateRootId,
