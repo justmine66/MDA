@@ -160,17 +160,7 @@ namespace MDA.EventStore.MySql
             throw new System.NotImplementedException();
         }
 
-        public Task<IDomainEvent[]> GetAllAggregateStoredEventsBetweenAsync<TType>(TType aggregateRootId, string aggregateRootTypeName, long lowSequence, long highSequence)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public Task<IDomainEvent[]> GetAllAggregateStoredEventsSinceAsync(string aggregateRootId, string aggregateRootTypeName, int sequence)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<IDomainEvent[]> GetAllAggregateStoredEventsSinceAsync<TType>(TType aggregateRootId, string aggregateRootTypeName, int sequence)
         {
             throw new System.NotImplementedException();
         }
