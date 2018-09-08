@@ -1,11 +1,15 @@
 ﻿using Dapper;
 using MDA.Common;
+using MDA.Common.Extensions;
 using MDA.Event.Abstractions;
+using MDA.EventStore.MySql.Poes;
 using MDA.EventStore.MySql.Port.Adapters.Input;
+using MDA.EventStore.MySql.Port.Adapters.Output;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,7 +19,7 @@ namespace MDA.EventStore.MySql
     {
         private const string TableName = "DomainEventStream";
         private const string InsertSql = "INSERT INTO {0}(`EventId`,`EventSequence`,`EventBody`,`AggregateRootId`,`CommandId`,`AggregateRootTypeName`,`OccurredOn`) VALUES(@EventId,@EventSequence,@EventBody,@AggregateRootId,@CommandId,@AggregateRootTypeName,@OccurredOn)";
-        private const string SelectSql = "SELECT `EventId`,`EventSequence`,`EventBody`,`AggregateRootId`,`CommandId`,`AggregateRootTypeName`,`OccurredOn` FROM {0}";
+        private const string SelectSql = "SELECT `EventId`,`EventSequence`,`EventBody`,`AggregateRootId`,`CommandId`,`AggregateRootTypeName`,`OccurredOn` FROM {0} WHERE {1}";
 
         private readonly ILogger<MySqlEventStore> _logger;
         private readonly MySqlEventStoreOptions _options;
@@ -39,7 +43,8 @@ namespace MDA.EventStore.MySql
 
             _versionIndexName = "IX_EventStream_AggId_Version";
             _commandIndexName = "IX_EventStream_AggId_CommandId";
-            _tableCount = 5;
+
+            _tableCount = _options.AggregateRootShardTableCount <= 0 ? 5 : _options.AggregateRootShardTableCount;
         }
 
         public async Task<AsyncResult<DomainEventAppendResult>> AppendAllAsync(DomainEventStream eventStream)
@@ -62,7 +67,7 @@ namespace MDA.EventStore.MySql
                     try
                     {
                         await connection.ExecuteAsync(sql, storedEvents, transaction);
-                        transaction.Commit();
+                        await transaction.CommitAsync();
 
                         return new AsyncResult<DomainEventAppendResult>(AsyncStatus.Success);
                     }
@@ -70,7 +75,7 @@ namespace MDA.EventStore.MySql
                     {
                         try
                         {
-                            transaction.Rollback();
+                            await transaction.RollbackAsync();
                         }
                         catch (Exception ex)
                         {
@@ -150,19 +155,134 @@ namespace MDA.EventStore.MySql
             }
         }
 
-        public Task<int> CountStoredEventsAsync()
+        public async Task<AsyncResult<int>> CountStoredEventsAsync()
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                using (var connection = new MySqlConnection(_options.ConnectionString))
+                {
+                    await connection.OpenAsync();
+                    var transaction = await connection.BeginTransactionAsync();
+
+                    var count = 0;
+
+                    try
+                    {
+                        for (int i = 0; i < _tableCount; i++)
+                        {
+                            var selectSql = $"SELECT count(1) FROM TableName_{i}";
+                            count += await connection.ExecuteScalarAsync<int>(selectSql);
+                        }
+
+                        await transaction.CommitAsync();
+                    }
+                    catch (Exception)
+                    {
+                        try
+                        {
+                            await transaction.RollbackAsync();
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError($"the method{nameof(CountStoredEventsAsync)}'s transaction rollback failed.", ex);
+                        }
+
+                        throw;
+                    }
+
+                    return new AsyncResult<int>(AsyncStatus.Success, count);
+                }
+            }
+            catch (MySqlException ex)
+            {
+                _logger.LogError($"the {nameof(CountStoredEventsAsync)} has a sql excetiopn", ex);
+
+                return new AsyncResult<int>(AsyncStatus.Failed);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"the {nameof(CountStoredEventsAsync)} has a unknown excetiopn", ex);
+
+                return new AsyncResult<int>(AsyncStatus.Failed);
+            }
         }
 
-        public Task<IDomainEvent[]> GetAllAggregateStoredEventsBetweenAsync(string aggregateRootId, string aggregateRootTypeName, long lowSequence, long highSequence)
+        public async Task<AsyncResult<IEnumerable<IDomainEvent>>> GetAllAggregateStoredEventsBetweenAsync(string aggregateRootId, string aggregateRootTypeName, int lowSequence, int highSequence)
         {
-            throw new System.NotImplementedException();
+            Assert.NotNullOrEmpty(aggregateRootId, nameof(aggregateRootId));
+            Assert.NotNullOrEmpty(aggregateRootTypeName, nameof(aggregateRootTypeName));
+
+            var sql = string.Format(SelectSql, GetShardTableName(aggregateRootId), "`AggregateRootId`=@AggregateRootId AND `AggregateRootTypeName`=@AggregateRootTypeName AND `EventSequence`>=@LowSequence AND `EventSequence`<@HighSequence");
+
+            try
+            {
+                using (var connection = new MySqlConnection(_options.ConnectionString))
+                {
+                    var storedEvents = await connection.QueryAsync<StoredDomainEvent>(sql, new
+                    {
+                        AggregateRootId = aggregateRootId,
+                        AggregateRootTypeName = aggregateRootTypeName,
+                        LowSequence = lowSequence,
+                        HighSequence = highSequence
+                    });
+
+                    var events = storedEvents.Select(it => DomainEventAdapter.ToDomainEvent(it, _serializer));
+
+                    return new AsyncResult<IEnumerable<IDomainEvent>>(AsyncStatus.Success, events);
+                }
+            }
+            catch (MySqlException ex)
+            {
+                _logger.LogError($"the {nameof(GetAllAggregateStoredEventsSinceAsync)} has a sql excetiopn, aggregateRootId: {aggregateRootId},aggregateRootTypeName: {aggregateRootTypeName},LowSequence: {lowSequence},HighSequence: {highSequence}", ex);
+
+                return new AsyncResult<IEnumerable<IDomainEvent>>(AsyncStatus.Failed);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"the {nameof(GetAllAggregateStoredEventsSinceAsync)} has a unknown excetiopn, aggregateRootId: {aggregateRootId},aggregateRootTypeName: {aggregateRootTypeName},LowSequence: {lowSequence},HighSequence: {highSequence}", ex);
+
+                return new AsyncResult<IEnumerable<IDomainEvent>>(AsyncStatus.Failed);
+            }
         }
 
-        public Task<IDomainEvent[]> GetAllAggregateStoredEventsSinceAsync(string aggregateRootId, string aggregateRootTypeName, int sequence)
+        public async Task<AsyncResult<IEnumerable<IDomainEvent>>> GetAllAggregateStoredEventsSinceAsync(
+            string aggregateRootId,
+            string aggregateRootTypeName,
+            int sequence)
         {
-            throw new System.NotImplementedException();
+            Assert.NotNullOrEmpty(aggregateRootId, nameof(aggregateRootId));
+            Assert.NotNullOrEmpty(aggregateRootTypeName, nameof(aggregateRootTypeName));
+
+            var sql = string.Format(SelectSql, GetShardTableName(aggregateRootId), "`AggregateRootId`=@AggregateRootId AND `AggregateRootTypeName`=@AggregateRootTypeName AND `EventSequence`>@EventSequence");
+
+            try
+            {
+                using (var connection = new MySqlConnection(_options.ConnectionString))
+                {
+                    var storedEvents = await connection.QueryAsync<StoredDomainEvent>(sql, new
+                    {
+                        AggregateRootId = aggregateRootId,
+                        AggregateRootTypeName = aggregateRootTypeName,
+                        EventSequence = sequence
+                    });
+
+                    var events = storedEvents.Select(it => DomainEventAdapter.ToDomainEvent(it, _serializer));
+
+                    return new AsyncResult<IEnumerable<IDomainEvent>>(AsyncStatus.Success, events);
+                }
+            }
+            catch (MySqlException ex)
+            {
+                _logger.LogError($"the {nameof(GetAllAggregateStoredEventsSinceAsync)} has a sql excetiopn, aggregateRootId: {aggregateRootId},aggregateRootTypeName: {aggregateRootTypeName},EventSequence: {sequence}", ex);
+
+                return new AsyncResult<IEnumerable<IDomainEvent>>(AsyncStatus.Failed);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"the {nameof(GetAllAggregateStoredEventsSinceAsync)} has a unknown excetiopn, aggregateRootId: {aggregateRootId},aggregateRootTypeName: {aggregateRootTypeName},EventSequence: {sequence}", ex);
+
+                return new AsyncResult<IEnumerable<IDomainEvent>>(AsyncStatus.Failed);
+            }
         }
 
         private string GetShardTableName(string aggregateRootId)
