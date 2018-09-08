@@ -15,23 +15,23 @@ using System.Threading.Tasks;
 
 namespace MDA.EventStore.MySql
 {
-    public class MySqlEventStore : IDomainEventStore
+    public class MySqlDomainEventStore : IDomainEventStore
     {
         private const string TableName = "DomainEventStream";
         private const string InsertSql = "INSERT INTO {0}(`EventId`,`EventSequence`,`EventBody`,`AggregateRootId`,`CommandId`,`AggregateRootTypeName`,`OccurredOn`) VALUES(@EventId,@EventSequence,@EventBody,@AggregateRootId,@CommandId,@AggregateRootTypeName,@OccurredOn)";
         private const string SelectSql = "SELECT `EventId`,`EventSequence`,`EventBody`,`AggregateRootId`,`CommandId`,`AggregateRootTypeName`,`OccurredOn` FROM {0} WHERE {1}";
 
-        private readonly ILogger<MySqlEventStore> _logger;
-        private readonly MySqlEventStoreOptions _options;
+        private readonly ILogger<MySqlDomainEventStore> _logger;
+        private readonly MySqlDomainEventStoreOptions _options;
         private readonly IEventSerializer _serializer;
 
         private string _versionIndexName;
         private string _commandIndexName;
         private int _tableCount;
 
-        public MySqlEventStore(
-            ILogger<MySqlEventStore> logger,
-            IOptions<MySqlEventStoreOptions> options,
+        public MySqlDomainEventStore(
+            ILogger<MySqlDomainEventStore> logger,
+            IOptions<MySqlDomainEventStoreOptions> options,
             IEventSerializer serializer)
         {
             _options = options.Value;

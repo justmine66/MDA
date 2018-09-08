@@ -1,6 +1,6 @@
 ﻿namespace MDA.EventStore.MySql
 {
-    public class MySqlEventStoreOptions
+    public class MySqlDomainEventStoreOptions
     {
         public string ConnectionString { get; set; }
 
