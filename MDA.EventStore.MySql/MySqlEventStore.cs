@@ -35,6 +35,8 @@ namespace MDA.EventStore.MySql
 
             _versionIndexName = "IX_EventStream_AggId_Version";
             _commandIndexName = "IX_EventStream_AggId_CommandId";
+
+            Assert.NotNullOrEmpty(_options.ConnectionString, nameof(_options.ConnectionString));
         }
 
         public Task<AsyncResult<DomainEventAppendResult>> AppendAllAsync(IEnumerable<IDomainEvent> eventStream)
@@ -49,7 +51,6 @@ namespace MDA.EventStore.MySql
             Assert.NotNullOrEmpty(domainEvent.AggregateRootId, nameof(domainEvent.AggregateRootId));
             Assert.NotNullOrEmpty(domainEvent.AggregateRootTypeName, nameof(domainEvent.AggregateRootTypeName));
             Assert.NotNullOrEmpty(domainEvent.CommandId, nameof(domainEvent.CommandId));
-            Assert.NotNullOrEmpty(_options.ConnectionString, nameof(_options.ConnectionString));
 
             var storedEvent = StoredDomainEventAdapter.ToStoredDomainEvent(domainEvent, _serializer);
             var sql = string.Format(InsertSql, $"{Table}_{domainEvent.AggregateRootTypeName}");
@@ -64,7 +65,7 @@ namespace MDA.EventStore.MySql
             }
             catch (MySqlException ex)
             {
-                _logger.LogError("Append domain event has sql exception, eventInfo: " + domainEvent, ex);
+                _logger.LogError("Append domain event has sql exception, eventInfo: " + storedEvent, ex);
 
                 if (ex.Number == 1062 && ex.Message.Contains(_versionIndexName))
                 {
@@ -81,7 +82,8 @@ namespace MDA.EventStore.MySql
             }
             catch (Exception ex)
             {
-                _logger.LogError("Append domain event has sql unknown, eventInfo: " + domainEvent, ex);
+                _logger.LogError("Append domain event has sql unknown, eventInfo: " + storedEvent, ex);
+
                 return new AsyncResult<DomainEventAppendResult>(AsyncStatus.Failed, ex.Message);
             }
         }
