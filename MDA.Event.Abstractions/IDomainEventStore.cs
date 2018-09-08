@@ -1,5 +1,4 @@
 ﻿using MDA.Common;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MDA.Event.Abstractions
@@ -21,6 +20,6 @@ namespace MDA.Event.Abstractions
 
         Task<AsyncResult<DomainEventAppendResult>> AppendAsync(IDomainEvent domainEvent);
 
-        Task<AsyncResult<DomainEventAppendResult>> AppendAllAsync(IEnumerable<IDomainEvent> eventStream);
+        Task<AsyncResult<DomainEventAppendResult>> AppendAllAsync(DomainEventStream eventStream);
     }
 }
