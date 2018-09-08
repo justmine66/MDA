@@ -104,6 +104,10 @@
         /// <summary>
         /// 失败
         /// </summary>
-        Failed
+        Failed,
+        /// <summary>
+        /// 超时
+        /// </summary>
+        Timeouted
     }
 }
