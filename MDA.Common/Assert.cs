@@ -13,7 +13,25 @@ namespace MDA.Common
         public static void CharacterLengthLessThan(string argumentName, string argument, int length)
         {
             if (argument.Length <= length)
-                throw new ArgumentNullException($"The {argumentName} must be {length} characters or less.");
+                throw new ArgumentException($"The {argumentName} must be {length} characters or less.");
+        }
+
+        public static void LengthGreaterThan(string argumentName, int value, int length)
+        {
+            if (value <= length)
+                throw new ArgumentException($"The {argumentName} length must greater than{length}.");
+        }
+
+        public static void LengthLessThan(string argumentName, int value, int length)
+        {
+            if (value >= length)
+                throw new ArgumentException($"The {argumentName} length must less than{length}.");
+        }
+
+        public static void LengthLessThan(string argumentName, int value, int length, string message)
+        {
+            if (value >= length)
+                throw new ArgumentException(message);
         }
 
         public static void NotNullOrEmpty(string argument, string argumentName)
