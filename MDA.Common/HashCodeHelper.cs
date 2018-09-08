@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace MDA.Common
 {
@@ -13,6 +16,13 @@ namespace MDA.Common
                     hash = hash * 23 + (obj != null ? obj.GetHashCode() : 0);
                 return hash;
             }
+        }
+        public static int GetShardIndexOf(string key, int shardNumber)
+        {
+            var buffer = Encoding.UTF8.GetBytes(key.ToCharArray());
+            var hash = HashAlgorithm.Create().ComputeHash(buffer);
+
+            return BitConverter.ToInt32(hash, 0) % shardNumber;
         }
     }
 }
