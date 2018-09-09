@@ -5,7 +5,7 @@ namespace MDA.Event.Abstractions.Extensions
 {
     public static class EventServiceCollectionExtension
     {
-        public static IServiceCollection AddMySqlDomainEventStorage(this IServiceCollection services)
+        public static IServiceCollection AddEventing(this IServiceCollection services)
         {
             services.AddSingleton<IEventSerializer, EventSerializer>();
 
