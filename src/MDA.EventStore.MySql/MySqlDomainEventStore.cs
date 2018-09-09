@@ -17,6 +17,10 @@ namespace MDA.EventStore.MySql
 {
     public class MySqlDomainEventStore : IDomainEventStore
     {
+        /// <summary>
+        /// 分隔符，默认："_"。用于分隔表名中的各个分类名称。
+        /// </summary>
+        public static readonly string KeyDelimiter = ":";
         private const string TableName = "DomainEventStream";
         private const string InsertSql = "INSERT INTO {0}(`EventId`,`EventSequence`,`EventBody`,`AggregateRootId`,`CommandId`,`AggregateRootTypeName`,`OccurredOn`) VALUES(@EventId,@EventSequence,@EventBody,@AggregateRootId,@CommandId,@AggregateRootTypeName,@OccurredOn)";
         private const string SelectSql = "SELECT `EventId`,`EventSequence`,`EventBody`,`AggregateRootId`,`CommandId`,`AggregateRootTypeName`,`OccurredOn` FROM {0} WHERE {1}";
@@ -28,6 +32,7 @@ namespace MDA.EventStore.MySql
         private string _versionIndexName;
         private string _commandIndexName;
         private int _tableCount;
+        private int _appendEventStreamTimeoutInSeconds;
 
         public MySqlDomainEventStore(
             ILogger<MySqlDomainEventStore> logger,
@@ -41,10 +46,11 @@ namespace MDA.EventStore.MySql
             _logger = logger;
             _serializer = serializer;
 
-            _versionIndexName = "IX_EventStream_AggId_Version";
-            _commandIndexName = "IX_EventStream_AggId_CommandId";
+            _versionIndexName = "IX_DomainEventStream_AggId_Version";
+            _commandIndexName = "IX_DomainEventStream_AggId_CommandId";
 
             _tableCount = _options.AggregateRootShardTableCount <= 0 ? 5 : _options.AggregateRootShardTableCount;
+            _appendEventStreamTimeoutInSeconds = _options.AppendEventStreamTimeoutInSeconds <= 0 ? 30 : _options.AppendEventStreamTimeoutInSeconds;
         }
 
         public async Task<AsyncResult<DomainEventAppendResult>> AppendAllAsync(DomainEventStream eventStream)
@@ -66,7 +72,7 @@ namespace MDA.EventStore.MySql
 
                     try
                     {
-                        await connection.ExecuteAsync(sql, storedEvents, transaction);
+                        await connection.ExecuteAsync(sql, storedEvents, transaction, _appendEventStreamTimeoutInSeconds);
                         await transaction.CommitAsync();
 
                         return new AsyncResult<DomainEventAppendResult>(AsyncStatus.Success);
@@ -293,7 +299,7 @@ namespace MDA.EventStore.MySql
             }
 
             var index = HashCodeHelper.GetShardIndexOf(aggregateRootId, _tableCount);
-            return $"{TableName}_{index}";
+            return $"{TableName}{KeyDelimiter}{index}";
         }
     }
 }
