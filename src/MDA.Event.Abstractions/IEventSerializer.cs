@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MDA.Event.Abstractions
 {
@@ -7,5 +8,6 @@ namespace MDA.Event.Abstractions
         T Deserialize<T>(string serialization);
         object Deserialize(string serialization, Type type);
         string Serialize(IDomainEvent domainEvent);
+        string Serialize(IEnumerable<IDomainEvent> eventStream)
     }
 }
