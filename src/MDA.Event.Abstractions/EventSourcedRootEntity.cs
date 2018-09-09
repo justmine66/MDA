@@ -6,6 +6,10 @@ namespace MDA.Event.Abstractions
     /// <summary>
     /// 表示一个基于事件溯源的聚合根实体。
     /// </summary>
+    /// <remarks>
+    /// 加载当前状态
+    /// 当需要事件溯源实体执行变更状态的命令时，首先需要从事件储存中加载这个实体之前所有的事件，并应用于实体上，创建实体的当前状态。
+    /// </remarks>
     public abstract class EventSourcedRootEntity : EntityWithCompositeId
     {
         /// <summary>
