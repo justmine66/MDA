@@ -9,8 +9,10 @@ namespace MDA.Event.Abstractions
         string AggregateRootTypeName { get; set; }
     }
 
-    public interface IDomainEvent<TType> : IDomainEvent
+    public interface IDomainEvent<TAggregateRootIdType> : ISequenceMessage
     {
-        new TType AggregateRootId { get; set; }
+        string CommandId { get; set; }
+        TAggregateRootIdType AggregateRootId { get; set; }
+        string AggregateRootTypeName { get; set; }
     }
 }
