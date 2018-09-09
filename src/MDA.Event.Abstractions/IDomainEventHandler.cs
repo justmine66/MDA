@@ -4,13 +4,12 @@ namespace MDA.Event.Abstractions
 {
     public interface IDomainEventHandler
     {
-        Task HandleAsync(IDomainEvent @event);
+        void Handle(IDomainEvent @event);
     }
 
     public interface IDomainEventHandler<in TIDomainEvent>
-        : IDomainEventHandler
         where TIDomainEvent : IDomainEvent
     {
-        Task HandleAsync(TIDomainEvent @event);
+        void Handle(TIDomainEvent @event);
     }
 }
