@@ -2,6 +2,6 @@
 {
     public interface IIdentity<TType>
     {
-        TType Id { get; set; }
+        TType Id { get;  }
     }
 }
