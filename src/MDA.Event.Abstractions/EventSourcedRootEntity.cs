@@ -35,8 +35,9 @@ namespace MDA.Event.Abstractions
         {
             foreach (var evt in eventStream)
             {
-                When(evt);
+                (this as dynamic).Handle(evt);
             }
+
             _unmutatedVersion = streamVersion;
         }
 
@@ -72,22 +73,13 @@ namespace MDA.Event.Abstractions
         }
 
         /// <summary>
-        /// 处理事件
-        /// </summary>
-        /// <param name="e"></param>
-        private void When(IDomainEvent e)
-        {
-            (this as dynamic).Apply(e);
-        }
-
-        /// <summary>
         /// 应用领域事件
         /// </summary>
-        /// <param name="e"></param>
-        protected void Apply(IDomainEvent e)
+        /// <param name="e">领域事件</param>
+        protected void Apply(dynamic domainEvent)
         {
-            _mutatingEvents.Add(e);
-            When(e);
+            _mutatingEvents.Add(domainEvent);
+            (this as dynamic).Handle(domainEvent);
         }
     }
 }
