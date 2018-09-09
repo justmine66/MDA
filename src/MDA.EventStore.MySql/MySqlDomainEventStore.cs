@@ -20,7 +20,7 @@ namespace MDA.EventStore.MySql
         /// <summary>
         /// 分隔符，默认："_"。用于分隔表名中的各个分类名称。
         /// </summary>
-        public static readonly string KeyDelimiter = ":";
+        public static readonly string KeyDelimiter = "_";
         private const string TableName = "DomainEventStream";
         private const string InsertSql = "INSERT INTO {0}(`EventId`,`EventSequence`,`EventBody`,`AggregateRootId`,`CommandId`,`AggregateRootTypeName`,`OccurredOn`) VALUES(@EventId,@EventSequence,@EventBody,@AggregateRootId,@CommandId,@AggregateRootTypeName,@OccurredOn)";
         private const string SelectSql = "SELECT `EventId`,`EventSequence`,`EventBody`,`AggregateRootId`,`CommandId`,`AggregateRootTypeName`,`OccurredOn` FROM {0} WHERE {1}";
