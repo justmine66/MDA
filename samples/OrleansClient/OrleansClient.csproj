@@ -19,4 +19,8 @@
     <ProjectReference Include="..\Grain.interfaces\Grain.interfaces.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ActorCollection\" />
+  </ItemGroup>
+
 </Project>
