@@ -4,9 +4,9 @@ namespace MDA.Event.Abstractions
 {
     public abstract class DomainEvent : IDomainEvent
     {
-        public DomainEvent() { }
+        protected DomainEvent() { }
 
-        public DomainEvent(
+        protected DomainEvent(
             string commandId, 
             string aggregateRootId, 
             string aggregateRootTypeName,
@@ -30,7 +30,8 @@ namespace MDA.Event.Abstractions
 
     public abstract class DomainEvent<TAggregateRootIdType> : IDomainEvent<TAggregateRootIdType>
     {
-        public DomainEvent(
+        protected DomainEvent() { }
+        protected DomainEvent(
             string commandId,
             TAggregateRootIdType aggregateRootId,
             string aggregateRootTypeName,
