@@ -31,10 +31,10 @@ namespace MDA.EventStore.SqlServer
         private readonly SqlServerDomainEventStoreOptions _options;
         private readonly IEventSerializer _serializer;
 
-        private string _versionIndexName;
-        private string _commandIndexName;
-        private int _tableCount;
-        private int _appendEventStreamTimeoutInSeconds;
+        private readonly string _versionIndexName;
+        private readonly string _commandIndexName;
+        private readonly int _tableCount;
+        private readonly int _appendEventStreamTimeoutInSeconds;
 
         public SqlServerDomainEventStore(
             ILogger<SqlServerDomainEventStore> logger,
