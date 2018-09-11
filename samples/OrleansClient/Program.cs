@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Configuration;
+using OrleansClient.Concurrency;
 using System;
 using System.Threading.Tasks;
 
@@ -41,28 +42,31 @@ namespace OrleansClient
             //var hello = client.GetGrain<IExampleGrain>(0, "a string!", null);
             //await hello.Hello();
 
-            var e0 = client.GetGrain<IEmployee>(Guid.NewGuid());
-            var e1 = client.GetGrain<IEmployee>(Guid.NewGuid());
-            var e2 = client.GetGrain<IEmployee>(Guid.NewGuid());
-            var e3 = client.GetGrain<IEmployee>(Guid.NewGuid());
-            var e4 = client.GetGrain<IEmployee>(Guid.NewGuid());
+            //var e0 = client.GetGrain<IEmployee>(Guid.NewGuid());
+            //var e1 = client.GetGrain<IEmployee>(Guid.NewGuid());
+            //var e2 = client.GetGrain<IEmployee>(Guid.NewGuid());
+            //var e3 = client.GetGrain<IEmployee>(Guid.NewGuid());
+            //var e4 = client.GetGrain<IEmployee>(Guid.NewGuid());
 
-            var m0 = client.GetGrain<IManager>(Guid.NewGuid());
-            var m1 = client.GetGrain<IManager>(Guid.NewGuid());
-            var m0e = m0.AsEmployee().Result;
-            var m1e = m1.AsEmployee().Result;
+            //var m0 = client.GetGrain<IManager>(Guid.NewGuid());
+            //var m1 = client.GetGrain<IManager>(Guid.NewGuid());
+            //var m0e = m0.AsEmployee().Result;
+            //var m1e = m1.AsEmployee().Result;
 
-            await m0e.Promote(10);
-            await m1e.Promote(11);
+            //await m0e.Promote(10);
+            //await m1e.Promote(11);
 
-            m0.AddDirectReport(e0).Wait();
-            m0.AddDirectReport(e1).Wait();
-            m0.AddDirectReport(e2).Wait();
+            //m0.AddDirectReport(e0).Wait();
+            //m0.AddDirectReport(e1).Wait();
+            //m0.AddDirectReport(e2).Wait();
 
-            m1.AddDirectReport(m0e).Wait();
-            m1.AddDirectReport(e3).Wait();
+            //m1.AddDirectReport(m0e).Wait();
+            //m1.AddDirectReport(e3).Wait();
 
-            m1.AddDirectReport(e4).Wait();
+            //m1.AddDirectReport(e4).Wait();
+
+            //await ConcurrencyTest.Run(client);
+            await StockClient.Run(client);
 
             Console.Read();
         }

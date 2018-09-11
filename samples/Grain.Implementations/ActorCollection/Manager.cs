@@ -17,13 +17,11 @@ namespace Grain.Implementations.ActorCollection
             return base.OnActivateAsync();
         }
 
-        public Task AddDirectReport(IEmployee employee)
+        public async Task AddDirectReport(IEmployee employee)
         {
             _reports.Add(employee);
-            employee.SetManager(this);
-            employee.Greeting(_me, "Welcome to my team!");
-
-            return Task.CompletedTask;
+            await employee.SetManager(this);
+            await employee.Greeting(_me, "Welcome to my team!");
         }
 
         public Task<IEmployee> AsEmployee()
