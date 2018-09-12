@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Configuration;
+using Orleans.Runtime;
 using Polly;
 using System;
 using System.Threading;
@@ -35,8 +36,8 @@ namespace MDA.Messaging.Orleans
                   options.ServiceId = "OrleansSiloHost";
               })
               .ConfigureLogging(logging => logging.AddConsole());
-
-            var policy = Policy.Handle<Exception>()
+            
+            var policy = Policy.Handle<SiloUnavailableException>()
                 .WaitAndRetry(_retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
                 {
                     _logger.LogWarning(ex.ToString());
