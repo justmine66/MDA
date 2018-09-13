@@ -11,7 +11,7 @@ namespace OrleansSiloHost
     {
         static async Task Main(string[] args)
         {
-            var builder = new SiloHostBuilder()
+            var builder = new SiloHostBuilder() 
                 .UseLocalhostClustering()
                 .Configure<ClusterOptions>(options =>
                 {
