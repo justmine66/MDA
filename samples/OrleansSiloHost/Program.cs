@@ -4,6 +4,8 @@ using Orleans.Configuration;
 using Orleans.Hosting;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Orleans;
 
 namespace OrleansSiloHost
 {
@@ -11,12 +13,16 @@ namespace OrleansSiloHost
     {
         static async Task Main(string[] args)
         {
-            var builder = new SiloHostBuilder() 
+            var builder = new SiloHostBuilder()
                 .UseLocalhostClustering()
                 .Configure<ClusterOptions>(options =>
                 {
                     options.ClusterId = "samples";
                     options.ServiceId = "OrleansSiloHost";
+                })
+                .ConfigureServices(services =>
+                {
+                    services.AddSingleton<IIncomingGrainCallFilter, LoggingCallFilter>();
                 })
                 .AddMemoryGrainStorage("MemoryStore")
                 .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
