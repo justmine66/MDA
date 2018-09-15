@@ -23,7 +23,7 @@ namespace OrleansSiloHost
                 .AddAdoNetGrainStorage("MySqlStorage", options =>
                 {
                     options.Invariant = "System.Data.MySqlClient";
-                    options.ConnectionString = "<ConnectionString>";
+                    options.ConnectionString = "server=47.75.161.43;port=3306;user id=root;database=MDA;password=youngangel.c0m;characterset=utf8;sslmode=none;";
                     options.UseJsonFormat = true;
                 })
                 .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
