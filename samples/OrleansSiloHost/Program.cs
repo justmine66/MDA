@@ -20,11 +20,15 @@ namespace OrleansSiloHost
                     options.ClusterId = "samples";
                     options.ServiceId = "OrleansSiloHost";
                 })
-                .AddDynamoDBGrainStorage()
-                .AddMemoryGrainStorage("MemoryStore")
+                .AddAdoNetGrainStorage("MySqlStorage", options =>
+                {
+                    options.Invariant = "System.Data.MySqlClient";
+                    options.ConnectionString = "<ConnectionString>";
+                    options.UseJsonFormat = true;
+                })
                 .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
                 .ConfigureLogging(logging => logging.AddConsole());
-            
+
             var host = builder.Build();
 
             await host.StartAsync();
