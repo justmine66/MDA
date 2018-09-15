@@ -20,10 +20,11 @@ namespace OrleansSiloHost
                     options.ClusterId = "samples";
                     options.ServiceId = "OrleansSiloHost";
                 })
+                .AddDynamoDBGrainStorage()
                 .AddMemoryGrainStorage("MemoryStore")
                 .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
                 .ConfigureLogging(logging => logging.AddConsole());
-
+            
             var host = builder.Build();
 
             await host.StartAsync();
