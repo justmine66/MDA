@@ -66,7 +66,11 @@ namespace OrleansClient
             //m1.AddDirectReport(e4).Wait();
 
             //await ConcurrencyTest.Run(client);
-            await StockClient.Run(client);
+            //await StockClient.Run(client);
+
+            //await ReentrancyClient.RunSlow(client);
+            //await ReentrancyClient.RunFast(client);
+            await ReentrancyClient.RunIsEven(client);
 
             Console.Read();
         }

@@ -18,6 +18,7 @@ namespace OrleansSiloHost
                     options.ClusterId = "samples";
                     options.ServiceId = "OrleansSiloHost";
                 })
+                //.Configure<SchedulingOptions>(options => { options.AllowCallChainReentrancy = false; })
                 .AddMemoryGrainStorage("MemoryStore")
                 .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
                 .ConfigureLogging(logging => logging.AddConsole());
