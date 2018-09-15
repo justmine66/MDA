@@ -4,6 +4,8 @@ using Orleans.Configuration;
 using Orleans.Hosting;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Orleans;
 
 namespace OrleansSiloHost
 {
@@ -18,7 +20,6 @@ namespace OrleansSiloHost
                     options.ClusterId = "samples";
                     options.ServiceId = "OrleansSiloHost";
                 })
-                //.Configure<SchedulingOptions>(options => { options.AllowCallChainReentrancy = false; })
                 .AddMemoryGrainStorage("MemoryStore")
                 .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
                 .ConfigureLogging(logging => logging.AddConsole());
