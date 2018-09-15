@@ -22,7 +22,7 @@ namespace OrleansSiloHost
                 })
                 .AddAdoNetGrainStorage("MySqlStorage", options =>
                 {
-                    options.Invariant = "System.Data.MySqlClient";
+                    options.Invariant = "MySql.Data.MySqlClient";
                     options.ConnectionString = "server=47.75.161.43;port=3306;user id=root;database=mda;password=youngangel.c0m;characterset=utf8;sslmode=none;";
                     options.UseJsonFormat = true;
                 })

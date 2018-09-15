@@ -1,8 +1,6 @@
-﻿using Grain.interfaces.ActorCollection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Configuration;
-using OrleansClient.Concurrency;
 using System;
 using System.Threading.Tasks;
 
@@ -70,7 +68,9 @@ namespace OrleansClient
 
             //await ReentrancyClient.RunSlow(client);
             //await ReentrancyClient.RunFast(client);
-            await ReentrancyClient.RunIsEven(client);
+            //await ReentrancyClient.RunIsEven(client);
+
+            await PersistenceClient.Run(client);
 
             Console.Read();
         }
