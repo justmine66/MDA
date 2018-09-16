@@ -4,13 +4,46 @@ using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OrleansSiloHost
 {
     class Program
     {
+        static readonly ManualResetEvent _siloStopped = new ManualResetEvent(false);
+
+        static ISiloHost silo;
+        static bool siloStopping = false;
+        static readonly object syncLock = new object();
+
         static async Task Main(string[] args)
+        {
+            SetupApplicationShutdown();
+
+            var host = CreateSilo();
+            await host.StartAsync();
+
+            _siloStopped.WaitOne();
+        }
+
+        static void SetupApplicationShutdown()
+        {
+            /// Capture the user pressing Ctrl+C
+            Console.CancelKeyPress += (s, a) =>
+            {
+                a.Cancel = true;
+                lock (syncLock)
+                {
+                    if (!siloStopping)
+                    {
+                        siloStopping = true;
+                        Task.Run(StopSilo).Ignore();
+                    }
+                }
+            };
+        }
+        static ISiloHost CreateSilo()
         {
             var invariant = "MySql.Data.MySqlClient";
             var connectionString = "server=47.75.161.43;port=3306;user id=root;database=mda;password=youngangel.c0m;characterset=utf8;sslmode=none;";
@@ -49,11 +82,12 @@ namespace OrleansSiloHost
                     .AddConsole();
                 });
 
-            var host = builder.Build();
-
-            await host.StartAsync();
-
-            Console.Read();
+            return builder.Build();
+        }
+        static async Task StopSilo()
+        {
+            await silo.StopAsync();
+            _siloStopped.Set();
         }
     }
 }
