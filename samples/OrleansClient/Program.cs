@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Configuration;
+using Orleans.Hosting;
 using System;
 using System.Threading.Tasks;
 
@@ -21,6 +22,9 @@ namespace OrleansClient
             //MemoryDemo.GenerateIdSpan1();
             //var output = "123,1231,3123.2,52342".SplitWithSpan(',').ToArray();
 
+            var invariant = "MySql.Data.MySqlClient";
+            var connectionString = "server=47.75.161.43;port=3306;user id=root;database=mda;password=youngangel.c0m;characterset=utf8;sslmode=none;";
+
             var client = new ClientBuilder()
               .UseLocalhostClustering()
               .Configure<ClusterOptions>(options =>
@@ -28,7 +32,17 @@ namespace OrleansClient
                   options.ClusterId = "samples";
                   options.ServiceId = "OrleansSiloHost";
               })
-              .ConfigureLogging(logging => logging.AddConsole())
+              .UseAdoNetClustering(options =>
+              {
+                  options.Invariant = invariant;
+                  options.ConnectionString = connectionString;
+              })
+              .ConfigureLogging(logging =>
+              {
+                  logging
+                  .SetMinimumLevel(LogLevel.Warning)
+                  .AddConsole();
+              })
               .Build();
 
             await client.Connect();
@@ -70,7 +84,7 @@ namespace OrleansClient
             //await ReentrancyClient.RunFast(client);
             //await ReentrancyClient.RunIsEven(client);
 
-            await PersistenceClient.Run(client);
+            //await PersistenceClient.Run(client);
 
             Console.Read();
         }

@@ -4,7 +4,6 @@ using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
 using System;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace OrleansSiloHost
@@ -13,6 +12,9 @@ namespace OrleansSiloHost
     {
         static async Task Main(string[] args)
         {
+            var invariant = "MySql.Data.MySqlClient";
+            var connectionString = "server=47.75.161.43;port=3306;user id=root;database=mda;password=youngangel.c0m;characterset=utf8;sslmode=none;";
+
             var builder = new SiloHostBuilder()
                 .UseLocalhostClustering()
                 .Configure<ClusterOptions>(options =>
@@ -20,14 +22,32 @@ namespace OrleansSiloHost
                     options.ClusterId = "samples";
                     options.ServiceId = "OrleansSiloHost";
                 })
+                .UseAdoNetClustering(options =>
+                {
+                    options.Invariant = invariant;
+                    options.ConnectionString = connectionString;
+                })
+                .UseAdoNetReminderService(options =>
+                {
+                    options.Invariant = invariant;
+                    options.ConnectionString = connectionString;
+                })
                 .AddAdoNetGrainStorage("MySqlStorage", options =>
                 {
-                    options.Invariant = "MySql.Data.MySqlClient";
-                    options.ConnectionString = "server=47.75.161.43;port=3306;user id=root;database=mda;password=youngangel.c0m;characterset=utf8;sslmode=none;";
-                    options.UseJsonFormat = true;
+                    options.Invariant = invariant;
+                    options.ConnectionString = connectionString;
                 })
-                .Configure<EndpointOptions>(options => options.AdvertisedIPAddress = IPAddress.Loopback)
-                .ConfigureLogging(logging => logging.AddConsole());
+                .Configure<EndpointOptions>(options =>
+                {
+                    options.SiloPort = 11111;
+                    options.GatewayPort = 30000;
+                })
+                .ConfigureLogging(logging =>
+                {
+                    logging
+                    .SetMinimumLevel(LogLevel.Warning)
+                    .AddConsole();
+                });
 
             var host = builder.Build();
 
