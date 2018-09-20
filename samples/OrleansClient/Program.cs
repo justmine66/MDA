@@ -43,6 +43,7 @@ namespace OrleansClient
                   .SetMinimumLevel(LogLevel.Warning)
                   .AddConsole();
               })
+              .AddSimpleMessageStreamProvider("SMSProvider")
               .Build();
 
             await client.Connect();

@@ -80,7 +80,9 @@ namespace OrleansSiloHost
                     logging
                     .SetMinimumLevel(LogLevel.Warning)
                     .AddConsole();
-                });
+                })
+                .AddSimpleMessageStreamProvider("SMSProvider")
+                .AddMemoryGrainStorage("PubSubStore");
 
             return builder.Build();
         }
