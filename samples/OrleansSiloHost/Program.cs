@@ -29,7 +29,7 @@ namespace OrleansSiloHost
 
         static void SetupApplicationShutdown()
         {
-            /// Capture the user pressing Ctrl+C
+            // Capture the user pressing Ctrl+C
             Console.CancelKeyPress += (s, a) =>
             {
                 a.Cancel = true;
@@ -80,7 +80,9 @@ namespace OrleansSiloHost
                     logging
                     .SetMinimumLevel(LogLevel.Warning)
                     .AddConsole();
-                });
+                })
+                .AddSimpleMessageStreamProvider("SMSProvider")
+                .AddMemoryGrainStorage("PubSubStore");
 
             return builder.Build();
         }
