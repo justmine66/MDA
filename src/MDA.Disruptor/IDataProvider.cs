@@ -1,6 +1,6 @@
 ﻿namespace MDA.Disruptor
 {
-    public interface IDataProvider<T>
+    public interface IDataProvider<out T>
     {
         T Get(long sequence);
     }

@@ -22,7 +22,7 @@
             _gatingSequence = gatingSequence;
         }
 
-        public PollState Poll(Handler<T> eventHandler)
+        public PollState Poll(IHandler<T> eventHandler)
         {
             long currentSequence = _sequence.GetValue();
             long nextSequence = currentSequence + 1;
@@ -30,11 +30,11 @@
 
             if (nextSequence <= availableSequence)
             {
-                bool processNextEvent;
                 long processedSequence = currentSequence;
 
                 try
                 {
+                    bool processNextEvent;
                     do
                     {
                         T @event = _dataProvider.Get(nextSequence);
@@ -49,19 +49,19 @@
                     _sequence.SetValue(processedSequence);
                 }
 
-                return PollState.PROCESSING;
+                return PollState.Processing;
             }
             else if (_sequencer.GetCursor() >= nextSequence)
             {
-                return PollState.GATING;
+                return PollState.Gating;
             }
             else
             {
-                return PollState.IDLE;
+                return PollState.Idle;
             }
         }
 
-        public interface Handler<T>
+        public interface IHandler<in T>
         {
             bool OnEvent(T @event, long sequence, bool endOfBatch);
         }
@@ -69,8 +69,8 @@
 
     public enum PollState
     {
-        PROCESSING,
-        GATING,
-        IDLE
+        Processing,
+        Gating,
+        Idle
     }
 }
