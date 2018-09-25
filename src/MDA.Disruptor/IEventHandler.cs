@@ -3,9 +3,9 @@
     /// <summary>
     /// Callback interface to be implemented for processing events as they become available in the <see cref="RingBuffer{T}"/>
     /// </summary>
-    /// <typeparam name="TData">Type of events for sharing during exchange or parallel coordination of an event.</typeparam>
+    /// <typeparam name="TEvent">Type of events for sharing during exchange or parallel coordination of an event.</typeparam>
     /// <remarks>See <see cref="IBatchEventProcessor{T}.SetExceptionHandler"/> if you want to handle exceptions propagated out of the handler.</remarks>
-    public interface IEventHandler<in TData>
+    public interface IEventHandler<in TEvent>
     {
         /// <summary>
         /// Called when a publisher has committed an event to the <see cref="RingBuffer{T}"/>. The <see cref="IBatchEventProcessor{T}"/> will
@@ -15,9 +15,9 @@
         /// operation.  Implementations should ensure that the operation is always performed when endOfBatch is true as
         /// the time between that message an the next one is inderminate.
         /// </summary>
-        /// <param name="data">Data committed to the <see cref="RingBuffer{T}"/></param>
+        /// <param name="event">Data committed to the <see cref="RingBuffer{T}"/></param>
         /// <param name="sequence">Sequence number committed to the <see cref="RingBuffer{T}"/></param>
         /// <param name="endOfBatch">flag to indicate if this is the last event in a batch from the <see cref="RingBuffer{T}"/></param>
-        void OnEvent(TData data, long sequence, bool endOfBatch);
+        void OnEvent(TEvent @event, long sequence, bool endOfBatch);
     }
 }
