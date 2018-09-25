@@ -13,7 +13,7 @@ namespace MDA.Test.Disruptor
     /// </remarks>
     public sealed class FalseSharingTest
     {
-        public const int NumThreads = 16;
+        public const int NumThreads = 4;
         public const long Iterations = 500L * 1000L * 1000L;//迭代500亿次。
 
         //private readonly FalseSharingCacheLineEntry[] _seqs;
