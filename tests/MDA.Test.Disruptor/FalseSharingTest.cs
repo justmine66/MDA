@@ -9,20 +9,27 @@ namespace MDA.Test.Disruptor
     /// CPU高速缓存伪共享测试类。
     /// </summary>
     /// <remarks>
-    /// 启动CPU核数个线程，每个线程独立更新自己的计数器。
+    /// 启动(1-CPU核数)个线程，每个线程独立更新自己的计数器，测试持续时间与线程数的线性关系。
     /// </remarks>
     public sealed class FalseSharingTest
     {
-        public const int NUM_THREADS = 4;
-        public const long ITERATIONS = 500L * 1000L * 1000L;//迭代500亿次。
+        public const int NumThreads = 16;
+        public const long Iterations = 500L * 1000L * 1000L;//迭代500亿次。
 
-        private readonly CacheLineEntry[] longs = new CacheLineEntry[NUM_THREADS];
+        //private readonly FalseSharingCacheLineEntry[] _seqs;
+        private readonly CacheLineEntry[] _seqs;
+        //private readonly CacheLineEntryOne[] _seqs;
 
         public FalseSharingTest()
         {
-            for (int i = 0; i < longs.Length; i++)
+            //_seqs = new FalseSharingCacheLineEntry[NumThreads];
+            _seqs = new CacheLineEntry[NumThreads];
+            //_seqs = new CacheLineEntryOne[NumThreads];
+            for (int i = 0; i < _seqs.Length; i++)
             {
-                longs[i] = new CacheLineEntry();
+                //_seqs[i] = new FalseSharingCacheLineEntry();
+                _seqs[i] = new CacheLineEntry();
+                //_seqs[i] = new CacheLineEntryOne();
             }
         }
 
@@ -38,20 +45,20 @@ namespace MDA.Test.Disruptor
 
         private void Run()
         {
-            var threads = new Thread[NUM_THREADS];
-            for (int i = 0; i < threads.Length; i++)
+            var threads = new Thread[NumThreads];
+            for (var i = 0; i < threads.Length; i++)
             {
                 threads[i] = new Thread(SetValue);
             }
 
-            for (int i = 0; i < threads.Length; i++)
+            for (var i = 0; i < threads.Length; i++)
             {
                 threads[i].Start(i);
             }
 
-            for (int i = 0; i < threads.Length; i++)
+            foreach (var t in threads)
             {
-                threads[i].Join();
+                t.Join();
             }
         }
 
@@ -59,35 +66,46 @@ namespace MDA.Test.Disruptor
         {
             if (int.TryParse(obj?.ToString(), out int index))
             {
-                var iterations = ITERATIONS;
+                var iterations = Iterations;
                 while (0 != --iterations)
                 {
-                    longs[index].Value = iterations;
+                    _seqs[index].Value = iterations;
                 }
             }
         }
     }
 
+    ///// <summary>
+    ///// CPU伪共享高速缓存行条目(伪共享)
+    ///// </summary>
+    public class FalseSharingCacheLineEntry
+    {
+        public long Value = 0L;
+    }
+
     /// <summary>
-    /// CPU高速缓存行条目
+    /// CPU高速缓存行条目(直接填充)
     /// </summary>
     public class CacheLineEntry
     {
-        protected long p1, p2, p3, p4, p5, p6, p7;
+        protected long P1, P2, P3, P4, P5, P6, P7;
         public long Value = 0L;
-        protected long p9, p10, p11, p12, p13, p14, p15;
+        protected long P9, P10, P11, P12, P13, P14, P15;
     }
 
-    //[StructLayout(LayoutKind.Explicit, Size = 128)]
-    //public class CacheLineEntryOne
-    //{
-    //    [FieldOffset(56)]
-    //    private long _value;
+    /// <summary>
+    /// CPU高速缓存行条目(控制内存布局)
+    /// </summary>
+    [StructLayout(LayoutKind.Explicit, Size = 120)]
+    public class CacheLineEntryOne
+    {
+        [FieldOffset(56)]
+        private long _value;
 
-    //    public long Value
-    //    {
-    //        get => _value;
-    //        set => _value = value;
-    //    }
-    //}
+        public long Value
+        {
+            get => _value;
+            set => _value = value;
+        }
+    }
 }
