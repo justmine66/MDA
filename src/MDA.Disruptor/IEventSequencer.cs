@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MDA.Disruptor
+﻿namespace MDA.Disruptor
 {
-    public interface IEventSequencer
+    public interface IEventSequencer<TEvent> : IDataProvider<TEvent>, ISequenced
     {
 
     }
