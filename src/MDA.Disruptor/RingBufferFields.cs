@@ -3,11 +3,11 @@ using MDA.Disruptor.Extensions;
 
 namespace MDA.Disruptor
 {
-    public class RingBufferFields<TEvent> : LhsPadding
+    internal abstract class RingBufferFields<TEvent> : LhsPadding
     {
         private static readonly int _bufferPad;
-        private static readonly long REF_ARRAY_BASE;
-        private static readonly int REF_ELEMENT_SHIFT;
+        private static readonly long _refArrayBase;
+        private static readonly int _refElementShift;
 
         static RingBufferFields()
         {
@@ -16,10 +16,10 @@ namespace MDA.Disruptor
             switch (scale)
             {
                 case 4:
-                    REF_ELEMENT_SHIFT = 2;
+                    _refElementShift = 2;
                     break;
                 case 8:
-                    REF_ELEMENT_SHIFT = 3;
+                    _refElementShift = 3;
                     break;
                 default:
                     throw new PlatformNotSupportedException("Unknown pointer size");
@@ -61,6 +61,11 @@ namespace MDA.Disruptor
             {
                 _entries[_bufferPad + i] = eventFactory.NewInstance();
             }
+        }
+
+        protected TEvent ElementAt(long sequence)
+        {
+            return default(TEvent);
         }
     }
 }
