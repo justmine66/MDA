@@ -3,7 +3,7 @@ using MDA.Disruptor.Extensions;
 
 namespace MDA.Disruptor
 {
-    internal abstract class RingBufferFields<TEvent> : LhsPadding
+    public abstract class RingBufferFields<TEvent> : LhsPadding
     {
         private static readonly int _bufferPad;
         private static readonly long _refArrayBase;
