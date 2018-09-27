@@ -52,6 +52,7 @@ namespace MDA.Disruptor
 
             _indexMask = _bufferSize - 1;
             _entries = new object[sequencer.BufferSize + 2 * _bufferPad];
+
             Fill(eventFactory);
         }
 
