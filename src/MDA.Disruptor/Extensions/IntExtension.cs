@@ -42,5 +42,21 @@
 
             return i & 0x3f;
         }
+
+        /// <summary>
+        /// Calculate the log base 2 of the supplied integer, essentially reports the location
+        /// of the highest bit.
+        /// </summary>
+        /// <param name="i">Value to calculate log2 for.</param>
+        /// <returns>The log2 value</returns>
+        public static int Log2(this int i)
+        {
+            var r = 0;
+            while ((i >>= 1) != 0)
+            {
+                ++r;
+            }
+            return r;
+        }
     }
 }
