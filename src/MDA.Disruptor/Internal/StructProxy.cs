@@ -6,12 +6,11 @@ using System.Reflection.Emit;
 
 namespace MDA.Disruptor.Internal
 {
-    internal static class StructProxy
+    public static class StructProxy
     {
-        private static readonly ModuleBuilder _moduleBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(nameof(StructProxy) + ".DynamicAssembly"), AssemblyBuilderAccess.Run)
-            .DefineDynamicModule(nameof(StructProxy));
+        private static readonly ModuleBuilder ModuleBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName(nameof(StructProxy) + ".DynamicAssembly"), AssemblyBuilderAccess.Run).DefineDynamicModule(nameof(StructProxy));
 
-        private static readonly Dictionary<Type, Type> _proxyTypes = new Dictionary<Type, Type>();
+        private static readonly Dictionary<Type, Type> ProxyTypes = new Dictionary<Type, Type>();
 
         public static TInterface CreateProxyInstance<TInterface>(TInterface target)
         {
@@ -21,12 +20,12 @@ namespace MDA.Disruptor.Internal
                 return target;
 
             Type proxyType;
-            lock (_proxyTypes)
+            lock (ProxyTypes)
             {
-                if (!_proxyTypes.TryGetValue(targetType, out proxyType))
+                if (!ProxyTypes.TryGetValue(targetType, out proxyType))
                 {
                     proxyType = GenerateStructProxyType(targetType);
-                    _proxyTypes.Add(targetType, proxyType);
+                    ProxyTypes.Add(targetType, proxyType);
                 }
             }
 
@@ -39,19 +38,18 @@ namespace MDA.Disruptor.Internal
         private static Type GenerateStructProxyType(Type targetType)
         {
             if (!targetType.IsVisible)
-            {
                 return null;
-            }
 
-            var typeBuilder = _moduleBuilder.DefineType($"{nameof(StructProxy)}_{targetType.Name}_{Guid.NewGuid():N}", TypeAttributes.Public, targetType);
-            var fieldBuilder = typeBuilder.DefineField("_target", targetType, FieldAttributes.Private);
+            var typeBuilder = ModuleBuilder.DefineType($"StructProxy_{targetType.Name}_{Guid.NewGuid():N}", TypeAttributes.Public, typeof(ValueType));
 
-            GenerateConstructor(targetType, typeBuilder, fieldBuilder);
+            var field = typeBuilder.DefineField("_target", targetType, FieldAttributes.Private);
+
+            GenerateConstructor(targetType, typeBuilder, field);
 
             var interfaceTypes = targetType.GetInterfaces().Where(x => x.IsVisible);
             foreach (var interfaceType in interfaceTypes)
             {
-                GenerateInterfaceImplementation(interfaceType, targetType, typeBuilder, fieldBuilder);
+                GenerateInterfaceImplementation(interfaceType, targetType, typeBuilder, field);
             }
 
             return typeBuilder.CreateTypeInfo();
@@ -68,29 +66,29 @@ namespace MDA.Disruptor.Internal
             constructorGenerator.Emit(OpCodes.Ret);
         }
 
-        private static void GenerateInterfaceImplementation(Type interfaceType, Type targetType,
-            TypeBuilder typeBuilder, FieldBuilder field)
+        private static void GenerateInterfaceImplementation(Type interfaceType, Type targetType, TypeBuilder typeBuilder, FieldBuilder field)
         {
             typeBuilder.AddInterfaceImplementation(interfaceType);
+
             var interfaceMap = targetType.GetInterfaceMap(interfaceType);
 
-            for (int index = 0; index < interfaceMap.InterfaceMethods.Length; index++)
+            for (var index = 0; index < interfaceMap.InterfaceMethods.Length; index++)
             {
                 var interfaceMethodInfo = interfaceMap.InterfaceMethods[index];
                 var targetMethodInfo = interfaceMap.TargetMethods[index];
                 var parameters = interfaceMethodInfo.GetParameters();
 
-                var methodBuilder = typeBuilder.DefineMethod(interfaceMethodInfo.Name, MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.Final, interfaceMethodInfo.ReturnType, parameters.Select(x => x.ParameterType).ToArray());
+                var method = typeBuilder.DefineMethod(interfaceMethodInfo.Name, MethodAttributes.Public | MethodAttributes.Virtual | MethodAttributes.Final, interfaceMethodInfo.ReturnType, parameters.Select(x => x.ParameterType).ToArray());
 
                 if (targetMethodInfo.IsGenericMethod)
                 {
                     var genericArguments = targetMethodInfo.GetGenericArguments();
-                    methodBuilder.DefineGenericParameters(genericArguments.Select((x, i) => $"T{i}").ToArray());
+                    method.DefineGenericParameters(genericArguments.Select((x, i) => $"T{i}").ToArray());
                 }
 
-                methodBuilder.SetImplementationFlags(methodBuilder.GetMethodImplementationFlags() | MethodImplAttributes.AggressiveInlining);
+                method.SetImplementationFlags(method.GetMethodImplementationFlags() | MethodImplAttributes.AggressiveInlining);
 
-                var methodGenerator = methodBuilder.GetILGenerator();
+                var methodGenerator = method.GetILGenerator();
                 methodGenerator.Emit(OpCodes.Ldarg_0);
                 methodGenerator.Emit(OpCodes.Ldfld, field);
 
