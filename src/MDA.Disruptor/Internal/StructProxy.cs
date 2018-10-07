@@ -42,31 +42,31 @@ namespace MDA.Disruptor.Internal
 
             var typeBuilder = ModuleBuilder.DefineType($"StructProxy_{targetType.Name}_{Guid.NewGuid():N}", TypeAttributes.Public, typeof(ValueType));
 
-            var field = typeBuilder.DefineField("_target", targetType, FieldAttributes.Private);
+            var fieldBuilder = typeBuilder.DefineField("_target", targetType, FieldAttributes.Private);
 
-            GenerateConstructor(targetType, typeBuilder, field);
+            GenerateConstructor(targetType, typeBuilder, fieldBuilder);
 
             var interfaceTypes = targetType.GetInterfaces().Where(x => x.IsVisible);
             foreach (var interfaceType in interfaceTypes)
             {
-                GenerateInterfaceImplementation(interfaceType, targetType, typeBuilder, field);
+                GenerateInterfaceImplementation(interfaceType, targetType, typeBuilder, fieldBuilder);
             }
 
             return typeBuilder.CreateTypeInfo();
         }
 
-        private static void GenerateConstructor(Type targetType, TypeBuilder typeBuilder, FieldBuilder field)
+        private static void GenerateConstructor(Type targetType, TypeBuilder typeBuilder, FieldBuilder fieldBuilder)
         {
             var constructor = typeBuilder.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard, new[] { targetType });
 
             var constructorGenerator = constructor.GetILGenerator();
             constructorGenerator.Emit(OpCodes.Ldarg_0);
             constructorGenerator.Emit(OpCodes.Ldarg_1);
-            constructorGenerator.Emit(OpCodes.Stfld, field);
+            constructorGenerator.Emit(OpCodes.Stfld, fieldBuilder);
             constructorGenerator.Emit(OpCodes.Ret);
         }
 
-        private static void GenerateInterfaceImplementation(Type interfaceType, Type targetType, TypeBuilder typeBuilder, FieldBuilder field)
+        private static void GenerateInterfaceImplementation(Type interfaceType, Type targetType, TypeBuilder typeBuilder, FieldBuilder fieldBuilder)
         {
             typeBuilder.AddInterfaceImplementation(interfaceType);
 
@@ -90,7 +90,7 @@ namespace MDA.Disruptor.Internal
 
                 var methodGenerator = method.GetILGenerator();
                 methodGenerator.Emit(OpCodes.Ldarg_0);
-                methodGenerator.Emit(OpCodes.Ldfld, field);
+                methodGenerator.Emit(OpCodes.Ldfld, fieldBuilder);
 
                 for (var parameterIndex = 0; parameterIndex < parameters.Length; parameterIndex++)
                 {
