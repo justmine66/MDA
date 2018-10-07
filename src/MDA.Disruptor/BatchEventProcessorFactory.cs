@@ -18,7 +18,7 @@ namespace MDA.Disruptor
         /// <param name="eventHandler">eventHandler is the delegate to which events are dispatched.</param>
         /// <returns></returns>
         public static IBatchEventProcessor<T> Create<T>(
-            IDataProvider<T> dataProvider, 
+            IDataProvider<T> dataProvider,
             ISequenceBarrier sequenceBarrier,
             IEventHandler<T> eventHandler)
             where T : class
@@ -30,9 +30,9 @@ namespace MDA.Disruptor
                 ? StructProxy.CreateProxyInstance(batchStartAware)
                 : new NoopBatchStartAware();
 
-            var batchEventProcessorType = typeof(BatchEventProcessor<,,,,>).MakeGenericType(typeof(T),dataProviderProxy.GetType(), sequenceBarrierProxy.GetType(), eventHandlerProxy.GetType(), batchStartAwareProxy.GetType());
+            var batchEventProcessorType = typeof(BatchEventProcessor<,,,,>).MakeGenericType(typeof(T), dataProviderProxy.GetType(), sequenceBarrierProxy.GetType(), eventHandlerProxy.GetType(), batchStartAwareProxy.GetType());
 
-            return Activator.CreateInstance(batchEventProcessorType,dataProviderProxy,sequenceBarrierProxy,eventHandlerProxy,batchStartAwareProxy) as IBatchEventProcessor<T>;
+            return Activator.CreateInstance(batchEventProcessorType, dataProviderProxy, sequenceBarrierProxy, eventHandlerProxy, batchStartAwareProxy) as IBatchEventProcessor<T>;
         }
     }
 }
