@@ -7,7 +7,8 @@ namespace MDA.Test.Disruptor
         static void Main(string[] args)
         {
             //new FalseSharingTest().StartTest();
-            StructProxyTest.Test();
+            //StructProxyTest.Test();
+            StubClassTest.Test();
 
             Console.Read();
         }
