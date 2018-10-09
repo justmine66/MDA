@@ -1,5 +1,4 @@
-﻿using MDA.Disruptor.Utility;
-using System;
+﻿using System;
 using System.Threading;
 
 namespace MDA.Disruptor.Impl
