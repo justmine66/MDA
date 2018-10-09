@@ -29,11 +29,11 @@ namespace MDA.Disruptor
         }
 
         private readonly long _indexMask;
-        private readonly Object[] _entries;
+        private readonly object[] _entries;
         protected readonly int _bufferSize;
         protected readonly ISequencer _sequencer;
 
-        public RingBufferFields(
+        protected RingBufferFields(
             ISequencer sequencer,
             IEventFactory<TEvent> eventFactory)
         {
@@ -52,6 +52,7 @@ namespace MDA.Disruptor
 
             _indexMask = _bufferSize - 1;
             _entries = new object[sequencer.BufferSize + 2 * _bufferPad];
+
             Fill(eventFactory);
         }
 

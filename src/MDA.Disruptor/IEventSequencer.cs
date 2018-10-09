@@ -1,6 +1,6 @@
 ﻿namespace MDA.Disruptor
 {
-    public interface IEventSequencer<TEvent> : IDataProvider<TEvent>, ISequenced
+    public interface IEventSequencer<out TEvent> : IDataProvider<TEvent>, ISequenced
     {
 
     }

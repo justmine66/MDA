@@ -13,23 +13,23 @@ namespace MDA.Test.Disruptor
     /// </remarks>
     public sealed class FalseSharingTest
     {
-        public const int NumThreads = 4;
+        public const int NumThreads = 1;
         public const long Iterations = 500L * 1000L * 1000L;//迭代500亿次。
 
         //private readonly FalseSharingCacheLineEntry[] _seqs;
-        private readonly CacheLineEntry[] _seqs;
-        //private readonly CacheLineEntryOne[] _seqs;
+        //private readonly CacheLineEntry[] _seqs;
+        private readonly CacheLineEntryOne[] _seqs;
 
         public FalseSharingTest()
         {
             //_seqs = new FalseSharingCacheLineEntry[NumThreads];
-            _seqs = new CacheLineEntry[NumThreads];
-            //_seqs = new CacheLineEntryOne[NumThreads];
+            //_seqs = new CacheLineEntry[NumThreads];
+            _seqs = new CacheLineEntryOne[NumThreads];
             for (int i = 0; i < _seqs.Length; i++)
             {
                 //_seqs[i] = new FalseSharingCacheLineEntry();
-                _seqs[i] = new CacheLineEntry();
-                //_seqs[i] = new CacheLineEntryOne();
+                //_seqs[i] = new CacheLineEntry();
+                _seqs[i] = new CacheLineEntryOne();
             }
         }
 
@@ -100,12 +100,6 @@ namespace MDA.Test.Disruptor
     public class CacheLineEntryOne
     {
         [FieldOffset(56)]
-        private long _value;
-
-        public long Value
-        {
-            get => _value;
-            set => _value = value;
-        }
+        public long Value;
     }
 }

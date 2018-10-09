@@ -28,7 +28,7 @@
         bool IsAlerted { get; }
 
         /// <summary>
-        ///  Alert the <see cref="IEventProcessor"/> of a status change and stay in this status until cleared.
+        /// Alert the <see cref="IEventProcessor"/> of a status change and stay in this status until cleared.
         /// </summary>
         void Alert();
 
