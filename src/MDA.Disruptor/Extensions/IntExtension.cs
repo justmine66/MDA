@@ -42,5 +42,25 @@
 
             return i & 0x3f;
         }
+
+        /// <summary>
+        /// Test whether a given integer is a power of 2 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        public static bool IsPowerOf2(this int input)
+        {
+            return input.BitCount() == 1;
+        }
+
+        /// <summary>
+        /// Test whether a given integer is not a power of 2 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        public static bool IsNotPowerOf2(this int input)
+        {
+            return input.BitCount() != 1;
+        }
     }
 }
