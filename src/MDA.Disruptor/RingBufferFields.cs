@@ -45,7 +45,7 @@ namespace MDA.Disruptor
                 throw new ArgumentException("bufferSize must not be less than 1");
             }
 
-            if (_bufferSize.BitCount() != 1)
+            if (_bufferSize.IsNotPowerOf2())
             {
                 throw new ArgumentException("bufferSize must be a power of 2");
             }
