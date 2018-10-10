@@ -103,7 +103,7 @@ namespace MDA.Tests.Disruptor
         [Fact(DisplayName = "在线程开始发布到Disruptor后，添加序列到序列组。")]
         public void ShouldAddWhileRunning()
         {
-            var ringBuffer = RingBuffer<TestEvent>.CreateSingleProducer(() => new TestEvent(), 32);
+            var ringBuffer = RingBuffer<TestEvent>.CreateSingleProducer(new TestEventFactory(), 32);
             var sequenceThree = new Sequence(3L);
             var sequenceSeven = new Sequence(7L);
             var sequenceGroup = new SequenceGroup();
