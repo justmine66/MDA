@@ -14,13 +14,13 @@
         /// <summary>
         /// Perform an ordered write of this sequence. The intent is a Store/Store barrier between this write and any previous store.
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">The new value for the sequence.</param>
         void SetValue(long value);
 
         /// <summary>
         /// Performs a volatile write of this sequence. The intent is a Store/Store barrier between this write and any previous write and a Store/Load barrier between this write and any subsequent volatile read.
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">The new value for the sequence.</param>
         void SetVolatileValue(long value);
 
         /// <summary>
