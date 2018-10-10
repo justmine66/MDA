@@ -12,6 +12,18 @@ namespace MDA.Disruptor
 
         }
 
+        /// <summary>
+        /// Create a new single producer RingBuffer using the default wait strategy <see cref="BlockingWaitStrategy"/>.
+        /// </summary>
+        /// <param name="factory">used to create the events within the ring buffer.</param>
+        /// <param name="bufferSize">number of elements to create within the ring buffer.</param>
+        /// <returns>a constructed ring buffer.</returns>
+        /// <exception cref="ArgumentException">if bufferSize is less than 1 or not a power of 2</exception>
+        public static RingBuffer<TEvent> CreateSingleProducer(Func<TEvent> factory, int bufferSize)
+        {
+            return null;
+        }
+
         public int BufferSize => throw new NotImplementedException();
 
         public TEvent Get(long sequence)
