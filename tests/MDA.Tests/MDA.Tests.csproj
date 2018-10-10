@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\MDA.Disruptor\MDA.Disruptor.csproj" />
     <ProjectReference Include="..\..\src\MDA.Message\MDA.Message.csproj" />
   </ItemGroup>
 
