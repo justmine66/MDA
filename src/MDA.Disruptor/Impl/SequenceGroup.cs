@@ -3,9 +3,6 @@ using System.Threading;
 
 namespace MDA.Disruptor.Impl
 {
-    /// <summary>
-    /// A <see cref="Sequence"/> group that can dynamically have <see cref="Sequence"/>s added and removed while being thread safe.
-    /// </summary>
     public class SequenceGroup : ISequenceGroup
     {
         private ISequence[] _sequences = new ISequence[0];
@@ -25,33 +22,9 @@ namespace MDA.Disruptor.Impl
             } while (Interlocked.CompareExchange(ref _sequences, newSequences, oldSequences) != oldSequences);
         }
 
-        public long AddAndGet(long increment)
-        {
-            throw new NotImplementedException();
-        }
-
         public void AddWhileRunning(ICursored cursored, ISequence sequence)
         {
-            throw new NotImplementedException();
-        }
-
-        public bool CompareAndSet(long expectedValue, long newValue)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Get the minimum sequence value for the group.
-        /// </summary>
-        /// <returns></returns>
-        public long GetValue()
-        {
-            return SequenceGroupManager.GetMinimumSequence(_sequences);
-        }
-
-        public long IncrementAndGet()
-        {
-            throw new NotImplementedException();
+            SequenceGroupManager.AddSequences(ref _sequences, cursored, sequence);
         }
 
         public bool Remove(ISequence sequence)
@@ -59,29 +32,30 @@ namespace MDA.Disruptor.Impl
             return SequenceGroupManager.RemoveSequence(ref _sequences, sequence);
         }
 
-        /// <summary>
-        ///  Set all <see cref="Sequence"/>s in the group to a given value.
-        /// </summary>
-        /// <param name="value"></param>
+        public long GetMinimumSequence()
+        {
+            return SequenceGroupManager.GetMinimumSequence(_sequences);
+        }
+
         public void SetValue(long value)
         {
-            for (int i = 0; i < _sequences.Length; i++)
+            foreach (var sequence in _sequences)
             {
-                _sequences[i].SetValue(value);
+                sequence.SetValue(value);
             }
         }
 
         public void SetVolatileValue(long value)
         {
-            for (int i = 0; i < _sequences.Length; i++)
+            foreach (var sequence in _sequences)
             {
-                _sequences[i].SetVolatileValue(value);
+                sequence.SetVolatileValue(value);
             }
         }
 
         public int Size()
         {
-            throw new NotImplementedException();
+            return _sequences.Length;
         }
     }
 }
