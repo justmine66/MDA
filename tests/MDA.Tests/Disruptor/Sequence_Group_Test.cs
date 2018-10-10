@@ -1,5 +1,4 @@
-﻿using System;
-using MDA.Disruptor;
+﻿using MDA.Disruptor;
 using MDA.Disruptor.Impl;
 using Xunit;
 
