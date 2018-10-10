@@ -54,7 +54,7 @@ namespace MDA.Disruptor.Impl
             throw new NotImplementedException();
         }
 
-        public bool remove(ISequence sequence)
+        public bool Remove(ISequence sequence)
         {
             return SequenceGroupManager.RemoveSequence(ref _sequences, sequence);
         }
