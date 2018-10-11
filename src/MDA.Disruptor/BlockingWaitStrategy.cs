@@ -9,7 +9,7 @@ namespace MDA.Disruptor
     /// <remarks>This strategy can be used when throughput and low-latency are not as important as CPU resource.</remarks>
     public class BlockingWaitStrategy : IWaitStrategy
     {
-        private readonly Object mutex = new Object();
+        private readonly object mutex = new Object();
 
         public void SignalAllWhenBlocking()
         {
