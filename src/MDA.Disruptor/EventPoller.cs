@@ -22,6 +22,30 @@
             _gatingSequence = gatingSequence;
         }
 
+        public static EventPoller<T> NewInstance(
+            IDataProvider<T> dataProvider,
+            ISequencer sequencer,
+            ISequence sequence,
+            ISequence cursorSequence,
+            params ISequence[] gatingSequences)
+        {
+            ISequence gatingSequence;
+            if (gatingSequences.Length == 0)
+            {
+                gatingSequence = cursorSequence;
+            }
+            else if (gatingSequences.Length == 1)
+            {
+                gatingSequence = gatingSequences[0];
+            }
+            else
+            {
+                gatingSequence = new FixedSequenceGroup(gatingSequences);
+            }
+
+            return new EventPoller<T>(dataProvider, sequencer, sequence, gatingSequence);
+        }
+
         public PollState Poll(IHandler<T> eventHandler)
         {
             long currentSequence = _sequence.GetValue();
