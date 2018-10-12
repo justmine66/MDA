@@ -1,99 +1,92 @@
-﻿using System;
+﻿using MDA.Disruptor.Extensions;
+using MDA.Disruptor.Impl;
+using System;
 
 namespace MDA.Disruptor
 {
+    /// <summary>
+    /// Base class for the various sequencer types (single/multi). Provides common functionality like the management of gating sequences(add/remove) and ownership of the current cursor.
+    /// </summary>
     public abstract class AbstractSequencer : ISequencer
     {
+        protected int bufferSize;
+        protected IWaitStrategy waitStrategy;
+        protected ISequence cursor = new Sequence();
+        protected volatile ISequence[] gatingSequences = new Sequence[0];
+
+        /// <summary>
+        /// Create with the specified buffer size and wait strategy.
+        /// </summary>
+        /// <param name="bufferSize">The total number of entries, must be a positive power of 2.</param>
+        /// <param name="waitStrategy">The wait strategy used by this sequencer</param>
         public AbstractSequencer(int bufferSize, IWaitStrategy waitStrategy)
         {
+            if (bufferSize < 1)
+            {
+                throw new ArgumentException("bufferSize must not be less than 1");
+            }
 
+            if (bufferSize.IsNotPowerOf2())
+            {
+                throw new ArgumentException("bufferSize must be a power of 2");
+            }
+
+            this.bufferSize = bufferSize;
+            this.waitStrategy = waitStrategy;
         }
 
-        public int BufferSize => throw new NotImplementedException();
+        public int BufferSize => this.bufferSize;
 
         public void AddGatingSequences(params ISequence[] gatingSequences)
         {
-            throw new NotImplementedException();
+            SequenceGroupManager.AddSequences(ref this.gatingSequences, this, gatingSequences);
         }
 
-        public void Claim(long sequence)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void Claim(long sequence);
 
         public long GetCursor()
         {
-            throw new NotImplementedException();
+            return this.cursor.GetValue();
         }
 
-        public long GetHighestPublishedSequence(long nextSequence, long availableSequence)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract long GetHighestPublishedSequence(long nextSequence, long availableSequence);
 
         public long GetMinimumSequence()
         {
-            throw new NotImplementedException();
+            return SequenceGroupManager.GetMinimumSequence(this.gatingSequences, cursor.GetValue());
         }
 
-        public long GetRemainingCapacity()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract long GetRemainingCapacity();
 
-        public bool HasAvailableCapacity(int requiredCapacity)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract bool HasAvailableCapacity(int requiredCapacity);
 
-        public bool IsAvailable(long sequence)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract bool IsAvailable(long sequence);
 
         public ISequenceBarrier NewBarrier(params ISequence[] sequencesToTrack)
         {
-            throw new NotImplementedException();
+            return new ProcessingSequenceBarrier(this, waitStrategy, cursor, sequencesToTrack);
         }
 
         public EventPoller<T> NewPoller<T>(IDataProvider<T> provider, params ISequence[] gatingSequences)
         {
-            throw new NotImplementedException();
+            return EventPoller<T>.NewInstance(provider, this, new Sequence(), cursor, gatingSequences);
         }
 
-        public long Next()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract long Next();
 
-        public long Next(int n)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract long Next(int n);
 
-        public void Publish(long sequence)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void Publish(long sequence);
 
-        public void Publish(long lo, long hi)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void Publish(long lo, long hi);
 
         public bool RemoveGatingSequence(ISequence sequence)
         {
-            throw new NotImplementedException();
+            return SequenceGroupManager.RemoveSequence(ref this.gatingSequences, sequence);
         }
 
-        public bool TryNext(out long sequence)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract bool TryNext(out long sequence);
 
-        public bool TryNext(int n, out long sequence)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract bool TryNext(int n, out long sequence);
     }
 }
