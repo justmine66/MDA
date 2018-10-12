@@ -9,11 +9,14 @@ namespace MDA.Disruptor
     /// <remarks>This strategy can be used when throughput and low-latency are not as important as CPU resource.</remarks>
     public class BlockingWaitStrategy : IWaitStrategy
     {
-        private readonly object mutex = new Object();
+        private readonly object mutex = new object();
 
         public void SignalAllWhenBlocking()
         {
-            throw new NotImplementedException();
+            lock (mutex)
+            {
+                Monitor.PulseAll(mutex);
+            }
         }
 
         public long WaitFor(long sequence, ISequence cursor, ISequence dependentSequence, ISequenceBarrier barrier)
