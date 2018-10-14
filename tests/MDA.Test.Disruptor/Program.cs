@@ -9,7 +9,9 @@ namespace MDA.Test.Disruptor
             //new FalseSharingTest().StartTest();
             //StructProxyTest.Test();
             //StubClassTest.Test();
-            MonitorTest.Test();
+            //MonitorTest.Test();
+            CountdownEventTest.Test();
+            CountdownEventTest.Test1();
 
             Console.Read();
         }
