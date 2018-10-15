@@ -1,15 +1,15 @@
-﻿namespace MDA.Disruptor.Impl
+﻿using MDA.Disruptor.Exceptions;
+using System;
+
+namespace MDA.Disruptor.Impl
 {
     public abstract class SingleProducerSequencerPad : AbstractSequencer
     {
         protected long p1, p2, p3, p4, p5, p6, p7;
 
-        public SingleProducerSequencerPad(
-            int bufferSize,
-            IWaitStrategy waitStrategy)
+        public SingleProducerSequencerPad(int bufferSize, IWaitStrategy waitStrategy)
             : base(bufferSize, waitStrategy)
         {
-
         }
     }
 
@@ -25,63 +25,139 @@
 
     public class SingleProducerSequencer : SingleProducerSequencerFields
     {
-        public SingleProducerSequencer(int bufferSize, IWaitStrategy waitStrategy) : base(bufferSize, waitStrategy)
+        protected long p8, p9, p10, p11, p12, p14, p15;
+
+        public SingleProducerSequencer(int bufferSize, IWaitStrategy waitStrategy)
+            : base(bufferSize, waitStrategy)
         {
         }
 
         public override void Claim(long sequence)
         {
-            throw new System.NotImplementedException();
+            this.nextValue = sequence;
         }
 
         public override long GetHighestPublishedSequence(long nextSequence, long availableSequence)
         {
-            throw new System.NotImplementedException();
+            return availableSequence;
         }
 
         public override long GetRemainingCapacity()
         {
-            throw new System.NotImplementedException();
+            long nextValue = this.nextValue;
+
+            long consumed = SequenceGroupManager.GetMinimumSequence(gatingSequences, nextValue);
+            long produced = nextValue;
+            return BufferSize - (produced - consumed);
         }
 
         public override bool HasAvailableCapacity(int requiredCapacity)
         {
-            throw new System.NotImplementedException();
+            return HasAvailableCapacity(requiredCapacity, false);
         }
 
         public override bool IsAvailable(long sequence)
         {
-            throw new System.NotImplementedException();
+            return sequence <= cursor.GetValue();
         }
 
         public override long Next()
         {
-            throw new System.NotImplementedException();
+            return Next(1);
         }
 
         public override long Next(int n)
         {
-            throw new System.NotImplementedException();
+            if (n < 1)
+            {
+                throw new ArgumentException($"{nameof(n)} must greater than 1.");
+            }
+
+            long nextValue = this.nextValue;
+
+            long nextSequence = nextValue + n;
+            long wrapPoint = nextSequence - bufferSize;
+            long cachedGatingSequence = this.cachedValue;
+
+            if (wrapPoint > cachedGatingSequence || cachedGatingSequence > nextValue)
+            {
+                cursor.SetVolatileValue(nextValue);  // StoreLoad fence
+
+                long minSequence;
+                var spinWait = default(AggressiveSpinWait);
+                while (wrapPoint > (minSequence = SequenceGroupManager.GetMinimumSequence(gatingSequences, nextValue)))
+                {
+                    // Use waitStrategy to spin?
+                    spinWait.SpinOnce();
+                }
+
+                this.cachedValue = minSequence;
+            }
+
+            this.nextValue = nextSequence;
+
+            return nextSequence;
         }
 
         public override void Publish(long sequence)
         {
-            throw new System.NotImplementedException();
+            cursor.SetValue(sequence);
+            waitStrategy.SignalAllWhenBlocking();
         }
 
         public override void Publish(long lo, long hi)
         {
-            throw new System.NotImplementedException();
+            Publish(hi);
         }
 
         public override bool TryNext(out long sequence)
         {
-            throw new System.NotImplementedException();
+            return TryNext(1, out sequence);
         }
 
         public override bool TryNext(int n, out long sequence)
         {
-            throw new System.NotImplementedException();
+            if (n < 1)
+            {
+                throw new ArgumentException($"{nameof(n)} must greater than 1.");
+            }
+
+            if (!HasAvailableCapacity(n, true))
+            {
+                throw InsufficientCapacityException.Instance;
+            }
+
+            sequence = this.nextValue += n;
+            return true;
         }
+
+        #region [private methods]
+
+        private bool HasAvailableCapacity(int requiredCapacity, bool doStore)
+        {
+            var nextValue = this.nextValue;
+            var wrapPoint = (nextValue + requiredCapacity) - bufferSize;
+            var cachedGatingSequence = this.cachedValue;
+
+            if (wrapPoint > cachedGatingSequence || cachedGatingSequence > nextValue)
+            {
+                if (doStore)
+                {
+                    cursor.SetVolatileValue(nextValue);  // StoreLoad fence
+                }
+
+                long minSequence = SequenceGroupManager.GetMinimumSequence(gatingSequences, nextValue);
+                this.cachedValue = minSequence;
+
+                if (wrapPoint > minSequence)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        #endregion
     }
 }
