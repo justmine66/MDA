@@ -33,11 +33,11 @@ namespace MDA.Disruptor.Impl
             }
 
             long availableSequence;
-            var aggressiveSpinWait = new AggressiveSpinWait();
+            var spinWait = new AggressiveSpinWait();
             while ((availableSequence = dependentSequence.GetValue()) < sequence)
             {
                 barrier.CheckAlert();
-                aggressiveSpinWait.SpinOnce();
+                spinWait.SpinOnce();
             }
 
             return availableSequence;
