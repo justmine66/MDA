@@ -1,4 +1,6 @@
-﻿namespace MDA.Disruptor
+﻿using MDA.Disruptor.Impl;
+
+namespace MDA.Disruptor
 {
     /// <summary>
     /// Experimental poll-based interface for the Disruptor.

@@ -1,7 +1,7 @@
 ﻿using System;
 using MDA.Disruptor.Extensions;
 
-namespace MDA.Disruptor
+namespace MDA.Disruptor.Impl
 {
     /// <summary>
     /// Coordinator for claiming sequences for access to a data structure while tracking dependent <see cref="ISequence"/>s. Suitable for use for sequencing across multiple publisher threads.

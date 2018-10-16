@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace MDA.Disruptor
+namespace MDA.Disruptor.Impl
 {
     /// <summary>
     /// Hides a group of Sequences behind a single Sequence

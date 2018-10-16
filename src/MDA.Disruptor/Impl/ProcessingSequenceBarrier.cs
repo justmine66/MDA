@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MDA.Disruptor
+namespace MDA.Disruptor.Impl
 {
     /// <summary>
     /// <see cref="ISequenceBarrier"/> handed out for gating <see cref="IEventProcessor"/>s on a cursor sequence and optional dependent <see cref="IEventProcessor"/>(s), using the given WaitStrategy.

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace MDA.Disruptor
+namespace MDA.Disruptor.Impl
 {
     /// <summary>
     /// Yielding strategy that uses a Thread.yield() for <see cref="IEventProcessor"/>s waiting on a barrier after an initially spinning.

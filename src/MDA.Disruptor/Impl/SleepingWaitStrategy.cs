@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace MDA.Disruptor
+namespace MDA.Disruptor.Impl
 {
     /// <summary>
     /// Sleeping strategy that initially spins, then uses a Thread.yield(), and eventually sleep(<code>Thread.Sleep(0)</code>) for the minimum number of nanos the OS and JVM will allow while the <see cref="IEventProcessor"/>s are waiting on a barrier.
