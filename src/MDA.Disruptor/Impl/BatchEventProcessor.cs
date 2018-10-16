@@ -2,12 +2,12 @@
 
 namespace MDA.Disruptor.Impl
 {
-    class BatchEventProcessor<T, TDataProvider, TSequenceBarrier, TEventHandler, TBatchStartAware>
-        : IBatchEventProcessor<T>
-        where T : class
-        where TDataProvider : IDataProvider<T>
+    public class BatchEventProcessor<TEvent, TDataProvider, TSequenceBarrier, TEventHandler, TBatchStartAware>
+        : IBatchEventProcessor<TEvent>
+        where TEvent : class
+        where TDataProvider : IDataProvider<TEvent>
         where TSequenceBarrier : ISequenceBarrier
-        where TEventHandler : IEventHandler<T>
+        where TEventHandler : IEventHandler<TEvent>
         where TBatchStartAware : IBatchStartAware
     {
         public ISequence GetSequence()
@@ -35,7 +35,7 @@ namespace MDA.Disruptor.Impl
             throw new NotImplementedException();
         }
 
-        public void SetExceptionHandler(IExceptionHandler<T> exceptionHandler)
+        public void SetExceptionHandler(IExceptionHandler<TEvent> exceptionHandler)
         {
             throw new NotImplementedException();
         }

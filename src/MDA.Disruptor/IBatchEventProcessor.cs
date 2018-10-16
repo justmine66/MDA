@@ -3,10 +3,10 @@
 namespace MDA.Disruptor
 {
     /// <summary>
-    /// Interface for <see cref="BatchEventProcessor{T,TDataProvider,TSequenceBarrier,TEventHandler,TBatchStartAware}"/>.
+    /// Interface for <see cref="BatchEventProcessor{TEvent,TDataProvider,TSequenceBarrier,TEventHandler,TBatchStartAware}"/>.
     /// </summary>
-    /// <typeparam name="T">the type of event used.</typeparam>
-    public interface IBatchEventProcessor<T> : IEventProcessor
+    /// <typeparam name="TEvent">the type of event used.</typeparam>
+    public interface IBatchEventProcessor<TEvent> : IEventProcessor
     {
         /// <summary>
         /// Waits before the event processor enters the <see cref="IEventProcessor.IsRunning"/> state.
@@ -15,9 +15,9 @@ namespace MDA.Disruptor
         void WaitUntilStarted(TimeSpan timeout);
 
         /// <summary>
-        /// Set a new <see cref="IExceptionHandler{T}"/> for handling exceptions propagated out of the <see cref="IEventHandler{T}"/>
+        /// Set a new <see cref="IExceptionHandler{TEvent}"/> for handling exceptions propagated out of the <see cref="IEventHandler{TEvent}"/>
         /// </summary>
         /// <param name="exceptionHandler">exceptionHandler to replace the existing exceptionHandler.</param>
-        void SetExceptionHandler(IExceptionHandler<T> exceptionHandler);
+        void SetExceptionHandler(IExceptionHandler<TEvent> exceptionHandler);
     }
 }
