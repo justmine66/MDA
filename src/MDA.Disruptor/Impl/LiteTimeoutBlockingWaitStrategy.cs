@@ -1,14 +1,16 @@
-﻿using System.Threading;
+﻿using MDA.Disruptor.Exceptions;
+using System.Threading;
 
 namespace MDA.Disruptor.Impl
 {
     /// <summary>
-    /// Variation of the <see cref="BlockingWaitStrategy"/> that attempts to elide conditional wake-ups when the lock is uncontended. Shows performance improvements on microbenchmarks. However this wait strategy should be considered experimental as I have not full proved the correctness of the lock elision code.
+    /// Variation of the <see cref="TimeoutBlockingWaitStrategy"/> that attempts to elide conditional wake-ups when the lock is uncontended.
     /// </summary>
     public class LiteTimeoutBlockingWaitStrategy : IWaitStrategy
     {
         private readonly object _mutex = new object();
         private int _signalNeeded = 0;
+        private int timeoutInNanos;
 
         public void SignalAllWhenBlocking()
         {
@@ -38,7 +40,10 @@ namespace MDA.Disruptor.Impl
                         }
 
                         barrier.CheckAlert();
-                        Monitor.Wait(_mutex);
+                        if (!Monitor.Wait(_mutex, timeoutInNanos))
+                        {
+                            throw TimeoutException.Instance;
+                        }
                     } while (cursor.GetValue() < sequence);
                 }
             }
