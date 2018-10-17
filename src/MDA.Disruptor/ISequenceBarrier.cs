@@ -12,8 +12,9 @@
         /// </summary>
         /// <param name="sequence">sequence to wait for</param>
         /// <exception cref="AlertException">if a status change has occurred for the Disruptor.</exception>
-        /// /// <exception cref="AlertException">if a timeout occurs while waiting for the supplied sequence.</exception>
-        /// <returns>the sequence up to which is available</returns>
+        /// <exception cref="TimeoutException">if a timeout occurs while waiting for the supplied sequence.</exception>
+        /// <exception cref="InterruptedException">if the thread needs awaking on a condition variable.</exception>
+        /// <returns>the sequence up to which is available.</returns>
         long WaitFor(long sequence);
 
         /// <summary>
@@ -23,7 +24,8 @@
         long GetCursor();
 
         /// <summary>
-        /// The current alert status for the barrier.true if in alert otherwise false.
+        /// The current alert status for the barrier.
+        /// true if in alert otherwise false.
         /// </summary>
         bool IsAlerted { get; }
 
