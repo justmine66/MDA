@@ -2,7 +2,7 @@
 
 namespace MDA.Disruptor.Exceptions
 {
-    /// <summary>
+    /// <summary p="It does not fill in a stack trace for performance reasons.">
     ///  Used to alert <see cref="IEventProcessor"/>s waiting at a <see cref="ISequenceBarrier"/> of status changes.
     /// </summary>
     public class AlertException: Exception
