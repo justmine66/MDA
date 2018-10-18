@@ -11,18 +11,18 @@ namespace MDA.Disruptor.Impl
     /// </remarks>
     public class SleepingWaitStrategy : IWaitStrategy
     {
-        private const int DEFAULT_RETRIES = 200;
-        private const long DEFAULT_SLEEP = 100;
+        private const int DefaultRetries = 200;
+        private const long DefaultSleep = 100;
 
         private readonly int _retries;
         private readonly long _sleepTimeNs;
 
         public SleepingWaitStrategy()
-            : this(DEFAULT_RETRIES, DEFAULT_SLEEP)
+            : this(DefaultRetries, DefaultSleep)
         {
         }
 
-        public SleepingWaitStrategy(int retries) : this(retries, DEFAULT_SLEEP)
+        public SleepingWaitStrategy(int retries) : this(retries, DefaultSleep)
         {
         }
 
