@@ -1,4 +1,4 @@
-﻿namespace MDA.Disruptor.Impl
+﻿namespace MDA.Disruptor
 {
     public interface ITimeoutHandler
     {
