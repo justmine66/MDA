@@ -20,17 +20,17 @@
         /// </summary>
         /// <typeparam name="TArg">Class of the user supplied argument.</typeparam>
         /// <param name="translator">The user specified translation for the event</param>
-        /// <param name="arg0">A user supplied argument.</param>
-        void PublishEvent<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, TArg arg0);
+        /// <param name="arg">A user supplied argument.</param>
+        void PublishEvent<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, TArg arg);
 
         /// <summary>
         /// Allows one user supplied argument.
         /// </summary>
         /// <typeparam name="TArg">Class of the user supplied argument</typeparam>
         /// <param name="translator">The user specified translation for the event</param>
-        /// <param name="arg0">A user supplied argument</param>
+        /// <param name="arg">A user supplied argument</param>
         /// <returns>true if the value was published, false if there was insufficient capacity.</returns>
-        bool TryPublishEvent<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, TArg arg0);
+        bool TryPublishEvent<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, TArg arg);
 
         /// <summary>
         /// Allows two user supplied arguments.
@@ -137,9 +137,9 @@
         /// Allows one user supplied argument per event.
         /// </summary>
         /// <param name="translator">The user specified translation for the event</param>
-        /// <param name="arg0">A user supplied argument.</param>
+        /// <param name="arg">A user supplied argument.</param>
         /// <typeparam name="TArg">Class of the user supplied argument</typeparam>
-        void PublishEvents<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, TArg[] arg0);
+        void PublishEvents<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, TArg[] arg);
 
         /// <summary>
         /// Allows one user supplied argument per event.
@@ -148,16 +148,16 @@
         /// <param name="translator">The user specified translation for the event</param>
         /// <param name="batchStartsAt">The first element of the array which is within the batch.</param>
         /// <param name="batchSize">The actual size of the batch.</param>
-        /// <param name="arg0">A user supplied argument.</param>
-        void PublishEvents<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, int batchStartsAt, int batchSize, TArg[] arg0);
+        /// <param name="arg">A user supplied argument.</param>
+        void PublishEvents<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, int batchStartsAt, int batchSize, TArg[] arg);
 
         /// <summary>
         /// Allows one user supplied argument per event.
         /// </summary>
         /// <param name="translator">The user specified translation for the event</param>
-        /// <param name="arg0">A user supplied argument.</param>
+        /// <param name="arg">A user supplied argument.</param>
         /// <typeparam name="TArg">Class of the user supplied argument</typeparam>
-        bool TryPublishEvents<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, TArg[] arg0);
+        bool TryPublishEvents<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, TArg[] arg);
 
         /// <summary>
         /// Allows one user supplied argument per event.
@@ -166,54 +166,54 @@
         /// <param name="translator">The user specified translation for the event</param>
         /// <param name="batchStartsAt">The first element of the array which is within the batch.</param>
         /// <param name="batchSize">The actual size of the batch.</param>
-        /// <param name="arg0">A user supplied argument.</param>
-        bool TryPublishEvents<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, int batchStartsAt, int batchSize, TArg[] arg0);
+        /// <param name="arg">A user supplied argument.</param>
+        bool TryPublishEvents<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, int batchStartsAt, int batchSize, TArg[] arg);
 
         /// <summary>
         /// Allows two user supplied arguments per event.
         /// </summary>
-        /// <typeparam name="A">Class of the user supplied argument</typeparam>
-        /// <typeparam name="B">Class of the user supplied argument</typeparam>
+        /// <typeparam name="TArg0">Class of the user supplied argument</typeparam>
+        /// <typeparam name="TArg1">Class of the user supplied argument</typeparam>
         /// <param name="translator">The user specified translation for the event</param>
         /// <param name="arg0">A user supplied argument.</param>
         /// <param name="arg1">A user supplied argument.</param>
-        void PublishEvents<A, B>(IEventTranslatorTwoArg<TEvent, A, B> translator, A[] arg0, B[] arg1);
+        void PublishEvents<TArg0, TArg1>(IEventTranslatorTwoArg<TEvent, TArg0, TArg1> translator, TArg0[] arg0, TArg1[] arg1);
 
         /// <summary>
         /// Allows two user supplied arguments per event.
         /// </summary>
-        /// <typeparam name="A">Class of the user supplied argument</typeparam>
-        /// <typeparam name="B">Class of the user supplied argument</typeparam>
+        /// <typeparam name="TArg0">Class of the user supplied argument</typeparam>
+        /// <typeparam name="TArg1">Class of the user supplied argument</typeparam>
         /// <param name="translator">The user specified translation for the event</param>
         /// <param name="batchStartsAt">The first element of the array which is within the batch.</param>
         /// <param name="batchSize">The actual size of the batch.</param>
         /// <param name="arg0">A user supplied argument.</param>
         /// <param name="arg1">A user supplied argument.</param>
-        void PublishEvents<A, B>(IEventTranslatorTwoArg<TEvent, A, B> translator, int batchStartsAt, int batchSize, A[] arg0, B[] arg1);
+        void PublishEvents<TArg0, TArg1>(IEventTranslatorTwoArg<TEvent, TArg0, TArg1> translator, int batchStartsAt, int batchSize, TArg0[] arg0, TArg1[] arg1);
 
         /// <summary>
         /// Allows two user supplied arguments per event.
         /// </summary>
-        /// <typeparam name="A">Class of the user supplied argument</typeparam>
-        /// <typeparam name="B">Class of the user supplied argument</typeparam>
+        /// <typeparam name="TArg0">Class of the user supplied argument</typeparam>
+        /// <typeparam name="TArg1">Class of the user supplied argument</typeparam>
         /// <param name="translator">The user specified translation for the event</param>
         /// <param name="arg0">A user supplied argument.</param>
         /// <param name="arg1">A user supplied argument.</param>
         /// <returns>true if the value was published, false if there was insufficient capacity</returns>
-        bool TryPublishEvents<A, B>(IEventTranslatorTwoArg<TEvent, A, B> translator, A[] arg0, B[] arg1);
+        bool TryPublishEvents<TArg0, TArg1>(IEventTranslatorTwoArg<TEvent, TArg0, TArg1> translator, TArg0[] arg0, TArg1[] arg1);
 
         /// <summary>
         /// Allows two user supplied arguments per event.
         /// </summary>
-        /// <typeparam name="A">Class of the user supplied argument</typeparam>
-        /// <typeparam name="B">Class of the user supplied argument</typeparam>
+        /// <typeparam name="TArg0">Class of the user supplied argument</typeparam>
+        /// <typeparam name="TArg1">Class of the user supplied argument</typeparam>
         /// <param name="translator">The user specified translation for the event</param>
         /// <param name="batchStartsAt">The first element of the array which is within the batch.</param>
         /// <param name="batchSize">The actual size of the batch.</param>
         /// <param name="arg0">A user supplied argument.</param>
         /// <param name="arg1">A user supplied argument.</param>
         /// <returns>true if the value was published, false if there was insufficient capacity</returns>
-        bool TryPublishEvents<A, B>(IEventTranslatorTwoArg<TEvent, A, B> translator, int batchStartsAt, int batchSize, A[] arg0, B[] arg1);
+        bool TryPublishEvents<TArg0, TArg1>(IEventTranslatorTwoArg<TEvent, TArg0, TArg1> translator, int batchStartsAt, int batchSize, TArg0[] arg0, TArg1[] arg1);
 
         /// <summary>
         /// Allows three user supplied arguments per event.
