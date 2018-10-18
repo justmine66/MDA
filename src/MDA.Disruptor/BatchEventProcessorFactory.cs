@@ -28,11 +28,18 @@ namespace MDA.Disruptor
             var eventHandlerProxy = StructProxy.CreateProxyInstance(eventHandler);
             var batchStartAwareProxy = eventHandler is IBatchStartAware batchStartAware
                 ? StructProxy.CreateProxyInstance(batchStartAware)
-                : new NoopBatchStartAware();
+                : new NoOpBatchStartAware();
 
             var batchEventProcessorType = typeof(BatchEventProcessor<,,,,>).MakeGenericType(typeof(T), dataProviderProxy.GetType(), sequenceBarrierProxy.GetType(), eventHandlerProxy.GetType(), batchStartAwareProxy.GetType());
 
             return Activator.CreateInstance(batchEventProcessorType, dataProviderProxy, sequenceBarrierProxy, eventHandlerProxy, batchStartAwareProxy) as IBatchEventProcessor<T>;
+        }
+
+        private struct NoOpBatchStartAware : IBatchStartAware
+        {
+            public void OnBatchStart(long batchSize)
+            {
+            }
         }
     }
 }
