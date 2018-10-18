@@ -9,7 +9,7 @@ namespace MDA.Disruptor.Impl
     /// <remarks>This strategy will use 100% CPU, but will more readily give up the CPU than a busy spin strategy if other threads require CPU resource.</remarks>
     public class YieldingWaitStrategy : IWaitStrategy
     {
-        private const int _spinTries = 100;
+        private const int SpinTries = 100;
 
         public void SignalAllWhenBlocking()
         {
@@ -19,7 +19,7 @@ namespace MDA.Disruptor.Impl
         public long WaitFor(long sequence, ISequence cursor, ISequence dependentSequence, ISequenceBarrier barrier)
         {
             long availableSequence;
-            int counter = _spinTries;
+            int counter = SpinTries;
 
             while ((availableSequence = dependentSequence.GetValue()) < sequence)
             {
