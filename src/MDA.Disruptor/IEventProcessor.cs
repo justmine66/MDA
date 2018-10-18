@@ -3,7 +3,7 @@
     /// <summary>
     /// An EventProcessor needs to be an implementation of a runnable that will poll for events from the <see cref="RingBuffer{TEvent}"/> using the appropriate wait strategy. It is unlikely that you will need to implement this interface yourself. Look at using the <see cref="IEventHandler{TEvent}"/> interface along with the pre-supplied BatchEventProcessor in the first instance.
     /// </summary>
-    public interface IEventProcessor
+    public interface IEventProcessor : IRunnable
     {
         /// <summary>
         /// Return a reference to the <see cref="ISequence"/> being used by this <see cref="IEventProcessor"/>
