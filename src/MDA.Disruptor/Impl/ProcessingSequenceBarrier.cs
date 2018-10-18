@@ -1,4 +1,4 @@
-﻿using System;
+﻿using MDA.Disruptor.Exceptions;
 
 namespace MDA.Disruptor.Impl
 {
@@ -7,44 +7,70 @@ namespace MDA.Disruptor.Impl
     /// </summary>
     public class ProcessingSequenceBarrier : ISequenceBarrier
     {
-        private AbstractSequencer abstractSequencer;
-        private IWaitStrategy waitStrategy;
-        private ISequence cursor;
-        private ISequence[] sequencesToTrack;
+        private readonly IWaitStrategy _waitStrategy;
+        private readonly ISequence _dependentSequence;
+        private readonly ISequence _cursorSequence;
+        private readonly ISequencer _sequencer;
 
-        public ProcessingSequenceBarrier(AbstractSequencer abstractSequencer, IWaitStrategy waitStrategy, ISequence cursor, ISequence[] sequencesToTrack)
+        private volatile bool _alerted = false;
+
+        ProcessingSequenceBarrier(
+         ISequencer sequencer,
+         IWaitStrategy waitStrategy,
+         ISequence cursorSequence,
+         ISequence[] dependentSequences)
         {
-            this.abstractSequencer = abstractSequencer;
-            this.waitStrategy = waitStrategy;
-            this.cursor = cursor;
-            this.sequencesToTrack = sequencesToTrack;
+            _sequencer = sequencer;
+            _waitStrategy = waitStrategy;
+            _cursorSequence = cursorSequence;
+            if (0 == dependentSequences.Length)
+            {
+                _dependentSequence = cursorSequence;
+            }
+            else
+            {
+                _dependentSequence = new FixedSequenceGroup(dependentSequences);
+            }
         }
 
-        public bool IsAlerted => throw new NotImplementedException();
+        public bool IsAlerted => _alerted;
 
         public void Alert()
         {
-            throw new NotImplementedException();
+            _alerted = true;
+            _waitStrategy.SignalAllWhenBlocking();
         }
 
         public void CheckAlert()
         {
-            throw new NotImplementedException();
+            if (_alerted)
+            {
+                throw AlertException.Instance;
+            }
         }
 
         public void ClearAlert()
         {
-            throw new NotImplementedException();
+            _alerted = false;
         }
 
         public long GetCursor()
         {
-            throw new NotImplementedException();
+            return _dependentSequence.GetValue();
         }
 
         public long WaitFor(long sequence)
         {
-            throw new NotImplementedException();
+            CheckAlert();
+
+            var availableSequence = _waitStrategy.WaitFor(sequence, _cursorSequence, _dependentSequence, this);
+
+            if (availableSequence < sequence)
+            {
+                return availableSequence;
+            }
+
+            return _sequencer.GetHighestPublishedSequence(sequence, availableSequence);
         }
     }
 }
