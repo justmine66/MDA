@@ -27,32 +27,32 @@ namespace MDA.Disruptor.Impl
             Value = initialValue;
         }
 
-        public long GetValue()
+        public virtual long GetValue()
         {
             return Volatile.Read(ref Value);
         }
 
-        public void SetValue(long value)
+        public virtual void SetValue(long value)
         {
             Value = value;
         }
 
-        public void SetVolatileValue(long value)
+        public virtual void SetVolatileValue(long value)
         {
             Volatile.Write(ref Value, value);
         }
 
-        public bool CompareAndSet(long expectedValue, long newValue)
+        public virtual bool CompareAndSet(long expectedValue, long newValue)
         {
             return Interlocked.CompareExchange(ref Value, newValue, expectedValue) == expectedValue;
         }
 
-        public long IncrementAndGet()
+        public virtual long IncrementAndGet()
         {
             return Interlocked.Increment(ref Value);
         }
 
-        public long AddAndGet(long increment)
+        public virtual long AddAndGet(long increment)
         {
             return Interlocked.Add(ref Value, increment);
         }
