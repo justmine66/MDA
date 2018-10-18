@@ -1,8 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MDA.Disruptor.Exceptions;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using MDA.Disruptor.Exceptions;
 
 namespace MDA.Disruptor.Impl
 {
