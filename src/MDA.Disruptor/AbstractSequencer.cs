@@ -1,7 +1,7 @@
 ﻿using MDA.Disruptor.Extensions;
 using MDA.Disruptor.Impl;
-using System;
 using MDA.Disruptor.Utility;
+using System;
 
 namespace MDA.Disruptor
 {
@@ -10,17 +10,16 @@ namespace MDA.Disruptor
     /// </summary>
     public abstract class AbstractSequencer : ISequencer
     {
-        protected int bufferSize;
-        protected IWaitStrategy waitStrategy;
-        protected ISequence cursor = new Sequence();
-        protected volatile ISequence[] gatingSequences = new Sequence[0];
+        protected IWaitStrategy WaitStrategy;
+        protected ISequence Cursor = new Sequence();
+        protected volatile ISequence[] GatingSequences = new ISequence[0];
 
         /// <summary>
         /// Create with the specified buffer size and wait strategy.
         /// </summary>
         /// <param name="bufferSize">The total number of entries, must be a positive power of 2.</param>
         /// <param name="waitStrategy">The wait strategy used by this sequencer</param>
-        public AbstractSequencer(int bufferSize, IWaitStrategy waitStrategy)
+        protected AbstractSequencer(int bufferSize, IWaitStrategy waitStrategy)
         {
             if (bufferSize < 1)
             {
@@ -32,29 +31,29 @@ namespace MDA.Disruptor
                 throw new ArgumentException("bufferSize must be a power of 2");
             }
 
-            this.bufferSize = bufferSize;
-            this.waitStrategy = waitStrategy;
+            BufferSize = bufferSize;
+            WaitStrategy = waitStrategy;
         }
 
-        public int BufferSize => this.bufferSize;
+        public int BufferSize { get; }
 
-        public void AddGatingSequences(params ISequence[] gatingSequences)
+        public virtual void AddGatingSequences(params ISequence[] gatingSequences)
         {
-            SequenceGroupManager.AddSequences(ref this.gatingSequences, this, gatingSequences);
+            SequenceGroupManager.AddSequences(ref GatingSequences, this, gatingSequences);
         }
 
         public abstract void Claim(long sequence);
 
-        public long GetCursor()
+        public virtual long GetCursor()
         {
-            return this.cursor.GetValue();
+            return Cursor.GetValue();
         }
 
         public abstract long GetHighestPublishedSequence(long nextSequence, long availableSequence);
 
-        public long GetMinimumSequence()
+        public virtual long GetMinimumSequence()
         {
-            return SequenceGroupManager.GetMinimumSequence(this.gatingSequences, cursor.GetValue());
+            return SequenceGroupManager.GetMinimumSequence(GatingSequences, Cursor.GetValue());
         }
 
         public abstract long GetRemainingCapacity();
@@ -63,14 +62,14 @@ namespace MDA.Disruptor
 
         public abstract bool IsAvailable(long sequence);
 
-        public ISequenceBarrier NewBarrier(params ISequence[] sequencesToTrack)
+        public virtual ISequenceBarrier NewBarrier(params ISequence[] sequencesToTrack)
         {
-            return new ProcessingSequenceBarrier(this, waitStrategy, cursor, sequencesToTrack);
+            return new ProcessingSequenceBarrier(this, WaitStrategy, Cursor, sequencesToTrack);
         }
 
-        public EventPoller<T> NewPoller<T>(IDataProvider<T> provider, params ISequence[] gatingSequences)
+        public virtual EventPoller<T> NewPoller<T>(IDataProvider<T> provider, params ISequence[] gatingSequences)
         {
-            return EventPoller<T>.NewInstance(provider, this, new Sequence(), cursor, gatingSequences);
+            return EventPoller<T>.NewInstance(provider, this, new Sequence(), Cursor, gatingSequences);
         }
 
         public abstract long Next();
@@ -81,9 +80,9 @@ namespace MDA.Disruptor
 
         public abstract void Publish(long lo, long hi);
 
-        public bool RemoveGatingSequence(ISequence sequence)
+        public virtual bool RemoveGatingSequence(ISequence sequence)
         {
-            return SequenceGroupManager.RemoveSequence(ref this.gatingSequences, sequence);
+            return SequenceGroupManager.RemoveSequence(ref GatingSequences, sequence);
         }
 
         public abstract bool TryNext(out long sequence);
