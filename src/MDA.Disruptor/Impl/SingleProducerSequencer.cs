@@ -1,15 +1,15 @@
 ﻿using MDA.Disruptor.Exceptions;
-using System;
 using MDA.Disruptor.Infrastracture;
 using MDA.Disruptor.Utility;
+using System;
 
 namespace MDA.Disruptor.Impl
 {
     public abstract class SingleProducerSequencerPad : AbstractSequencer
     {
-        protected long p1, p2, p3, p4, p5, p6, p7;
+        protected long P1, P2, P3, P4, P5, P6, P7;
 
-        public SingleProducerSequencerPad(int bufferSize, IWaitStrategy waitStrategy)
+        protected SingleProducerSequencerPad(int bufferSize, IWaitStrategy waitStrategy)
             : base(bufferSize, waitStrategy)
         {
         }
@@ -17,17 +17,17 @@ namespace MDA.Disruptor.Impl
 
     public abstract class SingleProducerSequencerFields : SingleProducerSequencerPad
     {
-        public SingleProducerSequencerFields(int bufferSize, IWaitStrategy waitStrategy) : base(bufferSize, waitStrategy)
+        protected SingleProducerSequencerFields(int bufferSize, IWaitStrategy waitStrategy) : base(bufferSize, waitStrategy)
         {
         }
 
-        protected long nextValue = Sequence.InitialValue;
-        protected long cachedValue = Sequence.InitialValue;
+        protected long NextValue = Sequence.InitialValue;
+        protected long CachedValue = Sequence.InitialValue;
     }
 
     public class SingleProducerSequencer : SingleProducerSequencerFields
     {
-        protected long p8, p9, p10, p11, p12, p14, p15;
+        protected long P8, P9, P10, P11, P12, P13, P14;
 
         public SingleProducerSequencer(int bufferSize, IWaitStrategy waitStrategy)
             : base(bufferSize, waitStrategy)
@@ -36,7 +36,7 @@ namespace MDA.Disruptor.Impl
 
         public override void Claim(long sequence)
         {
-            this.nextValue = sequence;
+            NextValue = sequence;
         }
 
         public override long GetHighestPublishedSequence(long nextSequence, long availableSequence)
@@ -46,9 +46,9 @@ namespace MDA.Disruptor.Impl
 
         public override long GetRemainingCapacity()
         {
-            long nextValue = this.nextValue;
+            long nextValue = CachedValue;
 
-            long consumed = SequenceGroupManager.GetMinimumSequence(gatingSequences, nextValue);
+            long consumed = SequenceGroupManager.GetMinimumSequence(GatingSequences, nextValue);
             long produced = nextValue;
             return BufferSize - (produced - consumed);
         }
@@ -60,7 +60,7 @@ namespace MDA.Disruptor.Impl
 
         public override bool IsAvailable(long sequence)
         {
-            return sequence <= cursor.GetValue();
+            return sequence <= Cursor.GetValue();
         }
 
         public override long Next()
@@ -75,36 +75,36 @@ namespace MDA.Disruptor.Impl
                 throw new ArgumentException($"{nameof(n)} must greater than 1.");
             }
 
-            long nextValue = this.nextValue;
+            long nextValue = NextValue;
 
             long nextSequence = nextValue + n;
-            long wrapPoint = nextSequence - bufferSize;
-            long cachedGatingSequence = this.cachedValue;
+            long wrapPoint = nextSequence - BufferSize;
+            long cachedGatingSequence = CachedValue;
 
             if (wrapPoint > cachedGatingSequence || cachedGatingSequence > nextValue)
             {
-                cursor.SetVolatileValue(nextValue);  // StoreLoad fence
+                Cursor.SetVolatileValue(nextValue);  // StoreLoad fence
 
                 long minSequence;
                 var spinWait = default(AggressiveSpinWait);
-                while (wrapPoint > (minSequence = SequenceGroupManager.GetMinimumSequence(gatingSequences, nextValue)))
+                while (wrapPoint > (minSequence = SequenceGroupManager.GetMinimumSequence(GatingSequences, nextValue)))
                 {
                     // Use waitStrategy to spin?
                     spinWait.SpinOnce();
                 }
 
-                this.cachedValue = minSequence;
+                CachedValue = minSequence;
             }
 
-            this.nextValue = nextSequence;
+            NextValue = nextSequence;
 
             return nextSequence;
         }
 
         public override void Publish(long sequence)
         {
-            cursor.SetValue(sequence);
-            waitStrategy.SignalAllWhenBlocking();
+            Cursor.SetValue(sequence);
+            WaitStrategy.SignalAllWhenBlocking();
         }
 
         public override void Publish(long lo, long hi)
@@ -129,7 +129,7 @@ namespace MDA.Disruptor.Impl
                 throw InsufficientCapacityException.Instance;
             }
 
-            sequence = this.nextValue += n;
+            sequence = NextValue += n;
             return true;
         }
 
@@ -137,19 +137,19 @@ namespace MDA.Disruptor.Impl
 
         private bool HasAvailableCapacity(int requiredCapacity, bool doStore)
         {
-            var nextValue = this.nextValue;
-            var wrapPoint = (nextValue + requiredCapacity) - bufferSize;
-            var cachedGatingSequence = this.cachedValue;
+            var nextValue = NextValue;
+            var wrapPoint = (nextValue + requiredCapacity) - BufferSize;
+            var cachedGatingSequence = CachedValue;
 
             if (wrapPoint > cachedGatingSequence || cachedGatingSequence > nextValue)
             {
                 if (doStore)
                 {
-                    cursor.SetVolatileValue(nextValue);  // StoreLoad fence
+                    Cursor.SetVolatileValue(nextValue);  // StoreLoad fence
                 }
 
-                long minSequence = SequenceGroupManager.GetMinimumSequence(gatingSequences, nextValue);
-                this.cachedValue = minSequence;
+                long minSequence = SequenceGroupManager.GetMinimumSequence(GatingSequences, nextValue);
+                CachedValue = minSequence;
 
                 if (wrapPoint > minSequence)
                 {
