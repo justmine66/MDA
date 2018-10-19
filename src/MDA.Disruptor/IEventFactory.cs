@@ -1,4 +1,6 @@
-﻿namespace MDA.Disruptor
+﻿using MDA.Disruptor.Impl;
+
+namespace MDA.Disruptor
 {
     /// <summary>
     ///  Called by the <see cref="RingBuffer{TEvent}"/> to pre-populate all the events to fill the RingBuffer.

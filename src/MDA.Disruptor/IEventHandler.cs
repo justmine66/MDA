@@ -1,7 +1,9 @@
-﻿namespace MDA.Disruptor
+﻿using MDA.Disruptor.Impl;
+
+namespace MDA.Disruptor
 {
     /// <summary>
-    /// Callback interface to be implemented for processing events as they become available in the <see cref="RingBuffer{T}"/>
+    /// Callback interface to be implemented for processing events as they become available in the <see cref="RingBuffer{TEvent}"/>
     /// </summary>
     /// <typeparam name="TEvent">Type of events for sharing during exchange or parallel coordination of an event.</typeparam>
     /// <remarks>See <see cref="IBatchEventProcessor{T}.SetExceptionHandler"/> if you want to handle exceptions propagated out of the handler.</remarks>

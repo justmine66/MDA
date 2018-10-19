@@ -1,4 +1,5 @@
 ﻿using MDA.Disruptor.Exceptions;
+using MDA.Disruptor.Impl;
 
 namespace MDA.Disruptor
 {

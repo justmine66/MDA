@@ -1,10 +1,9 @@
-﻿using MDA.Disruptor.dsl;
+﻿using System;
+using MDA.Disruptor.dsl;
 using MDA.Disruptor.Extensions;
-using MDA.Disruptor.Impl;
-using System;
 using MDA.Disruptor.Infrastracture;
 
-namespace MDA.Disruptor
+namespace MDA.Disruptor.Impl
 {
     public abstract class RingBufferFields<TEvent> : LhsPadding
     {

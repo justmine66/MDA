@@ -1,4 +1,6 @@
-﻿namespace MDA.Disruptor
+﻿using MDA.Disruptor.Impl;
+
+namespace MDA.Disruptor
 {
     /// <summary>
     /// Implementations translate (write) data representations into events claimed from the <see cref="RingBuffer{TEvent}"/>.
