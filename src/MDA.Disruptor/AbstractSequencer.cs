@@ -39,7 +39,8 @@ namespace MDA.Disruptor
 
         public virtual void AddGatingSequences(params ISequence[] gatingSequences)
         {
-            SequenceGroupManager.AddSequences(ref GatingSequences, this, gatingSequences);
+            var sequences = GatingSequences;
+            SequenceGroupManager.AddSequences(ref sequences, this, gatingSequences);
         }
 
         public abstract void Claim(long sequence);
@@ -82,7 +83,8 @@ namespace MDA.Disruptor
 
         public virtual bool RemoveGatingSequence(ISequence sequence)
         {
-            return SequenceGroupManager.RemoveSequence(ref GatingSequences, sequence);
+            var sequences = GatingSequences;
+            return SequenceGroupManager.RemoveSequence(ref sequences, sequence);
         }
 
         public abstract bool TryNext(out long sequence);
