@@ -6,7 +6,7 @@
         /// The capacity of the data structure to hold entries.
         /// </summary>
         /// <returns>the size of the RingBuffer.</returns>
-        int BufferSize { get; }
+        int GetBufferSize();
 
         /// <summary>
         /// Has the buffer got capacity to allocate another sequence. This is a concurrent method so the response should only be taken as an indication of available capacity.
