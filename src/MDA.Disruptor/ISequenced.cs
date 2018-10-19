@@ -9,7 +9,7 @@
         int BufferSize { get; }
 
         /// <summary>
-        /// Has the buffer got capacity to allocate another sequence.  This is a concurrent method so the response should only be taken as an indication of available capacity.
+        /// Has the buffer got capacity to allocate another sequence. This is a concurrent method so the response should only be taken as an indication of available capacity.
         /// </summary>
         /// <param name="requiredCapacity">requiredCapacity in the buffer</param>
         /// <returns>true if the buffer has the capacity to allocate the next sequence otherwise false.</returns>
@@ -28,7 +28,7 @@
         long Next();
 
         /// <summary>
-        /// Claim the next n events in sequence for publishing.  This is for batch event producing.  Using batch producing requires a little care and some math.
+        /// Claim the next n events in sequence for publishing. This is for batch event producing. Using batch producing requires a little care and some math.
         /// <code>
         /// int n = 10;
         /// long hi = sequencer.next(n);

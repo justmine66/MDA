@@ -5,7 +5,7 @@ namespace MDA.Disruptor
     public interface ISequencer : ICursored, ISequenced
     {
         /// <summary>
-        /// Claim a specific sequence.  Only used if initialising the ring buffer to a specific value.
+        /// Claim a specific sequence. Only used if initialising the ring buffer to a specific value.
         /// </summary>
         /// <param name="sequence">The sequence to initialise too.</param>
         void Claim(long sequence);
