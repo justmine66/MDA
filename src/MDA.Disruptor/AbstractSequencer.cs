@@ -59,6 +59,11 @@ namespace MDA.Disruptor
 
         public abstract long GetRemainingCapacity();
 
+        public int GetBufferSize()
+        {
+            return BufferSize;
+        }
+
         public abstract bool HasAvailableCapacity(int requiredCapacity);
 
         public abstract bool IsAvailable(long sequence);

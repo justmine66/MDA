@@ -23,7 +23,7 @@ namespace MDA.Disruptor.Impl
             IEventFactory<TEvent> eventFactory)
         {
             Sequencer = sequencer;
-            BufferSize = Sequencer.BufferSize;
+            BufferSize = Sequencer.GetBufferSize();
 
             if (BufferSize < 1)
             {
@@ -36,7 +36,7 @@ namespace MDA.Disruptor.Impl
             }
 
             _indexMask = BufferSize - 1;
-            _entries = new object[sequencer.BufferSize + 2 * BufferPad];
+            _entries = new object[sequencer.GetBufferSize() + 2 * BufferPad];
 
             Fill(eventFactory);
         }
