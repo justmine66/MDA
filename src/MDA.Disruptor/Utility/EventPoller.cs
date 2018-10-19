@@ -5,15 +5,15 @@ namespace MDA.Disruptor.Utility
     /// <summary>
     /// Experimental poll-based interface for the Disruptor.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class EventPoller<T>
+    /// <typeparam name="TEvent"></typeparam>
+    public class EventPoller<TEvent>
     {
-        private readonly IDataProvider<T> _dataProvider;
+        private readonly IDataProvider<TEvent> _dataProvider;
         private readonly ISequencer _sequencer;
         private readonly ISequence _sequence;
         private readonly ISequence _gatingSequence;
 
-        public EventPoller(IDataProvider<T> dataProvider,
+        public EventPoller(IDataProvider<TEvent> dataProvider,
                            ISequencer sequencer,
                            ISequence sequence,
                            ISequence gatingSequence)
@@ -24,8 +24,8 @@ namespace MDA.Disruptor.Utility
             _gatingSequence = gatingSequence;
         }
 
-        public static EventPoller<T> NewInstance(
-            IDataProvider<T> dataProvider,
+        public static EventPoller<TEvent> NewInstance(
+            IDataProvider<TEvent> dataProvider,
             ISequencer sequencer,
             ISequence sequence,
             ISequence cursorSequence,
@@ -45,10 +45,10 @@ namespace MDA.Disruptor.Utility
                 gatingSequence = new FixedSequenceGroup(gatingSequences);
             }
 
-            return new EventPoller<T>(dataProvider, sequencer, sequence, gatingSequence);
+            return new EventPoller<TEvent>(dataProvider, sequencer, sequence, gatingSequence);
         }
 
-        public PollState Poll(IHandler<T> eventHandler)
+        public PollState Poll(IHandler<TEvent> eventHandler)
         {
             long currentSequence = _sequence.GetValue();
             long nextSequence = currentSequence + 1;
@@ -63,7 +63,7 @@ namespace MDA.Disruptor.Utility
                     bool processNextEvent;
                     do
                     {
-                        T @event = _dataProvider.Get(nextSequence);
+                        TEvent @event = _dataProvider.Get(nextSequence);
                         processNextEvent = eventHandler.OnEvent(@event, nextSequence, nextSequence == availableSequence);
                         processedSequence = nextSequence;
                         nextSequence++;
