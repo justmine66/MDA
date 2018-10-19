@@ -1,6 +1,7 @@
-﻿using MDA.Disruptor.Exceptions;
+﻿using MDA.Disruptor.Infrastracture;
+using System;
 using System.Threading;
-using MDA.Disruptor.Infrastracture;
+using TimeoutException = MDA.Disruptor.Exceptions.TimeoutException;
 
 namespace MDA.Disruptor.Impl
 {
@@ -10,8 +11,13 @@ namespace MDA.Disruptor.Impl
     public class LiteTimeoutBlockingWaitStrategy : IWaitStrategy
     {
         private readonly object _mutex = new object();
-        private int _signalNeeded = 0;
-        private int timeoutInNanos;
+        private volatile int _signalNeeded;
+        private readonly int _timeoutInMillis;
+
+        public LiteTimeoutBlockingWaitStrategy(TimeSpan timeout)
+        {
+            _timeoutInMillis = (int)timeout.TotalMilliseconds;
+        }
 
         public void SignalAllWhenBlocking()
         {
@@ -41,7 +47,7 @@ namespace MDA.Disruptor.Impl
                         }
 
                         barrier.CheckAlert();
-                        if (!Monitor.Wait(_mutex, timeoutInNanos))
+                        if (!Monitor.Wait(_mutex, _timeoutInMillis))
                         {
                             throw TimeoutException.Instance;
                         }
