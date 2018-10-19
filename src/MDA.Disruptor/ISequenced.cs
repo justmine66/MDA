@@ -70,7 +70,7 @@
         void Publish(long sequence);
 
         /// <summary>
-        /// Batch publish sequences.  Called when all of the events have been filled.
+        /// Batch publish sequences. Called when all of the events have been filled.
         /// </summary>
         /// <param name="lo">the first sequence number to publish</param>
         /// <param name="hi">the last sequence number to publish</param>
