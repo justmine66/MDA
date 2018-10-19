@@ -1,5 +1,5 @@
 ﻿using MDA.Disruptor;
-using MDA.Disruptor.Internal;
+using MDA.Disruptor.Infrastracture;
 
 namespace MDA.Test.Disruptor
 {

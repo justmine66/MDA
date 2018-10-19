@@ -14,7 +14,7 @@ namespace MDA.Disruptor.Impl
 
         private volatile bool _alerted = false;
 
-        ProcessingSequenceBarrier(
+        public ProcessingSequenceBarrier(
          ISequencer sequencer,
          IWaitStrategy waitStrategy,
          ISequence cursorSequence,

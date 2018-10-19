@@ -1,4 +1,4 @@
-﻿namespace MDA.Disruptor
+﻿namespace MDA.Disruptor.Infrastracture
 {
     public class LhsPadding
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace MDA.Disruptor.Internal
+namespace MDA.Disruptor.Infrastracture
 {
     public static class StructProxy
     {

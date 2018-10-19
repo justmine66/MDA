@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace MDA.Disruptor
+namespace MDA.Disruptor.Utility
 {
     /// <summary>
     /// Provides static methods for managing a <see cref="ISequenceGroup"/> object.

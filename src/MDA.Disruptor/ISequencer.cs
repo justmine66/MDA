@@ -1,4 +1,6 @@
-﻿namespace MDA.Disruptor
+﻿using MDA.Disruptor.Utility;
+
+namespace MDA.Disruptor
 {
     public interface ISequencer : ICursored, ISequenced
     {

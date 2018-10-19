@@ -1,8 +1,8 @@
 ﻿using System;
 using MDA.Disruptor.Impl;
-using MDA.Disruptor.Internal;
+using MDA.Disruptor.Infrastracture;
 
-namespace MDA.Disruptor
+namespace MDA.Disruptor.Utility
 {
     /// <summary>
     /// Factory that creates optimized instance of &lt;see cref="IBatchEventProcessor{T}"/&gt;.

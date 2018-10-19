@@ -1,4 +1,6 @@
-﻿namespace MDA.Disruptor.Impl
+﻿using MDA.Disruptor.Infrastracture;
+
+namespace MDA.Disruptor.Impl
 {
     /// <summary>
     /// Busy Spin strategy that uses a busy spin loop for <see cref="IEventProcessor"/>s waiting on a barrier.

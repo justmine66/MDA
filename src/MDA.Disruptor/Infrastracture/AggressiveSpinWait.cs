@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace MDA.Disruptor
+namespace MDA.Disruptor.Infrastracture
 {
     /// <summary>
     /// Represent a <see cref="SpinWait"/> that never calls <code>Thread.Sleep(1)</code>.

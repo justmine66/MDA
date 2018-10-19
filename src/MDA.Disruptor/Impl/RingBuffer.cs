@@ -2,6 +2,7 @@
 using MDA.Disruptor.Extensions;
 using MDA.Disruptor.Impl;
 using System;
+using MDA.Disruptor.Infrastracture;
 
 namespace MDA.Disruptor
 {
