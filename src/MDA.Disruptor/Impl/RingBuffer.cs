@@ -1,12 +1,10 @@
 ﻿using MDA.Disruptor.dsl;
 using MDA.Disruptor.Exceptions;
-using System;
 using MDA.Disruptor.Utility;
+using System;
 
 namespace MDA.Disruptor.Impl
 {
-
-
     /// <summary>
     /// Ring based store of reusable entries containing the data representing an event being exchanged between event producer and <see cref="IEventProcessor"/>s.
     /// </summary>
@@ -27,7 +25,6 @@ namespace MDA.Disruptor.Impl
             IEventFactory<TEvent> eventFactory)
             : base(sequencer, eventFactory)
         {
-
         }
 
         /// <summary>
@@ -146,7 +143,7 @@ namespace MDA.Disruptor.Impl
 
         public long GetRemainingCapacity()
         {
-            throw new NotImplementedException();
+            return Sequencer.GetRemainingCapacity();
         }
 
         /// <summary>
@@ -291,12 +288,12 @@ namespace MDA.Disruptor.Impl
 
         public void Publish(long sequence)
         {
-            throw new NotImplementedException();
+            Sequencer.Publish(sequence);
         }
 
         public void Publish(long lo, long hi)
         {
-            throw new NotImplementedException();
+            Sequencer.Publish(lo, hi);
         }
 
         /// <summary>
@@ -311,72 +308,86 @@ namespace MDA.Disruptor.Impl
 
         public void PublishEvent<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, TArg arg0)
         {
-            throw new NotImplementedException();
+            var sequence = Sequencer.Next();
+            TranslateAndPublish(translator, sequence, arg0);
         }
 
         public void PublishEvent<TArg0, TArg1>(IEventTranslatorTwoArg<TEvent, TArg0, TArg1> translator, TArg0 arg0, TArg1 arg1)
         {
-            throw new NotImplementedException();
+            var sequence = Sequencer.Next();
+            TranslateAndPublish(translator, sequence, arg0, arg1);
         }
 
         public void PublishEvent<TArg0, TArg1, TArg2>(IEventTranslatorThreeArg<TEvent, TArg0, TArg1, TArg2> translator, TArg0 arg0, TArg1 arg1, TArg2 arg2)
         {
-            throw new NotImplementedException();
+            var sequence = Sequencer.Next();
+            TranslateAndPublish(translator, sequence, arg0, arg1, arg2);
         }
 
         public void PublishEvent(IEventTranslatorVarArg<TEvent> translator, params object[] args)
         {
-            throw new NotImplementedException();
+            var sequence = Sequencer.Next();
+            TranslateAndPublish(translator, sequence, args);
         }
 
         public void PublishEvents(IEventTranslator<TEvent>[] translators)
         {
-            throw new NotImplementedException();
+            PublishEvents(translators, 0, translators.Length);
         }
 
         public void PublishEvents(IEventTranslator<TEvent>[] translators, int batchStartsAt, int batchSize)
         {
-            throw new NotImplementedException();
+            CheckBounds(translators, batchStartsAt, batchSize);
+            var finalSequence = Sequencer.Next(batchSize);
+            TranslateAndPublishBatch(translators, batchStartsAt, batchSize, finalSequence);
         }
 
         public void PublishEvents<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, TArg[] arg0)
         {
-            throw new NotImplementedException();
+            PublishEvents(translator, 0, arg0.Length, arg0);
         }
 
-        public void PublishEvents<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, int batchStartsAt, int batchSize, TArg[] arg0)
+        public void PublishEvents<TArg>(IEventTranslatorOneArg<TEvent, TArg> translators, int batchStartsAt, int batchSize, TArg[] arg0)
         {
-            throw new NotImplementedException();
+            CheckBounds(arg0, batchStartsAt, batchSize);
+            var finalSequence = Sequencer.Next(batchSize);
+            TranslateAndPublishBatch(translators, arg0, batchStartsAt, batchSize, finalSequence);
         }
 
-        public void PublishEvents<A, B>(IEventTranslatorTwoArg<TEvent, A, B> translator, A[] arg0, B[] arg1)
+        public void PublishEvents<TArg0, TArg1>(IEventTranslatorTwoArg<TEvent, TArg0, TArg1> translators, TArg0[] arg0, TArg1[] arg1)
         {
-            throw new NotImplementedException();
+            PublishEvents(translators, 0, arg0.Length, arg0, arg1);
         }
 
-        public void PublishEvents<A, B>(IEventTranslatorTwoArg<TEvent, A, B> translator, int batchStartsAt, int batchSize, A[] arg0, B[] arg1)
+        public void PublishEvents<TArg0, TArg1>(IEventTranslatorTwoArg<TEvent, TArg0, TArg1> translators, int batchStartsAt, int batchSize, TArg0[] arg0, TArg1[] arg1)
         {
-            throw new NotImplementedException();
+            CheckBounds(arg0, arg1, batchStartsAt, batchSize);
+            var finalSequence = Sequencer.Next(batchSize);
+            TranslateAndPublishBatch(translators, arg0, arg1, batchStartsAt, batchSize, finalSequence);
         }
 
         public void PublishEvents<TArg0, TArg1, TArg2>(IEventTranslatorThreeArg<TEvent, TArg0, TArg1, TArg2> translator, TArg0[] arg0, TArg1[] arg1, TArg2[] arg2)
         {
-            throw new NotImplementedException();
+            PublishEvents(translator, 0, arg0.Length, arg0, arg1, arg2);
         }
 
         public void PublishEvents<TArg0, TArg1, TArg2>(IEventTranslatorThreeArg<TEvent, TArg0, TArg1, TArg2> translator, int batchStartsAt, int batchSize, TArg0[] arg0, TArg1[] arg1, TArg2[] arg2)
         {
-            throw new NotImplementedException();
+            CheckBounds(arg0, arg1, arg2, batchStartsAt, batchSize);
+            var finalSequence = Sequencer.Next(batchSize);
+            TranslateAndPublishBatch(translator, arg0, arg1, arg2, batchStartsAt, batchSize, finalSequence);
         }
 
         public void PublishEvents(IEventTranslatorVarArg<TEvent> translator, params object[][] args)
         {
-            throw new NotImplementedException();
+            PublishEvents(translator, 0, args.Length, args);
         }
 
         public void PublishEvents(IEventTranslatorVarArg<TEvent> translator, int batchStartsAt, int batchSize, params object[][] args)
         {
-            throw new NotImplementedException();
+            CheckBounds(batchStartsAt, batchSize, args);
+            var finalSequence = Sequencer.Next(batchSize);
+            TranslateAndPublishBatch(translator, batchStartsAt, batchSize, finalSequence, args);
         }
 
         /// <summary>
@@ -406,72 +417,164 @@ namespace MDA.Disruptor.Impl
 
         public bool TryPublishEvent<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, TArg arg0)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Sequencer.TryNext(out long sequence);
+                TranslateAndPublish(translator, sequence, arg0);
+                return true;
+            }
+            catch (InsufficientCapacityException e)
+            {
+                return false;
+            }
         }
 
         public bool TryPublishEvent<TArg0, TArg1>(IEventTranslatorTwoArg<TEvent, TArg0, TArg1> translator, TArg0 arg0, TArg1 arg1)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Sequencer.TryNext(out long sequence);
+                TranslateAndPublish(translator, sequence, arg0, arg1);
+                return true;
+            }
+            catch (InsufficientCapacityException e)
+            {
+                return false;
+            }
         }
 
         public bool TryPublishEvent<TArg0, TArg1, TArg2>(IEventTranslatorThreeArg<TEvent, TArg0, TArg1, TArg2> translator, TArg0 arg0, TArg1 arg1, TArg2 arg2)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Sequencer.TryNext(out long sequence);
+                TranslateAndPublish(translator, sequence, arg0, arg1, arg2);
+                return true;
+            }
+            catch (InsufficientCapacityException e)
+            {
+                return false;
+            }
         }
 
         public bool TryPublishEvent(IEventTranslatorVarArg<TEvent> translator, params object[] args)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Sequencer.TryNext(out long sequence);
+                TranslateAndPublish(translator, sequence, args);
+                return true;
+            }
+            catch (InsufficientCapacityException e)
+            {
+                return false;
+            }
         }
 
         public bool TryPublishEvents(IEventTranslator<TEvent>[] translators)
         {
-            throw new NotImplementedException();
+            return TryPublishEvents(translators, 0, translators.Length);
         }
 
         public bool TryPublishEvents(IEventTranslator<TEvent>[] translators, int batchStartsAt, int batchSize)
         {
-            throw new NotImplementedException();
+            CheckBounds(translators, batchStartsAt, batchSize);
+            try
+            {
+                Sequencer.TryNext(batchSize, out long finalSequence);
+                TranslateAndPublishBatch(translators, batchStartsAt, batchSize, finalSequence);
+                return true;
+            }
+            catch (InsufficientCapacityException e)
+            {
+                return false;
+            }
         }
 
         public bool TryPublishEvents<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, TArg[] arg0)
         {
-            throw new NotImplementedException();
+            return TryPublishEvents(translator, 0, arg0.Length, arg0);
         }
 
         public bool TryPublishEvents<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, int batchStartsAt, int batchSize, TArg[] arg0)
         {
-            throw new NotImplementedException();
+            CheckBounds(arg0, batchStartsAt, batchSize);
+            try
+            {
+                Sequencer.TryNext(batchSize, out long finalSequence);
+                TranslateAndPublishBatch(translator, arg0, batchStartsAt, batchSize, finalSequence);
+                return true;
+            }
+            catch (InsufficientCapacityException e)
+            {
+                return false;
+            }
         }
 
         public bool TryPublishEvents<A, B>(IEventTranslatorTwoArg<TEvent, A, B> translator, A[] arg0, B[] arg1)
         {
-            throw new NotImplementedException();
+            return TryPublishEvents(translator, 0, arg0.Length, arg0, arg1);
         }
 
         public bool TryPublishEvents<A, B>(IEventTranslatorTwoArg<TEvent, A, B> translator, int batchStartsAt, int batchSize, A[] arg0, B[] arg1)
         {
-            throw new NotImplementedException();
+            CheckBounds(arg0, arg1, batchStartsAt, batchSize);
+            try
+            {
+                Sequencer.TryNext(batchSize, out long finalSequence);
+                TranslateAndPublishBatch(translator, arg0, arg1, batchStartsAt, batchSize, finalSequence);
+                return true;
+            }
+            catch (InsufficientCapacityException e)
+            {
+                return false;
+            }
         }
 
         public bool TryPublishEvents<TArg0, TArg1, TArg2>(IEventTranslatorThreeArg<TEvent, TArg0, TArg1, TArg2> translator, TArg0[] arg0, TArg1[] arg1, TArg2[] arg2)
         {
-            throw new NotImplementedException();
+            return TryPublishEvents(translator, 0, arg0.Length, arg0, arg1, arg2);
         }
 
         public bool TryPublishEvents<TArg0, TArg1, TArg2>(IEventTranslatorThreeArg<TEvent, TArg0, TArg1, TArg2> translator, int batchStartsAt, int batchSize, TArg0[] arg0, TArg1[] arg1, TArg2[] arg2)
         {
-            throw new NotImplementedException();
+            CheckBounds(arg0, arg1, arg2, batchStartsAt, batchSize);
+            try
+            {
+                if (Sequencer.TryNext(batchSize, out long finalSequence))
+                {
+                    TranslateAndPublishBatch(translator, arg0, arg1, arg2, batchStartsAt, batchSize, finalSequence);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (InsufficientCapacityException e)
+            {
+                return false;
+            }
         }
 
         public bool TryPublishEvents(IEventTranslatorVarArg<TEvent> translator, params object[][] args)
         {
-            throw new NotImplementedException();
+            return TryPublishEvents(translator, 0, args.Length, args);
         }
 
         public bool TryPublishEvents(IEventTranslatorVarArg<TEvent> translator, int batchStartsAt, int batchSize, params object[][] args)
         {
-            throw new NotImplementedException();
+            CheckBounds(args, batchStartsAt, batchSize);
+            try
+            {
+                Sequencer.TryNext(batchSize, out long finalSequence);
+                TranslateAndPublishBatch(translator, batchStartsAt, batchSize, finalSequence, args);
+                return true;
+            }
+            catch (InsufficientCapacityException e)
+            {
+                return false;
+            }
         }
 
         #region [ private methods ]
@@ -651,6 +754,56 @@ namespace MDA.Disruptor.Impl
             }
         }
 
+        private void CheckBounds<TArg>(TArg[] arg0, int batchStartsAt, int batchSize)
+        {
+            CheckBatchSizing(batchStartsAt, batchSize);
+            BatchOverRuns(arg0, batchStartsAt, batchSize);
+        }
+
+        private void CheckBounds<TArg0, TArg1>(TArg0[] arg0, TArg1[] arg1, int batchStartsAt, int batchSize)
+        {
+            CheckBatchSizing(batchStartsAt, batchSize);
+            BatchOverRuns(arg0, batchStartsAt, batchSize);
+            BatchOverRuns(arg1, batchStartsAt, batchSize);
+        }
+
+        private void CheckBounds<TArg0, TArg1, TArg2>(
+        TArg0[] arg0, TArg1[] arg1, TArg2[] arg2, int batchStartsAt, int batchSize)
+        {
+            CheckBatchSizing(batchStartsAt, batchSize);
+            BatchOverRuns(arg0, batchStartsAt, batchSize);
+            BatchOverRuns(arg1, batchStartsAt, batchSize);
+            BatchOverRuns(arg2, batchStartsAt, batchSize);
+        }
+
+        private void CheckBounds(int batchStartsAt, int batchSize, object[][] args)
+        {
+            CheckBatchSizing(batchStartsAt, batchSize);
+            BatchOverRuns(args, batchStartsAt, batchSize);
+        }
+
+        private void CheckBatchSizing(int batchStartsAt, int batchSize)
+        {
+            if (batchStartsAt < 0 || batchSize < 0)
+            {
+                throw new ArgumentException("Both batchStartsAt and batchSize must be positive but got: batchStartsAt " + batchStartsAt + " and batchSize " + batchSize);
+            }
+            else if (batchSize > BufferSize)
+            {
+                throw new ArgumentException("The ring buffer cannot accommodate " + batchSize + " it only has space for " + BufferSize + " entities.");
+            }
+        }
+
+        private void BatchOverRuns<TArg>(TArg[] arg0, int batchStartsAt, int batchSize)
+        {
+            if (batchStartsAt + batchSize > arg0.Length)
+            {
+                throw new ArgumentException(
+                    "A batchSize of: " + batchSize +
+                        " with batchStatsAt of: " + batchStartsAt +
+                        " will overrun the available number of arguments: " + (arg0.Length - batchStartsAt));
+            }
+        }
 
         #endregion
     }
