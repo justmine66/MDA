@@ -1,79 +1,21 @@
-﻿using System;
-using MDA.Disruptor.dsl;
-using MDA.Disruptor.Extensions;
-using MDA.Disruptor.Infrastracture;
+﻿using MDA.Disruptor.dsl;
+using MDA.Disruptor.Exceptions;
+using System;
+using MDA.Disruptor.Utility;
 
 namespace MDA.Disruptor.Impl
 {
-    public abstract class RingBufferFields<TEvent> : LhsPadding
-    {
-        private static readonly int _bufferPad;
-        private static readonly long _refArrayBase;
-        private static readonly int _refElementShift;
 
-        static RingBufferFields()
-        {
-            var scale = IntPtr.Size;
 
-            switch (scale)
-            {
-                case 4:
-                    _refElementShift = 2;
-                    break;
-                case 8:
-                    _refElementShift = 3;
-                    break;
-                default:
-                    throw new PlatformNotSupportedException("Unknown pointer size");
-            }
-
-            _bufferPad = 128 / scale;
-        }
-
-        private readonly long _indexMask;
-        private readonly object[] _entries;
-        protected readonly int _bufferSize;
-        protected readonly ISequencer _sequencer;
-
-        protected RingBufferFields(
-            ISequencer sequencer,
-            IEventFactory<TEvent> eventFactory)
-        {
-            _sequencer = sequencer;
-            _bufferSize = _sequencer.BufferSize;
-
-            if (_bufferSize < 1)
-            {
-                throw new ArgumentException("bufferSize must not be less than 1");
-            }
-
-            if (_bufferSize.IsNotPowerOf2())
-            {
-                throw new ArgumentException("bufferSize must be a power of 2");
-            }
-
-            _indexMask = _bufferSize - 1;
-            _entries = new object[sequencer.BufferSize + 2 * _bufferPad];
-
-            Fill(eventFactory);
-        }
-
-        private void Fill(IEventFactory<TEvent> eventFactory)
-        {
-            for (int i = 0; i < _bufferSize; i++)
-            {
-                _entries[_bufferPad + i] = eventFactory.NewInstance();
-            }
-        }
-
-        protected TEvent ElementAt(long sequence)
-        {
-            return default(TEvent);
-        }
-    }
-
+    /// <summary>
+    /// Ring based store of reusable entries containing the data representing an event being exchanged between event producer and <see cref="IEventProcessor"/>s.
+    /// </summary>
+    /// <typeparam name="TEvent">implementation storing the data for sharing during exchange or parallel coordination of an event.</typeparam>
     public sealed class RingBuffer<TEvent> : RingBufferFields<TEvent>, ICursored, IEventSequencer<TEvent>, IEventSink<TEvent>
     {
+        public static readonly long InitialCursorValue = Sequence.InitialValue;
+        protected long P9, P10, P11, P12, P13, P14, P15;
+
         /// <summary>
         /// Construct a RingBuffer with the full option set.
         /// </summary>
@@ -110,7 +52,7 @@ namespace MDA.Disruptor.Impl
                 case ProducerType.Multi:
                     return CreateMultiProducer(factory, bufferSize, waitStrategy);
                 default:
-                    throw new ArgumentOutOfRangeException(producerType.ToString());
+                    throw new IllegalStateException(producerType.ToString());
             }
         }
 
@@ -121,7 +63,9 @@ namespace MDA.Disruptor.Impl
         /// <param name="bufferSize">number of elements to create within the ring buffer.</param>
         /// <returns>a constructed ring buffer.</returns>
         /// <exception cref="ArgumentException">if bufferSize is less than 1 or not a power of 2</exception>
-        public static RingBuffer<TEvent> CreateSingleProducer(IEventFactory<TEvent> factory, int bufferSize)
+        public static RingBuffer<TEvent> CreateSingleProducer(
+            IEventFactory<TEvent> factory,
+            int bufferSize)
         {
             return CreateSingleProducer(factory, bufferSize, new BlockingWaitStrategy());
         }
@@ -156,19 +100,48 @@ namespace MDA.Disruptor.Impl
             int bufferSize,
             IWaitStrategy waitStrategy)
         {
-            return null;
+            var sequencer = new MultiProducerSequencer(bufferSize, waitStrategy);
+
+            return new RingBuffer<TEvent>(sequencer, factory);
         }
 
-        public int BufferSize => throw new NotImplementedException();
+        /// <summary>
+        /// Create a new multiple producer RingBuffer using the default wait strategy <see cref="BlockingWaitStrategy"/>.
+        /// </summary>
+        /// <param name="factory">used to create the events within the ring buffer.</param>
+        /// <param name="bufferSize">number of elements to create within the ring buffer.</param>
+        /// <returns>a constructed ring buffer.</returns>
+        /// <exception cref="ArgumentException">if bufferSize is less than 1 or not a power of 2</exception>
+        public static RingBuffer<TEvent> CreateMultiProducer(
+            IEventFactory<TEvent> factory,
+            int bufferSize)
+        {
+            return CreateMultiProducer(factory, bufferSize, new BlockingWaitStrategy());
+        }
 
+        /// <summary>
+        /// Get the event for a given sequence in the RingBuffer.
+        /// This call has 2 uses.
+        /// 1. Firstly use this call when publishing to a ring buffer.
+        /// 2. After calling <see cref="RingBuffer{TEvent}.Next()"/> use this call to get hold of the pre-allocated event to fill with data before calling <see cref="RingBuffer{TEvent}.Publish(long)"/>.
+        /// </summary>
+        /// <remarks>
+        /// Secondly use this call when consuming data from the ring buffer. After calling <see cref="ISequenceBarrier.WaitFor(long)"/> call this method with any value greater than that your current consumer sequence and less than or equal to the value returned from the <see cref="ISequenceBarrier.WaitFor(long)"/> method.
+        /// </remarks>
+        /// <param name="sequence">for the event</param>
+        /// <returns>the event for the given sequence</returns>
         public TEvent Get(long sequence)
         {
-            throw new NotImplementedException();
+            return ElementAt(sequence);
         }
 
+        /// <summary>
+        /// Get the current cursor value for the ring buffer. The actual value received will depend on the type of <see cref="ISequencer"/> that is being used.
+        /// </summary>
+        /// <returns></returns>
         public long GetCursor()
         {
-            throw new NotImplementedException();
+            return Sequencer.GetCursor();
         }
 
         public long GetRemainingCapacity()
@@ -176,19 +149,144 @@ namespace MDA.Disruptor.Impl
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// The size of the buffer.
+        /// </summary>
+        /// <returns></returns>
+        public int GetBufferSize()
+        {
+            return BufferSize;
+        }
+
+        /// <summary>
+        /// Given specified <param name="requiredCapacity"></param> determines if that amount of space is available.Note, you can not assume that if this method returns <c>true</c> that a call to <see cref="RingBuffer{TEvent}.Next()"/> will not block. Especially true if this ring buffer is set up to handle multiple producers.
+        /// </summary>
+        /// <param name="requiredCapacity"></param>
+        /// <returns></returns>
         public bool HasAvailableCapacity(int requiredCapacity)
         {
-            throw new NotImplementedException();
+            return Sequencer.HasAvailableCapacity(requiredCapacity);
         }
 
+        /// <summary>
+        /// Increment and return the next sequence for the ring buffer. Calls of this method should ensure that they always publish the sequence afterward.
+        /// </summary>
+        /// <code>
+        /// long sequence = ringBuffer.Next();
+        /// try {
+        ///     Event e = ringBuffer.Get(sequence);
+        ///     // Do some work with the event.
+        /// } finally {
+        ///     ringBuffer.Publish(sequence);
+        /// }
+        /// </code>
+        /// <returns>The next sequence to publish to.</returns>
         public long Next()
         {
-            throw new NotImplementedException();
+            return Sequencer.Next();
         }
 
+        /// <summary>
+        /// The same functionality as <see cref="RingBuffer{TEvent}.Next()"/>, but allows the caller to claim the next n sequences.
+        /// </summary>
+        /// <param name="n">number of slots to claim</param>
+        /// <returns>sequence number of the highest slot claimed.</returns>
         public long Next(int n)
         {
-            throw new NotImplementedException();
+            return Sequencer.Next(n);
+        }
+
+        /// <summary>
+        /// Increment and return the next sequence for the ring buffer. Calls of this method should ensure that they always publish the sequence afterward.
+        /// <code>
+        /// long sequence = ringBuffer.Next();
+        /// try {
+        ///     Event e = ringBuffer.Get(sequence);
+        ///     // Do some work with the event.
+        /// } finally {
+        ///     ringBuffer.Publish(sequence);
+        /// }
+        /// </code>
+        /// </summary>
+        /// <param name="sequence">The next sequence to publish to.</param>
+        /// <returns></returns>
+        /// <exception cref="InsufficientCapacityException">
+        /// This method will not block if there is not space available in the ring buffer, instead it will throw an <see cref="InsufficientCapacityException"/>.</exception>
+        public bool TryNext(out long sequence)
+        {
+            return Sequencer.TryNext(out sequence);
+        }
+
+        /// <summary>
+        /// The same functionality as <see cref="RingBuffer{TEvent}.TryNext(out long)"/>, but allows the caller to attempt to claim the next n sequences.
+        /// </summary>
+        /// <param name="n">number of slots to claim</param>
+        /// <param name="sequence">number of the highest slot claimed</param>
+        /// <returns></returns>
+        /// <exception cref="InsufficientCapacityException">
+        /// This method will not block if there is not space available in the ring buffer, instead it will throw an <see cref="InsufficientCapacityException"/>.</exception>
+        public bool TryNext(int n, out long sequence)
+        {
+            return Sequencer.TryNext(n, out sequence);
+        }
+
+        /// <summary>
+        /// Sets the cursor to a specific sequence and returns the pre-allocated entry that is stored there. This can cause a data race and should only be done in controlled circumstances, e.g.during initialisation.
+        /// </summary>
+        /// <param name="sequence">The sequence to claim.</param>
+        /// <returns>The pre-allocated event.</returns>
+        public TEvent ClaimAndGetPreAllocated(long sequence)
+        {
+            Sequencer.Claim(sequence);
+            return Get(sequence);
+        }
+
+        /// <summary>
+        /// Add the specified gating sequences to this instance of the Disruptor. They will safely and atomically added to the list of gating sequences.
+        /// </summary>
+        /// <param name="gatingSequences">The sequences to add.</param>
+        public void AddGatingSequences(params ISequence[] gatingSequences)
+        {
+            Sequencer.AddGatingSequences(gatingSequences);
+        }
+
+        /// <summary>
+        /// Get the minimum sequence value from all of the gating sequences added to this ringBuffer.
+        /// </summary>
+        /// <returns></returns>
+        public long GetMinimumGatingSequence()
+        {
+            return Sequencer.GetMinimumSequence();
+        }
+
+        /// <summary>
+        /// Remove the specified sequence from this ringBuffer.
+        /// </summary>
+        /// <param name="sequence">sequence to be removed.</param>
+        /// <returns>true if this sequence was found, false otherwise.</returns>
+        public bool RemoveGatingSequence(ISequence sequence)
+        {
+            return Sequencer.RemoveGatingSequence(sequence);
+        }
+
+        /// <summary>
+        /// Create a new SequenceBarrier to be used by an EventProcessor to track which messages are available to be read from the ring buffer given a list of sequences to track.
+        /// </summary>
+        /// <param name="sequencesToTrack"></param>
+        /// <returns></returns>
+        public ISequenceBarrier NewBarrier(params ISequence[] sequencesToTrack)
+        {
+            return Sequencer.NewBarrier(sequencesToTrack);
+        }
+
+        /// <summary>
+        /// Creates an event poller for this ring buffer gated on the supplied sequences.
+        /// </summary>
+        /// <param name="gatingSequences">to be gated on.</param>
+        /// <returns>A poller that will gate on this ring buffer and the supplied sequences.</returns>
+        public EventPoller<TEvent> NewPoller(params ISequence[] gatingSequences)
+        {
+            return Sequencer.NewPoller(this, gatingSequences);
         }
 
         public void Publish(long sequence)
@@ -201,9 +299,14 @@ namespace MDA.Disruptor.Impl
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// <see cref="IEventSink{TEvent}.PublishEvent(IEventTranslator{TEvent})"/>
+        /// </summary>
+        /// <param name="translator"></param>
         public void PublishEvent(IEventTranslator<TEvent> translator)
         {
-            throw new NotImplementedException();
+            var sequence = Sequencer.Next();
+            TranslateAndPublish(translator, sequence);
         }
 
         public void PublishEvent<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, TArg arg0)
@@ -276,19 +379,29 @@ namespace MDA.Disruptor.Impl
             throw new NotImplementedException();
         }
 
-        public bool TryNext(out long sequence)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool TryNext(int n, out long sequence)
-        {
-            throw new NotImplementedException();
-        }
-
+        /// <summary>
+        /// <see cref="IEventSink{TEvent}.TryPublishEvent(IEventTranslator{TEvent})"/>
+        /// </summary>
+        /// <param name="translator"></param>
+        /// <returns></returns>
         public bool TryPublishEvent(IEventTranslator<TEvent> translator)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (Sequencer.TryNext(out long sequence))
+                {
+                    TranslateAndPublish(translator, sequence);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (InsufficientCapacityException e)
+            {
+                return false;
+            }
         }
 
         public bool TryPublishEvent<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, TArg arg0)
@@ -360,5 +473,185 @@ namespace MDA.Disruptor.Impl
         {
             throw new NotImplementedException();
         }
+
+        #region [ private methods ]
+
+        private void TranslateAndPublish(IEventTranslator<TEvent> translator, long sequence)
+        {
+            try
+            {
+                translator.TranslateTo(Get(sequence), sequence);
+            }
+            finally
+            {
+                Sequencer.Publish(sequence);
+            }
+        }
+
+        private void TranslateAndPublish<TArg>(IEventTranslatorOneArg<TEvent, TArg> translator, long sequence, TArg arg)
+        {
+            try
+            {
+                translator.TranslateTo(Get(sequence), sequence, arg);
+            }
+            finally
+            {
+                Sequencer.Publish(sequence);
+            }
+        }
+
+        private void TranslateAndPublish<TArg0, TArg1>(
+            IEventTranslatorTwoArg<TEvent, TArg0, TArg1> translator,
+            long sequence, TArg0 arg0,
+            TArg1 arg1)
+        {
+            try
+            {
+                translator.TranslateTo(Get(sequence), sequence, arg0, arg1);
+            }
+            finally
+            {
+                Sequencer.Publish(sequence);
+            }
+        }
+
+        private void TranslateAndPublish<TArg0, TArg1, TArg2>(
+            IEventTranslatorThreeArg<TEvent, TArg0, TArg1, TArg2> translator,
+            long sequence,
+            TArg0 arg0, TArg1 arg1, TArg2 arg2)
+        {
+            try
+            {
+                translator.TranslateTo(Get(sequence), sequence, arg0, arg1, arg2);
+            }
+            finally
+            {
+                Sequencer.Publish(sequence);
+            }
+        }
+
+        private void TranslateAndPublish(IEventTranslatorVarArg<TEvent> translator, long sequence, params object[] args)
+        {
+            try
+            {
+                translator.TranslateTo(Get(sequence), sequence, args);
+            }
+            finally
+            {
+                Sequencer.Publish(sequence);
+            }
+        }
+
+        private void TranslateAndPublishBatch(
+            IEventTranslator<TEvent>[] translators,
+            int batchStartsAt,
+            int batchSize,
+            long finalSequence)
+        {
+            var initialSequence = finalSequence - (batchSize - 1);
+            try
+            {
+                var sequence = initialSequence;
+                var batchEndsAt = batchStartsAt + batchSize;
+                for (int i = batchStartsAt; i < batchEndsAt; i++)
+                {
+                    var translator = translators[i];
+                    translator.TranslateTo(Get(sequence), sequence++);
+                }
+            }
+            finally
+            {
+                Sequencer.Publish(initialSequence, finalSequence);
+            }
+        }
+
+        private void TranslateAndPublishBatch<TArg>(
+            IEventTranslatorOneArg<TEvent, TArg> translator,
+            TArg[] arg0,
+            int batchStartsAt,
+            int batchSize,
+            long finalSequence)
+        {
+            var initialSequence = finalSequence - (batchSize - 1);
+            try
+            {
+                var sequence = initialSequence;
+                var batchEndsAt = batchStartsAt + batchSize;
+                for (int i = batchStartsAt; i < batchEndsAt; i++)
+                {
+                    translator.TranslateTo(Get(sequence), sequence++, arg0[i]);
+                }
+            }
+            finally
+            {
+                Sequencer.Publish(initialSequence, finalSequence);
+            }
+        }
+
+        private void TranslateAndPublishBatch<TArg0, TArg1>(
+            IEventTranslatorTwoArg<TEvent, TArg0, TArg1> translator,
+            TArg0[] arg0, TArg1[] arg1,
+            int batchStartsAt, int batchSize,
+            long finalSequence)
+        {
+            var initialSequence = finalSequence - (batchSize - 1);
+            try
+            {
+                var sequence = initialSequence;
+                var batchEndsAt = batchStartsAt + batchSize;
+                for (int i = batchStartsAt; i < batchEndsAt; i++)
+                {
+                    translator.TranslateTo(Get(sequence), sequence++, arg0[i], arg1[i]);
+                }
+            }
+            finally
+            {
+                Sequencer.Publish(initialSequence, finalSequence);
+            }
+        }
+
+        private void TranslateAndPublishBatch<TArg0, TArg1, TArg2>(IEventTranslatorThreeArg<TEvent, TArg0, TArg1, TArg2> translator,
+            TArg0[] arg0, TArg1[] arg1, TArg2[] arg2,
+            int batchStartsAt, int batchSize,
+            long finalSequence)
+        {
+            var initialSequence = finalSequence - (batchSize - 1);
+            try
+            {
+                var sequence = initialSequence;
+                var batchEndsAt = batchStartsAt + batchSize;
+                for (int i = batchStartsAt; i < batchEndsAt; i++)
+                {
+                    translator.TranslateTo(Get(sequence), sequence++, arg0[i], arg1[i], arg2[i]);
+                }
+            }
+            finally
+            {
+                Sequencer.Publish(initialSequence, finalSequence);
+            }
+        }
+
+        private void TranslateAndPublishBatch(
+            IEventTranslatorVarArg<TEvent> translator, int batchStartsAt,
+             int batchSize, long finalSequence, params object[][] args)
+        {
+            var initialSequence = finalSequence - (batchSize - 1);
+            try
+            {
+                long sequence = initialSequence;
+                var batchEndsAt = batchStartsAt + batchSize;
+                for (int i = batchStartsAt; i < batchEndsAt; i++)
+                {
+                    translator.TranslateTo(Get(sequence), sequence++, args[i]);
+                }
+            }
+            finally
+            {
+                Sequencer.Publish(initialSequence, finalSequence);
+            }
+        }
+
+
+        #endregion
     }
 }
