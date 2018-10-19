@@ -76,12 +76,12 @@ namespace MDA.Disruptor.Impl
             ISequence dependentSequence, 
             ISequenceBarrier barrier)
         {
-            long availableSequence;
             long startTime = 0;
             int counter = SpinTries;
 
             do
             {
+                long availableSequence;
                 if ((availableSequence = dependentSequence.GetValue()) >= sequence)
                 {
                     return availableSequence;
