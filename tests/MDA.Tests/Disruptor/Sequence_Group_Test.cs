@@ -1,5 +1,5 @@
-﻿using MDA.Disruptor;
-using MDA.Disruptor.Impl;
+﻿using MDA.Disruptor.Impl;
+using MDA.Tests.Disruptor.Support;
 using Xunit;
 
 namespace MDA.Tests.Disruptor

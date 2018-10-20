@@ -1,4 +1,4 @@
-﻿namespace MDA.Tests.Disruptor
+﻿namespace MDA.Tests.Disruptor.Support
 {
     public class TestEvent
     {
