@@ -29,9 +29,9 @@
         {
             foreach (var handler in _eventHandlers)
             {
-                if (typeof(ILifecycleAware).IsAssignableFrom(handler.GetType()))
+                if (handler is ILifecycleAware aware)
                 {
-                    (handler as ILifecycleAware)?.OnShutdown();
+                    aware?.OnShutdown();
                 }
             }
         }
@@ -40,9 +40,9 @@
         {
             foreach (var handler in _eventHandlers)
             {
-                if (typeof(ILifecycleAware).IsAssignableFrom(handler.GetType()))
+                if (handler is ILifecycleAware aware)
                 {
-                    (handler as ILifecycleAware)?.OnStart();
+                    aware?.OnStart();
                 }
             }
         }
