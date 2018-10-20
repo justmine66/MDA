@@ -13,7 +13,7 @@ namespace MDA.Disruptor.Impl
         private static readonly int BufferPad = 128 / IntPtr.Size;
 
         private readonly long _indexMask;
-        private readonly object[] _entries;
+        private readonly TEvent[] _entries;
 
         protected int BufferSize;
         protected ISequencer Sequencer;
@@ -27,18 +27,23 @@ namespace MDA.Disruptor.Impl
 
             if (BufferSize < 1)
             {
-                throw new ArgumentException("bufferSize must not be less than 1");
+                throw new ArgumentException($"{nameof(BufferSize)} must not be less than 1");
             }
 
             if (BufferSize.IsNotPowerOf2())
             {
-                throw new ArgumentException("bufferSize must be a power of 2");
+                throw new ArgumentException($"{nameof(BufferSize)} must be a power of 2");
             }
 
             _indexMask = BufferSize - 1;
-            _entries = new object[sequencer.GetBufferSize() + 2 * BufferPad];
+            _entries = new TEvent[sequencer.GetBufferSize() + 2 * BufferPad];
 
             Fill(eventFactory);
+        }
+
+        protected TEvent ElementAt(long sequence)
+        {
+            return _entries[BufferPad + (int)(sequence & _indexMask)];
         }
 
         private void Fill(IEventFactory<TEvent> eventFactory)
@@ -47,11 +52,6 @@ namespace MDA.Disruptor.Impl
             {
                 _entries[BufferPad + i] = eventFactory.NewInstance();
             }
-        }
-
-        protected TEvent ElementAt(long sequence)
-        {
-            return Utility.Util.Read<TEvent>(_entries, BufferPad + (int)(sequence & _indexMask));
         }
     }
 }
