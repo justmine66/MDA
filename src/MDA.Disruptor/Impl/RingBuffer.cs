@@ -11,7 +11,6 @@ namespace MDA.Disruptor.Impl
     /// <typeparam name="TEvent">implementation storing the data for sharing during exchange or parallel coordination of an event.</typeparam>
     public sealed class RingBuffer<TEvent> : RingBufferFields<TEvent>, ICursored, IEventSequencer<TEvent>, IEventSink<TEvent>
     {
-        public static readonly long InitialCursorValue = Sequence.InitialValue;
         protected long P9, P10, P11, P12, P13, P14, P15;
 
         /// <summary>
