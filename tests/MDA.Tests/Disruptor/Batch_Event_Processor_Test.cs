@@ -51,8 +51,7 @@ namespace MDA.Tests.Disruptor
             var thread = new Thread(() => processor.Run());
             thread.Start();
 
-            eventLatch.Wait();
-            //Assert.True(eventLatch.Wait(TimeSpan.FromSeconds(2)));
+            Assert.True(eventLatch.Wait(TimeSpan.FromSeconds(2)));
 
             processor.Halt();
             thread.Join();
