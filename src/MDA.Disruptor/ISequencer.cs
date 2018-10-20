@@ -2,6 +2,9 @@
 
 namespace MDA.Disruptor
 {
+    /// <summary>
+    /// Coordinates claiming sequences for access to a data structure while tracking dependent <see cref="ISequence"/>s
+    /// </summary>
     public interface ISequencer : ICursored, ISequenced
     {
         /// <summary>
@@ -11,10 +14,10 @@ namespace MDA.Disruptor
         void Claim(long sequence);
 
         /// <summary>
-        /// Confirms if a sequence is published and the0 event is available for use; non-blocking.
+        /// Confirms if a sequence is published and the event is available for use; non-blocking.
         /// </summary>
-        /// <param name="sequence">sequence of the buffer to check</param>
-        /// <returns>true if the sequence is available for use, false if not</returns>
+        /// <param name="sequence">of the buffer to check</param>
+        /// <returns>true if the sequence is available for use, false if not.</returns>
         bool IsAvailable(long sequence);
 
         /// <summary>
@@ -31,7 +34,7 @@ namespace MDA.Disruptor
         bool RemoveGatingSequence(ISequence sequence);
 
         /// <summary>
-        /// Create a new SequenceBarrier to be used by an EventProcessor to track which messages are available to be read from the ring buffer given a list of sequences to track.
+        /// Create a new SequenceBarrier to be used by an <see cref="IEventProcessor"/> to track which messages are available to be read from the ring buffer given a list of sequences to track.
         /// </summary>
         /// <param name="sequencesToTrack">All of the sequences that the newly constructed barrier will wait on.</param>
         /// <returns>A sequence barrier that will track the specified sequences.</returns>
@@ -45,11 +48,11 @@ namespace MDA.Disruptor
         long GetMinimumSequence();
 
         /// <summary>
-        /// Get the highest sequence number that can be safely read from the ring buffer. Depending on the implementation of the Sequencer this call may need to scan a number of values in the Sequencer.The scan will range from nextSequence to availableSequence.If there are no available values <code>&gt;= nextSequence</code> the return value will be <code>nextSequence - 1</code>.  To work correctly a consumer should pass a value that is 1 higher than the last sequence that was successfully processed.
+        /// Get the highest sequence number that can be safely read from the ring buffer. Depending on the implementation of the Sequencer this call may need to scan a number of values in the Sequencer. The scan will range from nextSequence to availableSequence. If there are no available values <code> nextSequence <= sequence <= availableSequence</code> the return value will be <code>nextSequence - 1</code>. To work correctly a consumer should pass a value that is 1 higher than the last sequence that was successfully processed.
         /// </summary>
-        /// <param name="nextSequence"></param>
-        /// <param name="availableSequence"></param>
-        /// <returns></returns>
+        /// <param name="nextSequence">The sequence to start scanning from.</param>
+        /// <param name="availableSequence">The sequence to scan to.</param>
+        /// <returns>The highest value that can be safely read from the ring buffer, will be at least <code>nextSequence - 1</code>.</returns>
         long GetHighestPublishedSequence(long nextSequence, long availableSequence);
 
         EventPoller<T> NewPoller<T>(IDataProvider<T> provider, params ISequence[] gatingSequences);

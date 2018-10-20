@@ -1,11 +1,11 @@
-﻿using System;
+﻿using MDA.Disruptor.Utility;
+using System;
 using System.Linq;
-using MDA.Disruptor.Utility;
 
 namespace MDA.Disruptor.Impl
 {
     /// <summary>
-    /// Hides a group of Sequences behind a single Sequence
+    /// Hides a group of Sequences behind a single Sequence.
     /// </summary>
     public class FixedSequenceGroup : ISequence
     {
