@@ -30,7 +30,7 @@ namespace MDA.Disruptor.Utility
                 ? StructProxy.CreateProxyInstance(batchStartAware)
                 : new NoOpBatchStartAware();
 
-            var batchEventProcessorType = typeof(BatchEventProcessor<,,,,>).MakeGenericType(typeof(T), dataProviderProxy.GetType(), sequenceBarrierProxy.GetType(), eventHandlerProxy.GetType(), batchStartAwareProxy.GetType());
+            var batchEventProcessorType = typeof(BatchEventProcessor<>).MakeGenericType(typeof(T), dataProviderProxy.GetType(), sequenceBarrierProxy.GetType(), eventHandlerProxy.GetType(), batchStartAwareProxy.GetType());
 
             return Activator.CreateInstance(batchEventProcessorType, dataProviderProxy, sequenceBarrierProxy, eventHandlerProxy, batchStartAwareProxy) as IBatchEventProcessor<T>;
         }
