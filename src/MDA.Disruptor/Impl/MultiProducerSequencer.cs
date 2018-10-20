@@ -15,7 +15,7 @@ namespace MDA.Disruptor.Impl
     /// </remarks>
     public class MultiProducerSequencer : AbstractSequencer
     {
-        private readonly ISequence _gatingSequenceCache = new Sequence(Sequence.InitialValue);
+        private readonly ISequence _gatingSequenceCache = new Sequence();
 
         private readonly int[] _availableBuffer;
         private readonly int _indexMask;
@@ -49,9 +49,9 @@ namespace MDA.Disruptor.Impl
             return Volatile.Read(ref _availableBuffer[index]) == flag;
         }
 
-        public override long GetHighestPublishedSequence(long lowerBound, long availableSequence)
+        public override long GetHighestPublishedSequence(long nextSequence, long availableSequence)
         {
-            for (long sequence = lowerBound; sequence <= availableSequence; sequence++)
+            for (long sequence = nextSequence; sequence <= availableSequence; sequence++)
             {
                 if (!IsAvailable(sequence))
                 {
@@ -181,9 +181,9 @@ namespace MDA.Disruptor.Impl
         /// <summary>
         /// The below methods work on the availableBuffer flag.
         /// The prime reason is to avoid a shared sequence object between publisher threads.(Keeping single pointers tracking start and end would require coordination between the threads).
-        /// --  Firstly we have the constraint that the delta between the cursor and minimum gating sequence will never be larger than the buffer size (the code in next/tryNext in the Sequence takes care of that).
+        /// -- Firstly we have the constraint that the delta between the cursor and minimum gating sequence will never be larger than the buffer size (the code in next/tryNext in the Sequence takes care of that).
         /// -- Given that; take the sequence value and mask off the lower portion of the sequence as the index into the buffer(indexMask). (aka modulo operator)
-        /// -- The upper portion of the sequence becomes the value to check for availability.ie: it tells us how many times around the ring buffer we've been (aka division).
+        /// -- The upper portion of the sequence becomes the value to check for availability. ie: it tells us how many times around the ring buffer we've been (aka division).
         /// -- Because we can't wrap without the gating sequences moving forward (i.e. the minimum gating sequence is effectively our last available position in the buffer), when we have new data and successfully claimed a slot we can simply write over the top.
         /// </summary>
         /// <param name="sequence"></param>
@@ -217,6 +217,7 @@ namespace MDA.Disruptor.Impl
 
         private int CalculateIndex(long sequence)
         {
+            //算法: sequence & (array length－1) = array index
             return ((int)sequence) & _indexMask;
         }
 
