@@ -266,7 +266,7 @@ namespace MDA.Disruptor.Impl
         }
 
         /// <summary>
-        /// Create a new SequenceBarrier to be used by an EventProcessor to track which messages are available to be read from the ring buffer given a list of sequences to track.
+        /// Create a new <see cref="ISequenceBarrier"/> to be used by an <see cref="IEventProcessor"/> to track which messages are available to be read from the ring buffer given a list of sequences to track.
         /// </summary>
         /// <param name="sequencesToTrack"></param>
         /// <returns></returns>
