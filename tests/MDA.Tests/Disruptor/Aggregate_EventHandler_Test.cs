@@ -6,20 +6,19 @@ namespace MDA.Tests.Disruptor
 {
     public class Aggregate_EventHandler_Test
     {
-        private readonly DummyEventHandler<int[]> eh1 = new DummyEventHandler<int[]>();
-        private readonly DummyEventHandler<int[]> eh2 = new DummyEventHandler<int[]>();
-        private readonly DummyEventHandler<int[]> eh3 = new DummyEventHandler<int[]>();
+        private readonly DummyEventHandler<int[]> _eh1 = new DummyEventHandler<int[]>();
+        private readonly DummyEventHandler<int[]> _eh2 = new DummyEventHandler<int[]>();
+        private readonly DummyEventHandler<int[]> _eh3 = new DummyEventHandler<int[]>();
 
         [Fact(DisplayName = "调用OnEvent。")]
         public void Should_Call_OnEvent_InSequence()
         {
             int[] @event = { 7 };
             var sequence = 3L;
-            var endOfBatch = true;
 
-            var aggregateEventHandler = new AggregateEventHandler<int[]>(eh1, eh2, eh3);
-            aggregateEventHandler.OnEvent(@event, sequence, endOfBatch);
-            AssertLastEvent(@event, sequence, eh1, eh2, eh3);
+            var aggregateEventHandler = new AggregateEventHandler<int[]>(_eh1, _eh2, _eh3);
+            aggregateEventHandler.OnEvent(@event, sequence, true);
+            AssertLastEvent(@event, sequence, _eh1, _eh2, _eh3);
         }
 
         private static void AssertLastEvent(int[] @event, long sequence, params DummyEventHandler<int[]>[] ehs)
