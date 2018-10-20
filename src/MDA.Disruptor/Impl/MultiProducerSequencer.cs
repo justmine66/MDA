@@ -11,7 +11,7 @@ namespace MDA.Disruptor.Impl
     /// Coordinator for claiming sequences for access to a data structure while tracking dependent <see cref="ISequence"/>s. Suitable for use for sequencing across multiple publisher threads.
     /// </summary>
     /// <remarks>
-    /// Note on <see cref="ISequencer.GetCursor()"/>: With this sequencer the cursor value is updated after the call to <see cref="ISequencer.Next()"/>, to determine the highest available sequence that can be read, then <see cref="ISequence.GetHighestPublishedSequence(long,long)"/> should be used.
+    /// Note on <see cref="ISequencer.GetCursor()"/>: With this sequencer the cursor value is updated after the call to <see cref="ISequencer.Next()"/>, to determine the highest available sequence that can be read, then <see cref="ISequencer.GetHighestPublishedSequence(long,long)"/> should be used.
     /// </remarks>
     public class MultiProducerSequencer : AbstractSequencer
     {
