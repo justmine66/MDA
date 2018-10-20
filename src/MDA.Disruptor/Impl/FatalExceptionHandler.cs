@@ -5,7 +5,7 @@ using System;
 namespace MDA.Disruptor.Impl
 {
     /// <summary>
-    ///  Convenience implementation of an exception handler that using standard logging to log the exception as <see cref="LogLevel.Critical"/> and re-throw it wrapped in a <see cref="RuntimeException"/>
+    /// Convenience implementation of an exception handler that using standard logging to log the exception as <see cref="LogLevel.Critical"/> and re-throw it wrapped in a <see cref="RuntimeException"/>
     /// </summary>
     public class FatalExceptionHandler<TEvent> : IExceptionHandler<TEvent>
     {
