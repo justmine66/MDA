@@ -135,7 +135,7 @@ namespace MDA.Disruptor.Impl
                 {
                     var availableSequence = _sequenceBarrier.WaitFor(nextSequence);
 
-                    _batchStartAware.OnBatchStart(availableSequence - nextSequence + 1);
+                    _batchStartAware?.OnBatchStart(availableSequence - nextSequence + 1);
 
                     while (nextSequence <= availableSequence)
                     {
