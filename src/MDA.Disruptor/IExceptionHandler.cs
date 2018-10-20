@@ -6,7 +6,7 @@ namespace MDA.Disruptor
     /// <summary>
     /// Callback handler for uncaught exceptions in the event processing cycle of the <see cref="IBatchEventProcessor{TEvent}"/>
     /// </summary>
-    public interface IExceptionHandler<TEvent>
+    public interface IExceptionHandler<in TEvent>
     {
         /// <summary>
         /// Strategy for handling uncaught exceptions when processing an event.
