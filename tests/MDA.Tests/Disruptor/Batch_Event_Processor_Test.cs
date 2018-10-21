@@ -1,9 +1,9 @@
-﻿using System;
-using System.Threading;
-using MDA.Disruptor;
+﻿using MDA.Disruptor;
 using MDA.Disruptor.Impl;
 using MDA.Tests.Disruptor.Support;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading;
 using Xunit;
 
 namespace MDA.Tests.Disruptor
@@ -52,6 +52,26 @@ namespace MDA.Tests.Disruptor
             thread.Start();
 
             Assert.True(eventLatch.Wait(TimeSpan.FromSeconds(2)));
+
+            processor.Halt();
+            thread.Join();
+        }
+
+        [Fact(DisplayName = "调用异常处理器处理未知异常。")]
+        public void Should_Call_Exception_Handler_On_Uncaught_Exception()
+        {
+            var exceptionLatch = new CountdownEvent(1);
+            var exceptionHandler = new LatchExceptionHandler(exceptionLatch);
+            var processor = new BatchEventProcessor<StubEvent>(_ringBuffer, _barrier, new ExceptionEventHandler(), exceptionHandler);
+
+            _ringBuffer.AddGatingSequences(processor.GetSequence());
+
+            var thread = new Thread(() => processor.Run());
+            thread.Start();
+
+            _ringBuffer.Publish(_ringBuffer.Next());
+
+            Assert.True(exceptionLatch.Wait(TimeSpan.FromSeconds(2000)));
 
             processor.Halt();
             thread.Join();
