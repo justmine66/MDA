@@ -18,7 +18,7 @@ namespace MDA.Disruptor
         /// Create with the specified buffer size and wait strategy.
         /// </summary>
         /// <param name="bufferSize">The total number of entries, must be a positive power of 2.</param>
-        /// <param name="waitStrategy">The wait strategy used by this sequencer</param>
+        /// <param name="waitStrategy">The wait strategy used by this sequencer.</param>
         protected AbstractSequencer(int bufferSize, IWaitStrategy waitStrategy)
         {
             if (bufferSize < 1)
