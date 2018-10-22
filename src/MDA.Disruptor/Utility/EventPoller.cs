@@ -91,12 +91,12 @@ namespace MDA.Disruptor.Utility
         {
             bool OnEvent(T @event, long sequence, bool endOfBatch);
         }
-    }
 
-    public enum PollState
-    {
-        Processing,
-        Gating,
-        Idle
+        public enum PollState
+        {
+            Processing,
+            Gating,
+            Idle
+        }
     }
 }
