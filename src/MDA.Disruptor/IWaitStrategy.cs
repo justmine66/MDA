@@ -9,7 +9,7 @@ namespace MDA.Disruptor
     public interface IWaitStrategy
     {
         /// <summary>
-        /// Wait for the given sequence to be available. It is possible for this method to return a value less than the sequence number supplied depending on the implementation of the WaitStrategy. A common use for this is to signal a timeout.Any EventProcessor that is using a WaitStrategy to get notifications about message becoming available should remember to handle this case. The <see cref="IBatchEventProcessor{TEvent}"/> explicitly handles this case and will signal a timeout if required.
+        /// Wait for the given sequence to be available. It is possible for this method to return a value less than the sequence number supplied depending on the implementation of the WaitStrategy. A common use for this is to signal a timeout. Any EventProcessor that is using a WaitStrategy to get notifications about message becoming available should remember to handle this case. The <see cref="IBatchEventProcessor{TEvent}"/> explicitly handles this case and will signal a timeout if required.
         /// </summary>
         /// <param name="sequence">to be waited on.</param>
         /// <param name="cursor">the main sequence from <see cref="RingBuffer{TEvent}"/>. Wait/notify strategies will need this as it's the only sequence that is also notified upon update.</param>
