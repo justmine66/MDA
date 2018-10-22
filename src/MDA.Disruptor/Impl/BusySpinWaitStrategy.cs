@@ -12,14 +12,13 @@ namespace MDA.Disruptor.Impl
     {
         public void SignalAllWhenBlocking()
         {
-            throw new System.NotImplementedException();
         }
 
         public long WaitFor(long sequence, ISequence cursor, ISequence dependentSequence, ISequenceBarrier barrier)
         {
             long availableSequence;
-
             var spinWait = default(AggressiveSpinWait);
+
             while ((availableSequence = dependentSequence.GetValue()) < sequence)
             {
                 barrier.CheckAlert();
