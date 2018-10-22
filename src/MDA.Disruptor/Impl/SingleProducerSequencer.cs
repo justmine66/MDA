@@ -17,7 +17,8 @@ namespace MDA.Disruptor.Impl
 
     public abstract class SingleProducerSequencerFields : SingleProducerSequencerPad
     {
-        protected SingleProducerSequencerFields(int bufferSize, IWaitStrategy waitStrategy) : base(bufferSize, waitStrategy)
+        protected SingleProducerSequencerFields(int bufferSize, IWaitStrategy waitStrategy) 
+            : base(bufferSize, waitStrategy)
         {
         }
 
@@ -25,10 +26,21 @@ namespace MDA.Disruptor.Impl
         protected long CachedValue = Sequence.InitialValue;
     }
 
+    /// <summary>
+    /// Coordinator for claiming sequences for access to a data structure while tracking dependent <see cref="ISequence"/>s. Not safe for use from multiple threads as it does not implement any barriers.
+    /// </summary>
+    /// <remarks>
+    /// Note on <see cref="ISequencer.GetCursor()"/>: With this sequencer the cursor value is updated after the call to <see cref="ISequencer.Publish(long)"/> is made.
+    /// </remarks>
     public class SingleProducerSequencer : SingleProducerSequencerFields
     {
         protected long P8, P9, P10, P11, P12, P13, P14;
 
+        /// <summary>
+        /// Construct a Sequencer with the selected wait strategy and buffer size.
+        /// </summary>
+        /// <param name="bufferSize">the size of the buffer that this will sequence over.</param>
+        /// <param name="waitStrategy">for those waiting on sequences.</param>
         public SingleProducerSequencer(int bufferSize, IWaitStrategy waitStrategy)
             : base(bufferSize, waitStrategy)
         {
@@ -87,6 +99,7 @@ namespace MDA.Disruptor.Impl
 
                 long minSequence;
                 var spinWait = default(AggressiveSpinWait);
+
                 while (wrapPoint > (minSequence = SequenceGroupManager.GetMinimumSequence(GatingSequences, nextValue)))
                 {
                     // Use waitStrategy to spin?
