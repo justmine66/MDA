@@ -9,10 +9,10 @@ namespace MDA.Tests.Disruptor.Support
     {
         public ISequence sequence = new Sequence();
         private CountdownEvent _barrier = new CountdownEvent(2);
-        private long _sleepTime;
+        private int _sleepTime;
         private IWaitStrategy _waitStrategy;
 
-        public SequenceUpdater(long sleepTime, IWaitStrategy waitStrategy)
+        public SequenceUpdater(int sleepTime, IWaitStrategy waitStrategy)
         {
             _sleepTime = sleepTime;
             _waitStrategy = waitStrategy;
@@ -26,7 +26,7 @@ namespace MDA.Tests.Disruptor.Support
                 _barrier.Wait();
                 if (0 != _sleepTime)
                 {
-                    Thread.Sleep((int)_sleepTime);
+                    Thread.Sleep(_sleepTime);
                 }
 
                 sequence.IncrementAndGet();
@@ -36,6 +36,12 @@ namespace MDA.Tests.Disruptor.Support
             {
                 Console.WriteLine(e);
             }
+        }
+
+        public void WaitForStartup()
+        {
+            _barrier.Signal();
+            _barrier.Wait();
         }
     }
 }
