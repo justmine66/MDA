@@ -24,6 +24,11 @@ namespace MDA.Disruptor.Utility
             _gatingSequence = gatingSequence;
         }
 
+        public ISequence GetSequence()
+        {
+            return _sequence;
+        }
+
         public static EventPoller<TEvent> NewInstance(
             IDataProvider<TEvent> dataProvider,
             ISequencer sequencer,
@@ -32,17 +37,17 @@ namespace MDA.Disruptor.Utility
             params ISequence[] gatingSequences)
         {
             ISequence gatingSequence;
-            if (gatingSequences.Length == 0)
+            switch (gatingSequences.Length)
             {
-                gatingSequence = cursorSequence;
-            }
-            else if (gatingSequences.Length == 1)
-            {
-                gatingSequence = gatingSequences[0];
-            }
-            else
-            {
-                gatingSequence = new FixedSequenceGroup(gatingSequences);
+                case 0:
+                    gatingSequence = cursorSequence;
+                    break;
+                case 1:
+                    gatingSequence = gatingSequences[0];
+                    break;
+                default:
+                    gatingSequence = new FixedSequenceGroup(gatingSequences);
+                    break;
             }
 
             return new EventPoller<TEvent>(dataProvider, sequencer, sequence, gatingSequence);
@@ -50,25 +55,25 @@ namespace MDA.Disruptor.Utility
 
         public PollState Poll(IHandler<TEvent> eventHandler)
         {
-            long currentSequence = _sequence.GetValue();
-            long nextSequence = currentSequence + 1;
-            long availableSequence = _sequencer.GetHighestPublishedSequence(nextSequence, _gatingSequence.GetValue());
+            var currentSequence = _sequence.GetValue();
+            var nextSequence = currentSequence + 1;
+            var availableSequence = _sequencer.GetHighestPublishedSequence(nextSequence, _gatingSequence.GetValue());
 
             if (nextSequence <= availableSequence)
             {
-                long processedSequence = currentSequence;
+                var processedSequence = currentSequence;
 
                 try
                 {
-                    bool processNextEvent;
+                    bool processed;
                     do
                     {
-                        TEvent @event = _dataProvider.Get(nextSequence);
-                        processNextEvent = eventHandler.OnEvent(@event, nextSequence, nextSequence == availableSequence);
+                        var @event = _dataProvider.Get(nextSequence);
+                        processed = eventHandler.OnEvent(@event, nextSequence, nextSequence == availableSequence);
                         processedSequence = nextSequence;
                         nextSequence++;
                     }
-                    while (nextSequence <= availableSequence & processNextEvent);
+                    while (nextSequence <= availableSequence & processed);
                 }
                 finally
                 {
