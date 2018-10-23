@@ -2,7 +2,7 @@
 {
     using MDA.Disruptor.Impl;
     using Xunit;
-    using static MDA.Tests.Disruptor.Support.WaitStrategyTestUtil;
+    using static Support.WaitStrategyTestUtil;
 
     public class Busy_Spin_Wait_Strategy_Test
     {
