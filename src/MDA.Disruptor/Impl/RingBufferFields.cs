@@ -12,8 +12,8 @@ namespace MDA.Disruptor.Impl
     {
         private static readonly int BufferPad = 128 / IntPtr.Size;
 
-        private readonly long _indexMask;
-        private readonly TEvent[] _entries;
+        private long _indexMask;
+        private TEvent[] _entries;
 
         protected int BufferSize;
         protected ISequencer Sequencer;
@@ -21,6 +21,25 @@ namespace MDA.Disruptor.Impl
         protected RingBufferFields(
             ISequencer sequencer,
             IEventFactory<TEvent> eventFactory)
+        {
+            Initialize(sequencer);
+            Fill(eventFactory);
+        }
+
+        protected RingBufferFields(
+            ISequencer sequencer,
+            Func<TEvent> eventFactory)
+        {
+            Initialize(sequencer);
+            Fill(eventFactory);
+        }
+
+        protected TEvent ElementAt(long sequence)
+        {
+            return _entries[BufferPad + (int)(sequence & _indexMask)];
+        }
+
+        private void Initialize(ISequencer sequencer)
         {
             Sequencer = sequencer;
             BufferSize = Sequencer.GetBufferSize();
@@ -37,13 +56,6 @@ namespace MDA.Disruptor.Impl
 
             _indexMask = BufferSize - 1;
             _entries = new TEvent[sequencer.GetBufferSize() + 2 * BufferPad];
-
-            Fill(eventFactory);
-        }
-
-        protected TEvent ElementAt(long sequence)
-        {
-            return _entries[BufferPad + (int)(sequence & _indexMask)];
         }
 
         private void Fill(IEventFactory<TEvent> eventFactory)
@@ -51,6 +63,14 @@ namespace MDA.Disruptor.Impl
             for (int i = 0; i < BufferSize; i++)
             {
                 _entries[BufferPad + i] = eventFactory.NewInstance();
+            }
+        }
+
+        private void Fill(Func<TEvent> eventFactory)
+        {
+            for (int i = 0; i < BufferSize; i++)
+            {
+                _entries[BufferPad + i] = eventFactory();
             }
         }
     }

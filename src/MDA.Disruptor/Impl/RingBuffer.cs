@@ -13,6 +13,8 @@ namespace MDA.Disruptor.Impl
     {
         protected long P9, P10, P11, P12, P13, P14, P15;
 
+        #region [ Constructor and factory methods ]
+
         /// <summary>
         /// Construct a RingBuffer with the full option set.
         /// </summary>
@@ -22,6 +24,19 @@ namespace MDA.Disruptor.Impl
         public RingBuffer(
             ISequencer sequencer,
             IEventFactory<TEvent> eventFactory)
+            : base(sequencer, eventFactory)
+        {
+        }
+
+        /// <summary>
+        /// Construct a RingBuffer with the full option set.
+        /// </summary>
+        /// <param name="sequencer">to handle the ordering of events moving through the RingBuffer.</param>
+        /// <param name="eventFactory">to newInstance entries for filling the RingBuffer.</param>
+        /// <exception cref="ArgumentException">if bufferSize is less than 1 or not a power of 2</exception>
+        public RingBuffer(
+            ISequencer sequencer,
+            Func<TEvent> eventFactory)
             : base(sequencer, eventFactory)
         {
         }
@@ -53,6 +68,32 @@ namespace MDA.Disruptor.Impl
         }
 
         /// <summary>
+        /// Create a new Ring Buffer with the specified producer type (SINGLE or MULTI).
+        /// </summary>
+        /// <param name="producerType">producer type to use <see cref="ProducerType"/>.</param>
+        /// <param name="factory">used to create events within the ring buffer.</param>
+        /// <param name="bufferSize">number of elements to create within the ring buffer.</param>
+        /// <param name="waitStrategy">used to determine how to wait for new elements to become available.</param>
+        /// <returns>a constructed ring buffer.</returns>
+        /// <exception cref="ArgumentException">if bufferSize is less than 1 or not a power of 2</exception>
+        public static RingBuffer<TEvent> Create(
+            ProducerType producerType,
+            Func<TEvent> factory,
+            int bufferSize,
+            IWaitStrategy waitStrategy)
+        {
+            switch (producerType)
+            {
+                case ProducerType.Single:
+                    return CreateSingleProducer(factory, bufferSize, waitStrategy);
+                case ProducerType.Multi:
+                    return CreateMultiProducer(factory, bufferSize, waitStrategy);
+                default:
+                    throw new IllegalStateException(producerType.ToString());
+            }
+        }
+
+        /// <summary>
         /// Create a new single producer RingBuffer using the default wait strategy <see cref="BlockingWaitStrategy"/>.
         /// </summary>
         /// <param name="factory">used to create the events within the ring buffer.</param>
@@ -67,6 +108,20 @@ namespace MDA.Disruptor.Impl
         }
 
         /// <summary>
+        /// Create a new single producer RingBuffer using the default wait strategy <see cref="BlockingWaitStrategy"/>.
+        /// </summary>
+        /// <param name="factory">used to create the events within the ring buffer.</param>
+        /// <param name="bufferSize">number of elements to create within the ring buffer.</param>
+        /// <returns>a constructed ring buffer.</returns>
+        /// <exception cref="ArgumentException">if bufferSize is less than 1 or not a power of 2</exception>
+        public static RingBuffer<TEvent> CreateSingleProducer(
+            Func<TEvent> factory,
+            int bufferSize)
+        {
+            return CreateSingleProducer(factory, bufferSize, new BlockingWaitStrategy());
+        }
+
+        /// <summary>
         /// Create a new single producer RingBuffer with the specified wait strategy.
         /// </summary>
         /// <param name="factory"></param>
@@ -75,6 +130,23 @@ namespace MDA.Disruptor.Impl
         /// <returns></returns>
         public static RingBuffer<TEvent> CreateSingleProducer(
             IEventFactory<TEvent> factory,
+            int bufferSize,
+            IWaitStrategy waitStrategy)
+        {
+            var sequencer = new SingleProducerSequencer(bufferSize, waitStrategy);
+
+            return new RingBuffer<TEvent>(sequencer, factory);
+        }
+
+        /// <summary>
+        /// Create a new single producer RingBuffer with the specified wait strategy.
+        /// </summary>
+        /// <param name="factory"></param>
+        /// <param name="bufferSize"></param>
+        /// <param name="waitStrategy"></param>
+        /// <returns></returns>
+        public static RingBuffer<TEvent> CreateSingleProducer(
+            Func<TEvent> factory,
             int bufferSize,
             IWaitStrategy waitStrategy)
         {
@@ -102,6 +174,24 @@ namespace MDA.Disruptor.Impl
         }
 
         /// <summary>
+        /// Create a new multiple producer RingBuffer with the specified wait strategy.
+        /// </summary>
+        /// <param name="factory">used to create the events within the ring buffer.</param>
+        /// <param name="bufferSize">number of elements to create within the ring buffer.</param>
+        /// <param name="waitStrategy">used to determine how to wait for new elements to become available.</param>
+        /// <returns>a constructed ring buffer.</returns>
+        /// <exception cref="ArgumentException">if bufferSize is less than 1 or not a power of 2</exception>
+        public static RingBuffer<TEvent> CreateMultiProducer(
+            Func<TEvent> factory,
+            int bufferSize,
+            IWaitStrategy waitStrategy)
+        {
+            var sequencer = new MultiProducerSequencer(bufferSize, waitStrategy);
+
+            return new RingBuffer<TEvent>(sequencer, factory);
+        }
+
+        /// <summary>
         /// Create a new multiple producer RingBuffer using the default wait strategy <see cref="BlockingWaitStrategy"/>.
         /// </summary>
         /// <param name="factory">used to create the events within the ring buffer.</param>
@@ -114,6 +204,22 @@ namespace MDA.Disruptor.Impl
         {
             return CreateMultiProducer(factory, bufferSize, new BlockingWaitStrategy());
         }
+
+        /// <summary>
+        /// Create a new multiple producer RingBuffer using the default wait strategy <see cref="BlockingWaitStrategy"/>.
+        /// </summary>
+        /// <param name="factory">used to create the events within the ring buffer.</param>
+        /// <param name="bufferSize">number of elements to create within the ring buffer.</param>
+        /// <returns>a constructed ring buffer.</returns>
+        /// <exception cref="ArgumentException">if bufferSize is less than 1 or not a power of 2</exception>
+        public static RingBuffer<TEvent> CreateMultiProducer(
+            Func<TEvent> factory,
+            int bufferSize)
+        {
+            return CreateMultiProducer(factory, bufferSize, new BlockingWaitStrategy());
+        }
+
+        #endregion
 
         /// <summary>
         /// Get the event for a given sequence in the RingBuffer.
