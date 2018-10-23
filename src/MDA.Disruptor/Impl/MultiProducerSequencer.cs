@@ -90,12 +90,12 @@ namespace MDA.Disruptor.Impl
                 current = Cursor.GetValue();
                 next = current + n;
 
-                long wrapPoint = next - BufferSize;
-                long cachedGatingSequence = _gatingSequenceCache.GetValue();
+                var wrapPoint = next - BufferSize;
+                var cachedGatingSequence = _gatingSequenceCache.GetValue();
 
                 if (wrapPoint > cachedGatingSequence || cachedGatingSequence > current)
                 {
-                    long gatingSequence = SequenceGroupManager.GetMinimumSequence(GatingSequences, current);
+                    var gatingSequence = SequenceGroupManager.GetMinimumSequence(GatingSequences, current);
 
                     if (wrapPoint > gatingSequence)
                     {
