@@ -1,13 +1,14 @@
 ﻿using MDA.Disruptor;
 using MDA.Disruptor.Impl;
 using MDA.Disruptor.Utility;
+using System.Collections;
 using Xunit;
 
 namespace MDA.Tests.Disruptor
 {
     public class Event_Poller_Test
     {
-        [Fact(DisplayName = "轮询处理所有事件")]
+        [Fact(DisplayName = "测试EventPoller的轮询状态。")]
         public void Should_Poll_For_Events()
         {
             var gatingSequence = new Sequence();
@@ -29,11 +30,52 @@ namespace MDA.Tests.Disruptor
             Assert.Equal(EventPoller<object>.PollState.Processing, poller.Poll(handler));
         }
 
+        [Fact(DisplayName = "成功轮询处理RingBuffer里的所有事件。")]
+        public void Should_Successfully_Poll_When_Buffer_Is_Full()
+        {
+            var events = new ArrayList();
+
+            var ringBuffer = RingBuffer<byte[]>.CreateMultiProducer(() => new byte[1], 4, new SleepingWaitStrategy());
+
+            var poller = ringBuffer.NewPoller();
+            ringBuffer.AddGatingSequences(poller.GetSequence());
+
+            var count = 4;
+
+            for (byte i = 1; i <= count; ++i)
+            {
+                var next = ringBuffer.Next();
+                ringBuffer.Get(next)[0] = i;
+                ringBuffer.Publish(next);
+            }
+
+            // think of another thread
+            poller.Poll(new DummyEventPollerHandler(events));
+
+            Assert.Equal(4, events.Count);
+        }
+
         private class EventPollerHandler : EventPoller<object>.IHandler<object>
         {
             public bool OnEvent(object @event, long sequence, bool endOfBatch)
             {
                 return false;
+            }
+        }
+
+        private class DummyEventPollerHandler : EventPoller<byte[]>.IHandler<byte[]>
+        {
+            private readonly ArrayList _events;
+
+            public DummyEventPollerHandler(ArrayList events)
+            {
+                _events = events;
+            }
+
+            public bool OnEvent(byte[] @event, long sequence, bool endOfBatch)
+            {
+                _events.Add(@event);
+                return !endOfBatch;
             }
         }
 
