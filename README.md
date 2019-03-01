@@ -16,7 +16,7 @@
 
 2. 高并发
 
-   借鉴Actor model思想，使用[Disruptor](https://github.com/justmine66/Disruptor)分发并发的消息到业务处理器，单线程处理整个业务逻辑，从源头解决并发问题。
+   借鉴Actor model思想，使用[Disruptor](https://github.com/justmine66/Disruptor)分发高并发消息到业务处理器，单线程处理整个业务逻辑，从源头解决并发问题。
 
 3. 高可用
 
