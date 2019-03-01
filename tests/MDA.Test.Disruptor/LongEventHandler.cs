@@ -1,5 +1,4 @@
-﻿using MDA.Disruptor;
-using System;
+﻿using System;
 
 namespace MDA.Test.Disruptor
 {

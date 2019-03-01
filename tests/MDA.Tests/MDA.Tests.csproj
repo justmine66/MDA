@@ -14,9 +14,4 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\MDA.Disruptor\MDA.Disruptor.csproj" />
-    <ProjectReference Include="..\..\src\MDA.Message\MDA.Message.csproj" />
-  </ItemGroup>
-
 </Project>

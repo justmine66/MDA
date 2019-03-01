@@ -1,15 +1,15 @@
 ﻿using Forum.Domain.DiscussionAggregate.DomainEvents;
 using Forum.Domain.ForumAggregate;
-using MDA.Common;
-using MDA.Event.Abstractions;
 using System.Collections.Generic;
+using MDA.Common;
+using MDA.Event;
 
 namespace Forum.Domain.DiscussionAggregate
 {
     public class Discussion : EventSourcedRootEntity,
         IDomainEventHandler<DiscussionStarted>
     {
-        public Discussion(IEnumerable<IDomainEvent> eventStream, int streamVersion)
+        public Discussion(IEnumerable<DomainEvent> eventStream, int streamVersion)
             : base(eventStream, streamVersion)
         {
 

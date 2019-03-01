@@ -1,5 +1,5 @@
 ﻿using Forum.Domain.ForumAggregate;
-using MDA.Event.Abstractions;
+using MDA.Event;
 
 namespace Forum.Domain.DiscussionAggregate.DomainEvents
 {
