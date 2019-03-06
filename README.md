@@ -26,4 +26,11 @@
 目前正在为MDA开发高性能的消息分发组件[Distruptor](https://github.com/justmine66/Disruptor)，它是保障业务处理模块单线程执行，且完全运行于内存中的关键因素。
 
 # 架构
-![](./MDA.png)
+## Message Stream
+![](./MessageStream.jpg)
+
+## Overall Structure
+![](./OverallStructure.jpg)
+
+## Application Flow
+![](./Application Flow.jpg)
