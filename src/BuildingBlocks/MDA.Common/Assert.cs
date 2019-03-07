@@ -73,19 +73,19 @@ namespace MDA.Common
         public static void Equal(int expected, int actual, string argumentName)
         {
             if (expected != actual)
-                throw new ArgumentException(string.Format("{0} expected value: {1}, actual value: {2}", argumentName, expected, actual));
+                throw new ArgumentException($"{argumentName} expected value: {expected}, actual value: {actual}");
         }
 
         public static void Equal(long expected, long actual, string argumentName)
         {
             if (expected != actual)
-                throw new ArgumentException(string.Format("{0} expected value: {1}, actual value: {2}", argumentName, expected, actual));
+                throw new ArgumentException($"{argumentName} expected value: {expected}, actual value: {actual}");
         }
 
         public static void Equal(bool expected, bool actual, string argumentName)
         {
             if (expected != actual)
-                throw new ArgumentException(string.Format("{0} expected value: {1}, actual value: {2}", argumentName, expected, actual));
+                throw new ArgumentException($"{argumentName} expected value: {expected}, actual value: {actual}");
         }
     }
 }
