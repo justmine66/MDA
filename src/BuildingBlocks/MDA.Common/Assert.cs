@@ -52,6 +52,12 @@ namespace MDA.Common
                 throw new ArgumentOutOfRangeException(argumentName, argumentName + " should be positive.");
         }
 
+        public static void Positive(long number, string argumentName, string message)
+        {
+            if (number <= 0)
+                throw new ArgumentOutOfRangeException(argumentName, message);
+        }
+
         public static void Nonnegative(long number, string argumentName)
         {
             if (number < 0)
