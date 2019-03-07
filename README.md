@@ -26,7 +26,7 @@
 目前正在为MDA开发高性能的消息分发组件[Distruptor](https://github.com/justmine66/Disruptor)，它是保障业务处理模块单线程执行，且完全运行于内存中的关键因素。
 
 # 交流群
-QQ:689418285
+QQ: 689418285
 
 # 架构
 ## Message Stream
