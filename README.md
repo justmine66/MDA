@@ -29,11 +29,12 @@
 QQ: 689418285
 
 # 架构
+## Application Flow
+![](./ApplicationFlow.jpg)
+
 ## Message Stream
 ![](./MessageStream.jpg)
 
 ## Overall Structure
 ![](./OverallStructure.jpg)
 
-## Application Flow
-![](./ApplicationFlow.jpg)
