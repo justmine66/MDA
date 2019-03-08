@@ -88,7 +88,7 @@ namespace MDA.MessageBus.InMemory
             _subscriberManager.UnSubscribe<TMessage, TMessageHandler>();
         }
 
-        private async Task DoPublishAsync(string topic, Message message)
+        private async Task DoPublishAsync(string topic, dynamic message)
         {
             Assert.NotNullOrEmpty(topic, nameof(topic));
             Assert.NotNull(message, nameof(message));
