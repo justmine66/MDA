@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace MDA.MessageBus.Kafka
 {
@@ -102,8 +103,8 @@ namespace MDA.MessageBus.Kafka
                                 if (_options.MonitorSlowMessageHandler)
                                 {
                                     var start = DateTime.UtcNow;
-
-                                    await handler.HandleAsync(message);
+                                    var messageObj = JsonConvert.DeserializeObject(message, subscriber.MessageType);
+                                    await handler.HandleAsync(messageObj);
 
                                     var elapsed = DateTime.UtcNow - start;
                                     if (elapsed > _options.SlowMessageHandlerThreshold)
