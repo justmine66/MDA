@@ -17,6 +17,6 @@
 
         IHeartbeatManager<I, O> CreateHeartbeatManager<I, O>(
             string resourceId, 
-            IHeartbeatListener<I, O> heartbeatListener,);
+            IHeartbeatListener<I, O> heartbeatListener);
     }
 }
