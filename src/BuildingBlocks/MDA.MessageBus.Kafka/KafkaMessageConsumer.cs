@@ -32,7 +32,16 @@ namespace MDA.MessageBus.Kafka
         public void Subscribe<TMessageHandler>(string topic)
             where TMessageHandler : IDynamicMessageHandler
         {
-            throw new NotImplementedException();
+            if (!_subsManager.HasSubscriber(topic))
+            {
+                if (!(_connector.CreateChannel() is Consumer<Null, string> consumer))
+                    throw new Exception("Unable to establish producer channel.");
+
+                consumer.Subscribe(topic);
+                consumer.OnMessage += OnMessage;
+            }
+
+            _subsManager.Subscribe<TMessageHandler>(topic);
         }
 
         public void Subscribe<TMessage, TMessageHandler>()
@@ -55,7 +64,7 @@ namespace MDA.MessageBus.Kafka
         public void UnSubscribe<TMessageHandler>(string topic)
             where TMessageHandler : IDynamicMessageHandler
         {
-            throw new NotImplementedException();
+            _subsManager.UnSubscribe<TMessageHandler>(topic);
         }
 
         public void UnSubscribe<TMessage, TMessageHandler>()
