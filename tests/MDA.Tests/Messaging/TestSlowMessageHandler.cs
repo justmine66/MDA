@@ -1,7 +1,7 @@
-﻿using MDA.Message;
-using MDA.Message.Abstractions;
+﻿using MDA.MessageBus;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 namespace MDA.Tests.Messaging
 {
@@ -9,9 +9,9 @@ namespace MDA.Tests.Messaging
     {
         private readonly MessageOptions _options;
 
-        public TestSlowMessageHandler(MessageOptions options)
+        public TestSlowMessageHandler(IOptions<MessageOptions> options)
         {
-            _options = options;
+            _options = options.Value;
         }
 
         public async Task HandleAsync(TestMessage message)
