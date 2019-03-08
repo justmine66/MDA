@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MDA.MessageBus.Kafka
 {
-    public class KafkaMessageProducer : IMessagePublisher, IDisposable
+    public class KafkaMessageProducer : IMessagePublisher
     {
         private readonly ILogger _logger;
         private readonly IKafkaPersistentConnector _connector;
@@ -43,11 +43,6 @@ namespace MDA.MessageBus.Kafka
         {
             var topic = typeof(TMessage).Name;
             await DoPublishAllAsync(topic, messages);
-        }
-
-        public void Dispose()
-        {
-            _connector?.Dispose();
         }
 
         private async Task DoPublishAsync(string topic, dynamic message)
