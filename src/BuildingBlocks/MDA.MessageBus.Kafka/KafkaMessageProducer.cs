@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MDA.MessageBus.Kafka
 {
-    public class KafkaMessageProducer : IMessagePublisher
+    public class KafkaMessageProducer : IMessagePublisher, IDisposable
     {
         private readonly ILogger _logger;
         private readonly IKafkaPersistentConnector _connector;
