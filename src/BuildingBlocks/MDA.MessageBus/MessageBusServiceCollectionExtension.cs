@@ -6,14 +6,14 @@ namespace MDA.MessageBus
 {
     public static class MessageBusServiceCollectionExtension
     {
-        public static IServiceCollection AddMessageBusServices(this IServiceCollection services, Action<MessageOptions> options)
+        public static IServiceCollection AddMessageBusBasicServices(this IServiceCollection services, Action<MessageOptions> options)
         {
             return services
                 .AddMessageBusBasicServices()
                 .Configure(options);
         }
 
-        public static IServiceCollection AddMessageBusServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddMessageBusBasicServices(this IServiceCollection services, IConfiguration configuration)
         {
             return services
                 .AddMessageBusBasicServices()
