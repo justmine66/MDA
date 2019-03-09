@@ -25,10 +25,6 @@ namespace MDA.MessageBus
 
         public string Message { get; }
 
-        public override string ToString()
-        {
-            return
-                $"{{Topic: {Topic}, MessageName: {MessageName}, MessageHandlerName: {MessageHandlerName}, ElapsedInMilliseconds: {Elapsed.TotalMilliseconds}, Message:{Message}}}";
-        }
+        public override string ToString() => $"{{Topic: {Topic}, MessageName: {MessageName}, MessageHandlerName: {MessageHandlerName}, ElapsedInMilliseconds: {Elapsed.TotalMilliseconds}, Message:{Message}}}";
     }
 }
