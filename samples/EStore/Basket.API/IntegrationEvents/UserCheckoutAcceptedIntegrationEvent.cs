@@ -1,10 +1,10 @@
 ﻿using Basket.API.Model;
-using MDA.MessageBus;
+using MDA.Eventing;
 using System;
 
 namespace Basket.API.IntegrationEvents
 {
-    public class UserCheckoutAcceptedIntegrationEvent : Message
+    public class UserCheckoutAcceptedIntegrationEvent : InboundEvent
     {
         public string UserId { get; }
 
@@ -38,7 +38,7 @@ namespace Basket.API.IntegrationEvents
 
         public CustomerBasket Basket { get; }
 
-        public UserCheckoutAcceptedIntegrationEvent(string userId, string userName, string city, string street,
+        public UserCheckoutAcceptedInboundEvent(string userId, string userName, string city, string street,
             string state, string country, string zipCode, string cardNumber, string cardHolderName,
             DateTime cardExpiration, string cardSecurityNumber, int cardTypeId, string buyer, Guid requestId,
             CustomerBasket basket)

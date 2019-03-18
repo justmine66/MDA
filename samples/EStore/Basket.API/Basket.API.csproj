@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\MDA.MessageBus\MDA.MessageBus.csproj" />
+    <ProjectReference Include="..\..\..\src\MDA\MDA.csproj" />
   </ItemGroup>
 
 </Project>

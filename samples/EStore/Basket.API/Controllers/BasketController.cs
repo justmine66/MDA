@@ -1,11 +1,13 @@
-﻿using Basket.API.Model;
+﻿using Basket.API.IntegrationEvents;
+using Basket.API.Model;
+using Basket.API.Services;
+using MDA.Concurrent;
 using MDA.MessageBus;
+using MDA.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using Basket.API.IntegrationEvents;
-using Basket.API.Services;
 
 namespace Basket.API.Controllers
 {
@@ -16,12 +18,27 @@ namespace Basket.API.Controllers
         private readonly IMessageBus _messageBus;
         private readonly IIdentityService _identityService;
         private readonly IBasketRepository _repository;
+        private readonly IInboundDisruptor<UpdateBasketEvent> _disruptor;
+        private readonly IJournalable _journaler;
 
-        public BasketController(IMessageBus messageBus, IIdentityService identityService, IBasketRepository repository)
+        public BasketController(IMessageBus messageBus, IIdentityService identityService, IBasketRepository repository, IJournalable journaler)
         {
             _messageBus = messageBus;
             _identityService = identityService;
             _repository = repository;
+            _journaler = journaler;
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(CustomerBasket), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<CustomerBasket>> UpdateBasketAsync([FromBody] CustomerBasket value)
+        {
+            var journal = new UpdateBasketJournaler(_journaler);
+            var logicProcessor = new UpdateBasketJournaler(_journaler);
+
+            _disruptor.After(journal).HandleEventsWith(logicProcessor);
+
+            return Ok();
         }
 
         [Route("checkout")]
