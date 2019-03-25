@@ -2,9 +2,9 @@
 using MDA.Eventing;
 using System.Collections.Generic;
 
-namespace Basket.API.IntegrationEvents
+namespace Basket.API.Port.Adapters.Input
 {
-    public class UpdateBasketEvent : InboundEvent
+    public class UpdateBasketInboundEvent : InboundEvent
     {
         public string BuyerId { get; set; }
         public List<BasketItem> Items { get; set; }

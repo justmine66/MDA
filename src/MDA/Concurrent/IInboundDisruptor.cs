@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace MDA.Concurrent
 {
-    public interface IInboundDisruptor<in T> where T : InboundEvent, new()
+    public interface IInboundDisruptor
     {
-        Task<bool> SendAsync(T evt);
+        Task<bool> SendAsync<T>(T evt) where T : InboundEvent, new();
     }
 }

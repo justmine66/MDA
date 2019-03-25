@@ -2,28 +2,38 @@
 using MDA.Common;
 using MDA.Eventing;
 using Microsoft.Extensions.Options;
+using System;
 using System.Threading.Tasks;
-using MDA.Persistence;
 
 namespace MDA.Concurrent
 {
-    public class InboundDisruptorImpl<T> : IInboundDisruptor<T>
-        where T : InboundEvent, new()
+    public class InboundDisruptorImpl : IInboundDisruptor
     {
-        private readonly Disruptor<T> _disruptor;
-        private readonly IJournalable _journaler;
+        private readonly Disruptor<InboundEvent> _disruptor;
+        private readonly IOptions<DisruptorOptions> _options;
 
-        public InboundDisruptorImpl(IOptions<DisruptorOptions> options, IJournalable journaler)
+        public InboundDisruptorImpl(Disruptor<InboundEvent> disruptor, IOptions<DisruptorOptions> options)
         {
-            _journaler = journaler;
-            _disruptor = new Disruptor<T>(() => new T(), options.Value.InboundRingBufferSize, TaskScheduler.Default);
+            _disruptor = disruptor;
+            _options = options;
         }
 
-        public Task<bool> SendAsync(T evt)
+        public Task<bool> SendAsync<T>(T evt) where T : InboundEvent, new()
         {
             Assert.NotNull(evt, nameof(evt));
 
-            _disruptor
+            var ringBuffer = _disruptor.GetRingBuffer();
+            var sequence = ringBuffer.Next();
+
+            try
+            {
+                var next = ringBuffer.Get(sequence);
+                next = evt;
+            }
+            finally
+            {
+                ringBuffer.Publish(sequence);
+            }
 
             return Task.FromResult(true);
         }

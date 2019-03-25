@@ -59,7 +59,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA.MessageBus.InMemory", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basket.API", "samples\EStore\Basket.API\Basket.API.csproj", "{D5B8DDF6-45EC-4844-9453-28CFCE84C854}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDA", "src\MDA\MDA.csproj", "{FD4D16E9-94BA-4ECC-B3D3-8CB0E4B0F12E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA", "src\MDA\MDA.csproj", "{FD4D16E9-94BA-4ECC-B3D3-8CB0E4B0F12E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

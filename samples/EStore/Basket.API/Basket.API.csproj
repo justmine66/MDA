@@ -15,4 +15,8 @@
     <ProjectReference Include="..\..\..\src\MDA\MDA.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Port.Adapters\Output\" />
+  </ItemGroup>
+
 </Project>
