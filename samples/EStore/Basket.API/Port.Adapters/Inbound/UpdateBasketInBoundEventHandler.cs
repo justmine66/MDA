@@ -1,9 +1,9 @@
 ﻿using MDA.Eventing;
 using System;
 
-namespace Basket.API.Port.Adapters.Input
+namespace Basket.API.Port.Adapters.Inbound
 {
-    public class UpdateBasketIInBoundEventHandler : IInBoundEventHandler<UpdateBasketInboundEvent>
+    public class UpdateBasketInBoundEventHandler : IInBoundEventHandler<UpdateBasketInboundEvent>
     {
         public void OnEvent(UpdateBasketInboundEvent @event, long sequence, bool endOfBatch)
         {

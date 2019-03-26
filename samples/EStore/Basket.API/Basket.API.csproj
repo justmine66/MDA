@@ -12,11 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\MDA\MDA.csproj" />
+    <Folder Include="Port.Adapters\Outbound\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Port.Adapters\Output\" />
+    <ProjectReference Include="..\..\..\src\MDA\MDA.csproj" />
   </ItemGroup>
 
 </Project>

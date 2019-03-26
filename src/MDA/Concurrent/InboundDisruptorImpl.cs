@@ -1,38 +1,63 @@
-﻿using Disruptor.Dsl;
-using MDA.Common;
+﻿using Disruptor;
+using Disruptor.Dsl;
+using MDA.Cluster;
 using MDA.Eventing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 
 namespace MDA.Concurrent
 {
-    public class InboundDisruptorImpl : IInboundDisruptor
+    public class InboundDisruptorImpl<T> : IInboundDisruptor<T>
+        where T : InboundEvent, new()
     {
-        private readonly Disruptor<InboundEvent> _disruptor;
-        private readonly IOptions<DisruptorOptions> _options;
+        private readonly Disruptor<T> _disruptor;
+        private readonly ILogger _logger;
 
-        public InboundDisruptorImpl(Disruptor<InboundEvent> disruptor, IOptions<DisruptorOptions> options)
+        public InboundDisruptorImpl(
+            IServiceProvider serviceProvider,
+            IOptions<MdaOptions> options,
+            ILogger<InboundDisruptorImpl<T>> logger)
         {
-            _disruptor = disruptor;
-            _options = options;
+            _logger = logger;
+
+            var ops = options.Value ?? MdaOptionsFactory.Create();
+            var disOps = ops.DisruptorOptions;
+            var settings = ops.ClusterSetting;
+
+            _disruptor = new Disruptor<T>(() => new T(), disOps.InboundRingBufferSize, TaskScheduler.Current);
+
+            var journaler = new InboundEventJournaler<T>();
+            var businessProcessor = serviceProvider.GetRequiredService<IInBoundEventHandler<T>>();
+
+            // Only the master node listens directly to input events and runs a replicator.
+            if (settings.AppMode.Environment.IsMaster)
+            {
+                // The replicator broadcasts the input events to the slave nodes.
+                // Should the master node go down, it's lack of heartbeat will be noticed, another node becomes master, starts processing input events, and starts its replicator.
+                var replicator = new InboundEventReplicator<T>();
+                _disruptor.HandleEventsWith(journaler, replicator).Then(businessProcessor);
+            }
+            else
+                _disruptor.HandleEventsWith(journaler).Then(businessProcessor);
+
+            _disruptor.Start();
         }
 
-        public Task<bool> SendAsync<T>(T evt) where T : InboundEvent, new()
+        public Task<bool> PublishInboundEventAsync<TMessage>(IEventTranslatorTwoArg<T, string, TMessage> translator, string messageKey, TMessage message)
         {
-            Assert.NotNull(evt, nameof(evt));
-
-            var ringBuffer = _disruptor.GetRingBuffer();
-            var sequence = ringBuffer.Next();
-
             try
             {
-                var next = ringBuffer.Get(sequence);
-                next = evt;
+                _logger.LogInformation($"Prepare to publish inbound event[id: {messageKey},message: {message.ToString()}]");
+
+                _disruptor.PublishEvent(translator, messageKey, message);
             }
-            finally
+            catch (Exception e)
             {
-                ringBuffer.Publish(sequence);
+                _logger.LogInformation($"Failed publish inbound event[id: {messageKey},message: {message.ToString()}], ex: {e}");
+                return Task.FromResult(false);
             }
 
             return Task.FromResult(true);

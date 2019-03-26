@@ -1,6 +1,5 @@
-﻿using Disruptor.Dsl;
+﻿using MDA.Cluster;
 using MDA.Concurrent;
-using MDA.Eventing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,14 +9,10 @@ namespace MDA
     {
         public static void AddMdaServices(this IServiceCollection container, IConfiguration configuration)
         {
+            container.AddOptions();
             container.Configure<DisruptorOptions>(configuration.GetSection(nameof(DisruptorOptions)));
-        }
-
-        private static IServiceCollection AddMDABasicServices(this IServiceCollection services)
-        {
-            services.AddOptions();
-            services.AddSingleton<Disruptor<InboundEvent>>(new Disruptor<InboundEvent>());
-            return services;
+            container.Configure<ClusterSetting>(configuration.GetSection(nameof(ClusterSetting)));
+            container.Configure<MdaOptions>(configuration.GetSection(nameof(MdaOptions)));
         }
     }
 }

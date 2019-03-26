@@ -1,7 +1,8 @@
 ﻿using Basket.API.Model;
-using Basket.API.Port.Adapters.Input;
+using Basket.API.Port.Adapters.Inbound;
 using MDA.Concurrent;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
 namespace Basket.API.Controllers
@@ -10,19 +11,18 @@ namespace Basket.API.Controllers
     [ApiController]
     public class BasketController : ControllerBase
     {
-        private readonly IInboundDisruptor _disruptor;
+        private readonly IInboundDisruptor<UpdateBasketInboundEvent> _disruptor;
 
-        public BasketController(IInboundDisruptor disruptor)
+        public BasketController(ILogger<BasketController> logger, IInboundDisruptor<UpdateBasketInboundEvent> disruptor)
         {
             _disruptor = disruptor;
         }
 
         [HttpPost]
-        public async Task<ActionResult<CustomerBasket>> UpdateBasketAsync([FromBody] UpdateBasketInboundEvent inboundEvent, [FromHeader(Name = "x-requestid")] string requestId)
+        public async Task<ActionResult<CustomerBasket>> UpdateBasketAsync([FromBody] CustomerBasket basket, [FromHeader(Name = "x-requestid")] string requestId)
         {
-            var result = await _disruptor.SendAsync(inboundEvent);
-            if (!result)
-                return BadRequest();
+            var result = await _disruptor.PublishInboundEventAsync(new UpdateBasketEventTranslator(), requestId, basket);
+            if (!result) return BadRequest();
 
             return Ok();
         }

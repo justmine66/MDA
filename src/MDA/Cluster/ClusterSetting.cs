@@ -1,5 +1,10 @@
 ﻿namespace MDA.Cluster
 {
+    public class ClusterSetting
+    {
+        public AppMode AppMode { get; set; }
+    }
+
     /// <summary>
     /// 应用程序运行模式
     /// </summary>
@@ -17,5 +22,7 @@
         /// 名称，默认为：Master。
         /// </summary>
         public string Name { get; set; } = "Master";
+
+        public bool IsMaster => Name == "Master";
     }
 }
