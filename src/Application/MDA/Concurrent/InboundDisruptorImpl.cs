@@ -45,7 +45,7 @@ namespace MDA.Concurrent
             _disruptor.Start();
         }
 
-        public Task<bool> PublishInboundEventAsync<TMessage>(IEventTranslatorTwoArg<T, string, TMessage> translator, string messageKey, TMessage message)
+        public Task<bool> PublishInboundEventAsync<TKey,TMessage>(IEventTranslatorTwoArg<T, TKey, TMessage> translator, TKey messageKey, TMessage message)
         {
             try
             {
@@ -56,6 +56,40 @@ namespace MDA.Concurrent
             catch (Exception e)
             {
                 _logger.LogInformation($"Failed publish inbound event[id: {messageKey},message: {message.ToString()}], ex: {e}");
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(true);
+        }
+
+        public Task<bool> PublishInboundEventAsync<TMessage>(IEventTranslatorOneArg<T, TMessage> translator, TMessage message)
+        {
+            try
+            {
+                _logger.LogInformation($"Prepare to publish inbound event[message: {message.ToString()}]");
+
+                _disruptor.PublishEvent(translator, message);
+            }
+            catch (Exception e)
+            {
+                _logger.LogInformation($"Failed publish inbound event[message: {message.ToString()}], ex: {e}");
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(true);
+        }
+
+        public Task<bool> PublishInboundEventAsync<TMessage>(IEventTranslator<T> translator)
+        {
+            try
+            {
+                _logger.LogInformation($"Prepare to publish inbound event.");
+
+                _disruptor.PublishEvent(translator);
+            }
+            catch (Exception e)
+            {
+                _logger.LogInformation($"Failed publish inbound event, ex: {e}");
                 return Task.FromResult(false);
             }
 
