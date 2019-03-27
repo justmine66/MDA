@@ -2,9 +2,9 @@
 {
     public class ClusterSettingFactory
     {
-        public static ClusterSetting Create()
+        public static ClusterSettings Create()
         {
-            return new ClusterSetting() { AppMode = new AppMode() { Environment = new Environment() } };
+            return new ClusterSettings() { AppMode = new AppMode() { Environment = new Environment() } };
         }
     }
 }

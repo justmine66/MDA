@@ -1,6 +1,5 @@
 ﻿using Basket.API.Port.Adapters.Inbound;
 using MDA;
-using MDA.Concurrent;
 using MDA.Eventing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,8 +22,7 @@ namespace Basket.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddMdaServices(Configuration);
-            services.AddSingleton<IInboundDisruptor<UpdateBasketInboundEvent>, InboundDisruptorImpl<UpdateBasketInboundEvent>>();
+            services.AddMdaServices();
             services.AddTransient<IInBoundEventHandler<UpdateBasketInboundEvent>, UpdateBasketInBoundEventHandler>();
         }
 

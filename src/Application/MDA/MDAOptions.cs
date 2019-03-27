@@ -5,7 +5,7 @@ namespace MDA
 {
     public class MdaOptions
     {
-        public ClusterSetting ClusterSetting { get; set; }
+        public ClusterSettings ClusterSetting { get; set; }
         public DisruptorOptions DisruptorOptions { get; set; }
     }
 }

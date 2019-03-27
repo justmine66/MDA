@@ -1,6 +1,5 @@
 ﻿using Disruptor;
 using Disruptor.Dsl;
-using MDA.Cluster;
 using MDA.Eventing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -23,9 +22,9 @@ namespace MDA.Concurrent
         {
             _logger = logger;
 
-            var ops = options.Value ?? MdaOptionsFactory.Create();
-            var disOps = ops.DisruptorOptions ?? DisruptorOptionsFactory.Create();
-            var settings = ops.ClusterSetting ?? ClusterSettingFactory.Create();
+            var ops = options.Value;
+            var disOps = ops.DisruptorOptions;
+            var settings = ops.ClusterSetting;
 
             _disruptor = new Disruptor<T>(() => new T(), disOps.InboundRingBufferSize, TaskScheduler.Current);
 
