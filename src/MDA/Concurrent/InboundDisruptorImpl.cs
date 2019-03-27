@@ -24,8 +24,8 @@ namespace MDA.Concurrent
             _logger = logger;
 
             var ops = options.Value ?? MdaOptionsFactory.Create();
-            var disOps = ops.DisruptorOptions;
-            var settings = ops.ClusterSetting;
+            var disOps = ops.DisruptorOptions ?? DisruptorOptionsFactory.Create();
+            var settings = ops.ClusterSetting ?? ClusterSettingFactory.Create();
 
             _disruptor = new Disruptor<T>(() => new T(), disOps.InboundRingBufferSize, TaskScheduler.Current);
 
