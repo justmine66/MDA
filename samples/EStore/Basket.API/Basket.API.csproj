@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\MDA.AspnetCore\MDA.AspnetCore.csproj" />
-    <ProjectReference Include="..\..\..\src\MDA\MDA.csproj" />
+    <ProjectReference Include="..\..\..\src\Application\MDA.AspnetCore\MDA.AspnetCore.csproj" />
+    <ProjectReference Include="..\..\..\src\Application\MDA\MDA.csproj" />
   </ItemGroup>
 
 </Project>

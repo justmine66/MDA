@@ -10,8 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BuildingBlocks\MDA.EventStoring\MDA.EventStoring.csproj" />
-    <ProjectReference Include="..\BuildingBlocks\MDA.MessageBus\MDA.MessageBus.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\MDA.EventStoring\MDA.EventStoring.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\MDA.MessageBus\MDA.MessageBus.csproj" />
   </ItemGroup>
 
 </Project>
