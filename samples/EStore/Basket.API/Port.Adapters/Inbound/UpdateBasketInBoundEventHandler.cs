@@ -7,7 +7,7 @@ namespace Basket.API.Port.Adapters.Inbound
     {
         public void OnEvent(UpdateBasketInboundEvent @event, long sequence, bool endOfBatch)
         {
-            throw new NotImplementedException();
+           
         }
     }
 }
