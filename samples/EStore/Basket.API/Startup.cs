@@ -1,4 +1,5 @@
-﻿using Basket.API.Port.Adapters.Inbound;
+﻿using Basket.API.Application.InboundEventHandlers;
+using Basket.API.Port.Adapters.Inbound;
 using MDA;
 using MDA.Eventing;
 using Microsoft.AspNetCore.Builder;
