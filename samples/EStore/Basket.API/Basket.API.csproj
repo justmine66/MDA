@@ -12,7 +12,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\MDA.MessageBus\MDA.MessageBus.csproj" />
+    <Folder Include="Port.Adapters\Outbound\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Application\MDA.AspnetCore\MDA.AspnetCore.csproj" />
+    <ProjectReference Include="..\..\..\src\Application\MDA\MDA.csproj" />
   </ItemGroup>
 
 </Project>
