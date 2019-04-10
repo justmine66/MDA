@@ -47,7 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EventDriven", "EventDriven"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BatchProcessing", "BatchProcessing", "{B5338FE0-A0ED-468D-9BC8-2241ABB48093}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StreamAnalytics", "StreamAnalytics", "{36D13A03-3D17-4EEF-8ACC-E793E2A26F9B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RealTimeAnalytics", "RealTimeAnalytics", "{36D13A03-3D17-4EEF-8ACC-E793E2A26F9B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ContinousProcessing", "ContinousProcessing", "{56B89947-C6DF-41E5-A131-902BE35A2A88}"
 EndProject
