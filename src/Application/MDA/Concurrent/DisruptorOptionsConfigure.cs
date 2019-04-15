@@ -2,9 +2,9 @@
 
 namespace MDA.Concurrent
 {
-    public class DefaultDisruptorConfigureOption : ConfigureOptions<DisruptorOptions>
+    public class DisruptorOptionsConfigure : ConfigureOptions<DisruptorOptions>
     {
-        public DefaultDisruptorConfigureOption(int inboundRingBufferSize = 1024, int outboundRingBufferSize = 1024)
+        public DisruptorOptionsConfigure(int inboundRingBufferSize = 1024, int outboundRingBufferSize = 1024)
             : base(options =>
             {
                 options.InboundRingBufferSize = inboundRingBufferSize;

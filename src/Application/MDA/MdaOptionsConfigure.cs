@@ -4,9 +4,9 @@ using Microsoft.Extensions.Options;
 
 namespace MDA
 {
-    public class DefaultMdaConfigureOption : ConfigureOptions<MdaOptions>
+    public class MdaOptionsConfigure : ConfigureOptions<MdaOptions>
     {
-        public DefaultMdaConfigureOption(ClusterSettings clusterSetting, DisruptorOptions disruptorOptions)
+        public MdaOptionsConfigure(ClusterSettings clusterSetting, DisruptorOptions disruptorOptions)
             : base(options =>
             {
                 options.ClusterSetting = clusterSetting;

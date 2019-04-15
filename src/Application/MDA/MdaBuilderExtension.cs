@@ -20,14 +20,14 @@ namespace MDA
         public static IMdaBuilder AddDisruptorOptions(this IMdaBuilder builder, int inboundRingBufferSize, int outboundRingBufferSize)
         {
             builder.Services.Add(ServiceDescriptor.Singleton<IConfigureOptions<DisruptorOptions>>(
-                new DefaultDisruptorConfigureOption(inboundRingBufferSize, outboundRingBufferSize)));
+                new DisruptorOptionsConfigure(inboundRingBufferSize, outboundRingBufferSize)));
             return builder;
         }
 
         public static IMdaBuilder AddClusterSettings(this IMdaBuilder builder, AppMode mode)
         {
             builder.Services.Add(ServiceDescriptor.Singleton<IConfigureOptions<ClusterSettings>>(
-                new DefaultClusterSettingsConfigureOption(mode)));
+                new ClusterSettingsConfigure(mode)));
             return builder;
         }
     }

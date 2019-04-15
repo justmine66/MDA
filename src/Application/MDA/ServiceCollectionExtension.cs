@@ -26,9 +26,9 @@ namespace MDA
             container.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<MdaOptions>>(
                 new DefaultMdaConfigureOption(ClusterSettingFactory.Create(),DisruptorOptionsFactory.Create())));
             container.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<DisruptorOptions>>(
-                new DefaultDisruptorConfigureOption()));
+                new DisruptorOptionsConfigure()));
             container.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<ClusterSettings>>(
-                new DefaultClusterSettingsConfigureOption(ClusterSettingFactory.Create().AppMode)));
+                new ClusterSettingsConfigure(ClusterSettingFactory.Create().AppMode)));
 
             configure(new MdaBuilder(container));
 
