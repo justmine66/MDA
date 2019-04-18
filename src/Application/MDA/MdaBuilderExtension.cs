@@ -13,7 +13,7 @@ namespace MDA
         public static IMdaBuilder AddMdaOptions(this IMdaBuilder builder, ClusterSettings clusterSettings, DisruptorOptions disruptorOptions)
         {
             builder.Services.Add(ServiceDescriptor.Singleton<IConfigureOptions<MdaOptions>>(
-                new DefaultMdaConfigureOption(clusterSettings, disruptorOptions)));
+                new MdaOptionsConfigure(clusterSettings, disruptorOptions)));
             return builder;
         }
 
