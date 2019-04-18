@@ -4,4 +4,18 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="EventSourcedRootEntity.cs~RF1d0e725e.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\MDA.Common\MDA.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp">
+      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.1.0\ref\netcoreapp2.1\Microsoft.CSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
