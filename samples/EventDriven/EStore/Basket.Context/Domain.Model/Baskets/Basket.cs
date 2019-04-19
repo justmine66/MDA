@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using Basket.Domain.Events;
-using MDA.Core.EventSourcing;
+using MDA.EventSourcing;
 using MDA.Shared;
 
-namespace Basket.Domain.Aggregates.BasketAggregate
+namespace Basket.Context.Domain.Model.Baskets
 {
     public class Basket : EventSourcedRootEntity
     {
@@ -17,7 +16,7 @@ namespace Basket.Domain.Aggregates.BasketAggregate
             Assert.NotNullOrEmpty(nameof(buyerId), buyerId);
             Assert.NotNull(nameof(items), items);
 
-            Apply(new AddBasket(buyerId, items));
+            Apply(new BasketCreated(buyerId, items));
         }
 
         public void Modify(string buyerId, List<BasketItem> items)
@@ -25,19 +24,19 @@ namespace Basket.Domain.Aggregates.BasketAggregate
             Assert.NotNullOrEmpty(nameof(buyerId), buyerId);
             Assert.NotNull(nameof(items), items);
 
-            Apply(new ModifyBasket(buyerId, items));
+            Apply(new BasketModified(buyerId, items));
         }
 
         public string BuyerId { get; private set; }
         public List<BasketItem> Items { get; private set; }
 
-        private void OnDomainEvent(AddBasket e)
+        private void OnDomainEvent(BasketCreated e)
         {
             BuyerId = e.BuyerId;
             Items = e.Items;
         }
 
-        private void OnDomainEvent(ModifyBasket e)
+        private void OnDomainEvent(BasketModified e)
         {
             BuyerId = e.BuyerId;
             Items = e.Items;

@@ -5,11 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="EventSourcedRootEntity.cs~RF1d0e725e.TMP" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\BuildingBlocks\MDA.Common\MDA.Common.csproj" />
+    <ProjectReference Include="..\MDA.Shared\MDA.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

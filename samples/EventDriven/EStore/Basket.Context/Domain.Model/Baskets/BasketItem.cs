@@ -1,9 +1,9 @@
-﻿using MDA.Core.EventSourcing;
+﻿using MDA.EventSourcing;
 using MDA.Shared;
 
-namespace Basket.Domain.Aggregates.BasketAggregate
+namespace Basket.Context.Domain.Model.Baskets
 {
-    public class BasketItem : Entity
+    public class BasketItem : Entity<BasketItemId>
     {
         public BasketItem(
             BasketItemId id,
@@ -11,7 +11,7 @@ namespace Basket.Domain.Aggregates.BasketAggregate
             string productName,
             decimal unitPrice,
             int quantity,
-            string pictureUrl)
+            string pictureUrl) : base(id)
         {
             Assert.NotNull(nameof(id), id);
             Assert.NotNullOrEmpty(nameof(productId), productId);
@@ -20,7 +20,6 @@ namespace Basket.Domain.Aggregates.BasketAggregate
             Assert.LengthGreaterThan(nameof(quantity), quantity, 0);
             Assert.NotNullOrEmpty(nameof(pictureUrl), pictureUrl);
 
-            Id = id;
             ProductId = productId;
             ProductName = productName;
             UnitPrice = unitPrice;
@@ -28,7 +27,6 @@ namespace Basket.Domain.Aggregates.BasketAggregate
             PictureUrl = pictureUrl;
         }
 
-        public BasketItemId Id { get; }
         public string ProductId { get; }
         public string ProductName { get; }
         public decimal UnitPrice { get; }

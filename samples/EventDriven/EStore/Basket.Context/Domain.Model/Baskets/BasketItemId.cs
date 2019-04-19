@@ -1,7 +1,7 @@
-﻿using MDA.Core.EventSourcing;
+﻿using MDA.EventSourcing;
 using MDA.Shared;
 
-namespace Basket.Domain.Aggregates.BasketAggregate
+namespace Basket.Context.Domain.Model.Baskets
 {
     public class BasketItemId : StringIdentity
     {

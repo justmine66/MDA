@@ -1,4 +1,4 @@
-﻿namespace MDA.Core.EventSourcing
+﻿namespace MDA.EventSourcing
 {
     public interface IIdentity<out T>
     {

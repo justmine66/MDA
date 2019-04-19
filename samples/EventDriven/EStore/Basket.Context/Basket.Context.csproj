@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\BuildingBlocks\MDA.EventSourcing\MDA.EventSourcing.csproj" />
     <ProjectReference Include="..\..\..\..\src\BuildingBlocks\MDA.Shared\MDA.Shared.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Core\MDA.Core.EventSourcing\MDA.Core.EventSourcing.csproj" />
   </ItemGroup>
 
 </Project>

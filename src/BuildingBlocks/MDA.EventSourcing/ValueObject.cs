@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using MDA.Common;
+using MDA.Shared;
 
-namespace MDA.Core.EventSourcing
+namespace MDA.EventSourcing
 {
     public abstract class ValueObject
     {

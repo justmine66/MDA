@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MDA.Core.EventSourcing
+namespace MDA.EventSourcing
 {
     public abstract class EventSourcedRootEntity : EntityWithCompositeId
     {

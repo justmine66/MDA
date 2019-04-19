@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MDA.Core.EventSourcing
+namespace MDA.EventSourcing
 {
     public abstract class StringIdentity : IEquatable<StringIdentity>, IIdentity<string>
     {

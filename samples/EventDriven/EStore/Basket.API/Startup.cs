@@ -24,7 +24,7 @@ namespace Basket.API
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddMdaServices();
-            services.AddTransient<IInBoundEventHandler<UpdateBasketInboundEvent>, UpdateBasketInBoundEventHandler>();
+            services.AddTransient<IInBoundEventHandler<UpdateBasketInboundEvent>, UpdateBasketInboundEventHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
