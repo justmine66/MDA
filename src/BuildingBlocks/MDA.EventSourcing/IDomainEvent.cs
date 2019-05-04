@@ -4,7 +4,11 @@ namespace MDA.EventSourcing
 {
     public interface IDomainEvent
     {
-        int EventVersion { get; set; }
+        /// <summary>
+        /// The aggregate root uid.
+        /// </summary>
+        string Principal { get; set; }
+        long EventVersion { get; set; }
         DateTime OccurredOn { get; set; }
     }
 }
