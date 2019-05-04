@@ -38,12 +38,12 @@ namespace TrackingShips.Domain.Model
             Apply(e);
         }
 
-        protected void OnDomainEvent(ShipArrived e)
+        public void OnDomainEvent(ShipArrived e)
         {
             Location = e.Port;
         }
 
-        protected void OnDomainEvent(ShipDeparted e)
+        public void OnDomainEvent(ShipDeparted e)
         {
             Location = e.Port;
         }

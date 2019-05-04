@@ -1,6 +1,10 @@
 ﻿using Disruptor;
 using Disruptor.Dsl;
+using MDA.Cluster;
 using MDA.Eventing;
+using MDA.EventSourcing;
+using MDA.EventStoring;
+using MDA.Persistence;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -9,16 +13,17 @@ using System.Threading.Tasks;
 
 namespace MDA.Concurrent
 {
-    public class InboundDisruptorImpl<T> : IInboundDisruptor<T>
-        where T : InboundEvent, new()
+    public class InboundDisruptorImpl<TDomainEvent> : IInboundDisruptor<TDomainEvent>
+        where TDomainEvent : DomainEvent, new()
     {
-        private readonly Disruptor<T> _disruptor;
+        private readonly Disruptor<TDomainEvent> _disruptor;
         private readonly ILogger _logger;
 
         public InboundDisruptorImpl(
+            ILogger<InboundDisruptorImpl<TDomainEvent>> logger,
             IServiceProvider serviceProvider,
             IOptions<MdaOptions> options,
-            ILogger<InboundDisruptorImpl<T>> logger)
+            IEventStore eventStore)
         {
             _logger = logger;
 
@@ -26,17 +31,17 @@ namespace MDA.Concurrent
             var disOps = ops.DisruptorOptions;
             var settings = ops.ClusterSetting;
 
-            _disruptor = new Disruptor<T>(() => new T(), disOps.InboundRingBufferSize, TaskScheduler.Current);
+            _disruptor = new Disruptor<TDomainEvent>(() => new TDomainEvent(), disOps.InboundRingBufferSize, TaskScheduler.Current);
 
-            var journaler = new InboundEventJournaler<T>();
-            var businessProcessor = serviceProvider.GetRequiredService<IInBoundEventHandler<T>>();
+            var journaler = new InboundEventJournaler<TDomainEvent>(eventStore);
+            var businessProcessor = serviceProvider.GetRequiredService<IInBoundDomainEventHandler<TDomainEvent>>();
 
             // Only the master node listens directly to input events and runs a replicator.
             if (settings.AppMode.Environment.IsMaster)
             {
                 // The replicator broadcasts the input events to the slave nodes.
                 // Should the master node go down, it's lack of heartbeat will be noticed, another node becomes master, starts processing input events, and starts its replicator.
-                var replicator = new InboundEventReplicator<T>();
+                var replicator = new InboundEventReplicator<TDomainEvent>();
                 _disruptor.HandleEventsWith(journaler, replicator).Then(businessProcessor);
             }
             else
@@ -45,55 +50,22 @@ namespace MDA.Concurrent
             _disruptor.Start();
         }
 
-        public Task<bool> PublishInboundEventAsync<TKey,TMessage>(IEventTranslatorTwoArg<T, TKey, TMessage> translator, TKey messageKey, TMessage message)
+        public Task<bool> PublishInboundEventAsync<TTranslator, TCommand>(string principal, TCommand command)
+            where TTranslator : IEventTranslatorTwoArg<TDomainEvent, string, TCommand>, new()
         {
             try
             {
-                _logger.LogInformation($"Prepare to publish inbound event[id: {messageKey},message: {message.ToString()}]");
+                _logger.LogInformation($"Prepare to publish inbound domain event[principal: {principal}, command: {command}]");
 
-                _disruptor.PublishEvent(translator, messageKey, message);
+                var translator = new TTranslator();
+                _disruptor.PublishEvent(translator, principal, command);
+                return Task.FromResult(true);
             }
             catch (Exception e)
             {
-                _logger.LogInformation($"Failed publish inbound event[id: {messageKey},message: {message.ToString()}], ex: {e}");
+                _logger.LogInformation($"Failed publish inbound domain event[principal: {principal}, command: {command}], ex: {e}");
                 return Task.FromResult(false);
             }
-
-            return Task.FromResult(true);
-        }
-
-        public Task<bool> PublishInboundEventAsync<TMessage>(IEventTranslatorOneArg<T, TMessage> translator, TMessage message)
-        {
-            try
-            {
-                _logger.LogInformation($"Prepare to publish inbound event[message: {message.ToString()}]");
-
-                _disruptor.PublishEvent(translator, message);
-            }
-            catch (Exception e)
-            {
-                _logger.LogInformation($"Failed publish inbound event[message: {message.ToString()}], ex: {e}");
-                return Task.FromResult(false);
-            }
-
-            return Task.FromResult(true);
-        }
-
-        public Task<bool> PublishInboundEventAsync<TMessage>(IEventTranslator<T> translator)
-        {
-            try
-            {
-                _logger.LogInformation($"Prepare to publish inbound event.");
-
-                _disruptor.PublishEvent(translator);
-            }
-            catch (Exception e)
-            {
-                _logger.LogInformation($"Failed publish inbound event, ex: {e}");
-                return Task.FromResult(false);
-            }
-
-            return Task.FromResult(true);
         }
     }
 }

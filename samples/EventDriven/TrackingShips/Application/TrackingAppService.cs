@@ -1,4 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using MDA.Concurrent;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading.Tasks;
+using TrackingShips.Application.Commands;
+using TrackingShips.Domain.Model;
+using TrackingShips.Port.Adapters;
 
 namespace TrackingShips.Application
 {
@@ -7,20 +13,20 @@ namespace TrackingShips.Application
     /// </summary>
     public class TrackingAppService
     {
-        /// <summary>
-        /// 记录船到达港口
-        /// </summary>
-        /// <param name="port">港口</param>
-        public async Task RecordArrivalAync(string port)
+        private readonly IServiceProvider _provider;
+
+        public TrackingAppService(IServiceProvider provider)
         {
-            
+            _provider = provider;
         }
 
-        /// <summary>
-        /// 记录船离开港口
-        /// </summary>
-        /// <param name="port">港口</param>
-        public async Task RecordDepartureAync(string port)
+        public async Task ArrivalSetsShipsLocationAsync(ShipArrivedCommand command)
+        {
+            var domainEventPublisher = _provider.GetService<IInboundDisruptor<ShipArrived>>();
+            await domainEventPublisher.PublishInboundEventAsync<ShipArrivedMapper, ShipArrivedCommand>(typeof(Ship).FullName, command);
+        }
+
+        public void DeparturePutsShipOutToSea(string port)
         {
 
         }

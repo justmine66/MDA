@@ -1,16 +1,13 @@
 ﻿using Disruptor;
-using MDA.Eventing;
+using MDA.EventSourcing;
 using System.Threading.Tasks;
 
 namespace MDA.Concurrent
 {
-    public interface IInboundDisruptor<T> where T : InboundEvent
+    public interface IInboundDisruptor<TDomainEvent>
+        where TDomainEvent : DomainEvent
     {
-        Task<bool> PublishInboundEventAsync<TKey,TMessage>(IEventTranslatorTwoArg<T, TKey, TMessage> translator,
-            TKey messageKey, TMessage message);
-
-        Task<bool> PublishInboundEventAsync<TMessage>(IEventTranslatorOneArg<T, TMessage> translator, TMessage message);
-
-        Task<bool> PublishInboundEventAsync<TMessage>(IEventTranslator<T> translator);
+        Task<bool> PublishInboundEventAsync<TTranslator, TCommand>(string principal, TCommand message)
+            where TTranslator : IEventTranslatorTwoArg<TDomainEvent, string, TCommand>, new();
     }
 }
