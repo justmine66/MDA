@@ -63,6 +63,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA", "src\Core\MDA\MDA.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA.AspnetCore", "src\Core\MDA.AspnetCore\MDA.AspnetCore.csproj", "{F3EE5B0E-E671-49FA-BF77-40DED41D3CDB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ordering.Context", "samples\EventDriven\EStore\Ordering.Context\Ordering.Context.csproj", "{96DC0BEB-88C9-429A-9DF1-0F8ADE2BBCBD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -149,6 +151,10 @@ Global
 		{F3EE5B0E-E671-49FA-BF77-40DED41D3CDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3EE5B0E-E671-49FA-BF77-40DED41D3CDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3EE5B0E-E671-49FA-BF77-40DED41D3CDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96DC0BEB-88C9-429A-9DF1-0F8ADE2BBCBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96DC0BEB-88C9-429A-9DF1-0F8ADE2BBCBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96DC0BEB-88C9-429A-9DF1-0F8ADE2BBCBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96DC0BEB-88C9-429A-9DF1-0F8ADE2BBCBD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -181,6 +187,7 @@ Global
 		{9BD39E55-E3F4-4CAC-8443-38738D8C3E0C} = {4FF04C4A-32F7-4164-A830-A35400506D35}
 		{01FF3310-FAC5-4E5B-AF26-EAD89B9DD58F} = {3B3AF354-42CD-4709-8D1D-35883A33F752}
 		{F3EE5B0E-E671-49FA-BF77-40DED41D3CDB} = {3B3AF354-42CD-4709-8D1D-35883A33F752}
+		{96DC0BEB-88C9-429A-9DF1-0F8ADE2BBCBD} = {B2742EA6-8C78-47D8-887D-03FF1A482A86}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DC9D9D4F-2190-4530-B529-2F3497D51EA0}

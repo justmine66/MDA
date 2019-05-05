@@ -1,17 +1,16 @@
-﻿using System.Collections.Generic;
-using MDA.EventSourcing;
+﻿using MDA.EventSourcing;
 
 namespace Basket.Context.Domain.Model.Baskets
 {
     public class BasketCreated : DomainEvent
     {
-        public BasketCreated(string buyerId, List<BasketItem> items)
+        public BasketCreated(string buyerId, BasketItem item)
         {
             BuyerId = buyerId;
-            Items = items;
+            Item = item;
         }
 
         public string BuyerId { get; }
-        public List<BasketItem> Items { get; }
+        public BasketItem Item { get; }
     }
 }

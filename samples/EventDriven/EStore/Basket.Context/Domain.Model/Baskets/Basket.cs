@@ -11,12 +11,18 @@ namespace Basket.Context.Domain.Model.Baskets
         {
         }
 
-        public Basket(string buyerId, List<BasketItem> items)
+        private Basket()
+        {
+            _items = new List<BasketItem>();
+        }
+
+        public Basket(string buyerId, BasketItem item)
+            : this()
         {
             Assert.NotNullOrEmpty(nameof(buyerId), buyerId);
-            Assert.NotNull(nameof(items), items);
+            Assert.NotNull(nameof(item), item);
 
-            Apply(new BasketCreated(buyerId, items));
+            Apply(new BasketCreated(buyerId, item));
         }
 
         public void Modify(string buyerId, List<BasketItem> items)
@@ -28,18 +34,19 @@ namespace Basket.Context.Domain.Model.Baskets
         }
 
         public string BuyerId { get; private set; }
-        public List<BasketItem> Items { get; private set; }
+        public List<BasketItem> _items { get; private set; }
+        public IEnumerable<BasketItem> Items => _items;
 
         private void OnDomainEvent(BasketCreated e)
         {
             BuyerId = e.BuyerId;
-            Items = e.Items;
+            _items.Add(e.Item);
         }
 
         private void OnDomainEvent(BasketModified e)
         {
             BuyerId = e.BuyerId;
-            Items = e.Items;
+            _items = e.Items;
         }
 
         protected override IEnumerable<object> GetIdentityComponents()
