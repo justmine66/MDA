@@ -2,7 +2,7 @@
 
 namespace MDA.MessageBus.InMemory
 {
-    public static class InMemoryMessageBusServiceCollectionExtension
+    public static class ServiceCollectionExtension
     {
         public static IServiceCollection AddInMemoryMessageBusServices(this IServiceCollection services)
         {
