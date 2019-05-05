@@ -14,7 +14,7 @@ namespace MDA.EventStoring
             Header = new EventLogEntryHeader()
             {
                 Principal = e.Principal,
-                occurredOn = e.OccurredOn,
+                OccurredOn = e.OccurredOn,
                 EventId = e.EventVersion,
                 EventTypeName = e.GetType().FullName
             };
@@ -22,7 +22,7 @@ namespace MDA.EventStoring
             Payload = e;
         }
 
-        public EventLogEntryHeader Header { get; private set; }
+        public EventLogEntryHeader Header { get; }
         public IDomainEvent Payload { get; private set; }
 
         public bool Equals(EventLogEntry other)
@@ -51,6 +51,6 @@ namespace MDA.EventStoring
         public string Principal { get; set; }
         public long EventId { get; set; }
         public string EventTypeName { get; set; }
-        public DateTime occurredOn { get; set; }
+        public DateTime OccurredOn { get; set; }
     }
 }

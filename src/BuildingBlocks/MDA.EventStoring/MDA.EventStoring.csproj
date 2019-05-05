@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MDA.EventSourcing\MDA.EventSourcing.csproj" />
+    <ProjectReference Include="..\MDA.Shared\MDA.Shared.csproj" />
   </ItemGroup>
 
 </Project>
