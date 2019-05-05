@@ -24,11 +24,11 @@ namespace MDA
             container.AddOptions();
 
             container.TryAdd(ServiceDescriptor.Singleton(typeof(IInboundDisruptor<>), typeof(InboundDisruptorImpl<>)));
-            container.AddSingleton<typeof(IDataCache<>), typeof(DataCacheImpl<>)>();
+            container.AddSingleton(typeof(IDataCache<>), typeof(DataCacheImpl<>));
             container.AddSingleton<IAppStateProvider, AppStateProvider>();
 
             container.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<MdaOptions>>(
-                new MdaOptionsConfigure(ClusterSettingFactory.Create(),DisruptorOptionsFactory.Create())));
+                new MdaOptionsConfigure(ClusterSettingFactory.Create(), DisruptorOptionsFactory.Create())));
             container.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<DisruptorOptions>>(
                 new DisruptorOptionsConfigure()));
             container.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<ClusterSettings>>(
