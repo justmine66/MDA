@@ -16,9 +16,9 @@ namespace MDA.EventSourcing
         {
             if (object.ReferenceEquals(this, obj)) return true;
             if (object.ReferenceEquals(null, obj)) return false;
-            if (this.GetType() != obj.GetType()) return false;
-            var vo = obj as ValueObject;
-            return GetEqualityComponents().SequenceEqual(vo.GetEqualityComponents());
+            if (GetType() != obj.GetType()) return false;
+
+            return obj is ValueObject other && GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
         }
 
         public override int GetHashCode()
