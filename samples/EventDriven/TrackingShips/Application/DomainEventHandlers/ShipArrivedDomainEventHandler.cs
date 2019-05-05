@@ -1,22 +1,24 @@
-﻿using MDA.Eventing;
+﻿using System.Threading.Tasks;
+using MDA.Eventing;
 using MDA.Persistence;
+using Microsoft.Extensions.Logging;
 using TrackingShips.Domain.Model;
 
 namespace TrackingShips.Application.DomainEventHandlers
 {
-    public class ShipArrivedDomainEventHandler : IInBoundDomainEventHandler<ShipArrived>
+    public class ShipArrivedDomainEventHandler : InBoundDomainEventHandler<Ship, ShipArrived>
     {
-        private readonly IAppStateProvider _state;
-
-        public ShipArrivedDomainEventHandler(IAppStateProvider stateProvider)
+        private readonly ILogger _logger;
+        public ShipArrivedDomainEventHandler(IAppStateProvider context, ILogger<ShipArrivedDomainEventHandler> logger)
+            : base(context)
         {
-            _state = stateProvider;
+            _logger = logger;
         }
 
-        public void OnEvent(ShipArrived domainEvent, long sequence, bool endOfBatch)
+        public override Task OnEventAsync(Ship principal)
         {
-            var ship = _state.Get<Ship>(domainEvent.Principal);
-            ship.OnDomainEvent(domainEvent);
+            _logger.LogInformation($"The ship{principal.Name} arrived port[{principal.Location}].");
+            return Task.CompletedTask;
         }
     }
 }

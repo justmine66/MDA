@@ -31,9 +31,9 @@ namespace MDA.EventSourcing
         /// 填充事件信息到领域模型。
         /// </summary>
         /// <param name="e">领域事件</param>
-        protected void OnDomainEvent(IDomainEvent e)
+        public void OnDomainEvent(dynamic e)
         {
-            (this as dynamic).Apply(e);
+            (this as dynamic).OnDomainEvent(e);
         }
 
         /// <summary>

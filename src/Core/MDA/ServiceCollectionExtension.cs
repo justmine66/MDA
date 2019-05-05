@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using System;
+using MDA.Caching;
 
 namespace MDA
 {
@@ -23,6 +24,7 @@ namespace MDA
             container.AddOptions();
 
             container.TryAdd(ServiceDescriptor.Singleton(typeof(IInboundDisruptor<>), typeof(InboundDisruptorImpl<>)));
+            container.AddSingleton<typeof(IDataCache<>), typeof(DataCacheImpl<>)>();
             container.AddSingleton<IAppStateProvider, AppStateProvider>();
 
             container.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<MdaOptions>>(

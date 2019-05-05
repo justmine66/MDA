@@ -1,6 +1,6 @@
-﻿using MDA.EventSourcing;
+﻿using System.Collections.Generic;
+using MDA.EventSourcing;
 using MDA.Shared;
-using System.Collections.Generic;
 
 namespace TrackingShips.Domain.Model
 {
@@ -12,6 +12,16 @@ namespace TrackingShips.Domain.Model
         public Ship(IEnumerable<IDomainEvent> eventStream, int streamVersion)
             : base(eventStream, streamVersion)
         {
+
+        }
+
+        public Ship(string name, string location)
+        {
+            Assert.NotNullOrEmpty(nameof(name), name);
+            Assert.NotNullOrEmpty(nameof(location), location);
+
+            Name = name;
+            Location = location;
         }
 
         /// <summary>
@@ -22,7 +32,7 @@ namespace TrackingShips.Domain.Model
         {
             Assert.NotNullOrEmpty(nameof(port), port);
 
-            var e = new ShipArrived() { Port = port };
+            var e = new ShipArrived() { Ship = Name, Port = port };
             Apply(e);
         }
 
@@ -30,21 +40,23 @@ namespace TrackingShips.Domain.Model
         /// 离开港口
         /// </summary>
         /// <param name="port">港口</param>
-        public void DeparturedAt(string port)
+        public void DepartedAt(string port)
         {
             Assert.NotNullOrEmpty(nameof(port), port);
 
-            var e = new ShipDeparted() { Port = port };
+            var e = new ShipDeparted() { Ship = Name, Port = port };
             Apply(e);
         }
 
         public void OnDomainEvent(ShipArrived e)
         {
+            Name = e.Ship;
             Location = e.Port;
         }
 
         public void OnDomainEvent(ShipDeparted e)
         {
+            Name = e.Ship;
             Location = e.Port;
         }
 

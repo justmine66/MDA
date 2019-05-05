@@ -1,7 +1,10 @@
-﻿namespace MDA.Persistence
+﻿using System.Threading.Tasks;
+using MDA.EventSourcing;
+
+namespace MDA.Persistence
 {
     public interface IAppStateProvider
     {
-        T Get<T>(string principal) where T : class;
+        Task<T> GetAsync<T>(string principal) where T : EventSourcedRootEntity;
     }
 }

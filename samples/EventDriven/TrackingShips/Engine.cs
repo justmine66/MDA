@@ -16,8 +16,14 @@ namespace TrackingShips
         }
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            var command = new ShipArrivedCommand() { Ship = "泰坦尼克号", Port = "珍珠港" };
-            await _appService.ArrivalSetsShipsLocationAsync(command);
+            for (var i = 0; i < 10; i++)
+            {
+                var command1 = new ShipArrivedCommand() { Ship = "泰坦尼克号" + i, Port = "珍珠港" + i };
+                await _appService.ArrivalSetsShipsLocationAsync(command1);
+
+                var command2 = new ShipDepartedCommand() { Ship = "泰坦尼克号" + i, Port = "珍珠港" + i };
+                await _appService.DeparturePutsShipOutToSea(command2);
+            }
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

@@ -1,7 +1,7 @@
-﻿using MDA.Concurrent;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using MDA.Concurrent;
+using Microsoft.Extensions.DependencyInjection;
 using TrackingShips.Application.Commands;
 using TrackingShips.Domain.Model;
 using TrackingShips.Port.Adapters;
@@ -26,9 +26,10 @@ namespace TrackingShips.Application
             await domainEventPublisher.PublishInboundEventAsync<ShipArrivedMapper, ShipArrivedCommand>(typeof(Ship).FullName, command);
         }
 
-        public void DeparturePutsShipOutToSea(string port)
+        public async Task DeparturePutsShipOutToSea(ShipDepartedCommand command)
         {
-
+            var domainEventPublisher = _provider.GetService<IInboundDisruptor<ShipDeparted>>();
+            await domainEventPublisher.PublishInboundEventAsync<ShipDepartedMapper, ShipDepartedCommand>(typeof(Ship).FullName, command);
         }
     }
 }
