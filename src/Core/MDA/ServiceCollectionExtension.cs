@@ -1,5 +1,6 @@
 ﻿using MDA.Cluster;
 using MDA.Concurrent;
+using MDA.Persistence;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -22,6 +23,7 @@ namespace MDA
             container.AddOptions();
 
             container.TryAdd(ServiceDescriptor.Singleton(typeof(IInboundDisruptor<>), typeof(InboundDisruptorImpl<>)));
+            container.AddSingleton<IAppStateProvider, AppStateProvider>();
 
             container.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<MdaOptions>>(
                 new MdaOptionsConfigure(ClusterSettingFactory.Create(),DisruptorOptionsFactory.Create())));
