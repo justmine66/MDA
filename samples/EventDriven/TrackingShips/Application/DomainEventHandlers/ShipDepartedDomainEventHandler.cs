@@ -17,7 +17,7 @@ namespace TrackingShips.Application.DomainEventHandlers
 
         public override Task OnEventAsync(Ship principal)
         {
-            _logger.LogInformation($"The ship{principal.Name} arrived port[{principal.Location}].");
+            _logger.LogInformation($"The ship{principal.Name} departed port[{principal.Location}].");
             return Task.CompletedTask;
         }
     }
