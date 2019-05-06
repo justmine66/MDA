@@ -20,8 +20,7 @@ namespace MDA.EventStoring.InMemory
                 eventLog.Add(entry);
             else
             {
-                eventLog = new List<EventLogEntry>();
-                eventLog.Add(entry);
+                eventLog = new List<EventLogEntry> { entry };
                 _dataContainer.TryAdd(domainEvent.Principal, eventLog);
             }
 
@@ -38,13 +37,12 @@ namespace MDA.EventStoring.InMemory
             _dataContainer.Clear();
         }
 
-        public Task<IEnumerable<IDomainEvent>> GetEventLogAsync(string principal) 
+        public Task<IEnumerable<IDomainEvent>> GetEventLogAsync(string principal)
         {
-
             if (_dataContainer.TryGetValue(principal, out var eventLog))
             {
-                var eventStream = eventLog.Select(it => it.Payload);
-                return Task.FromResult(eventStream);
+                var eventStream = eventLog.Select(it => it.Payload).ToArray();
+                return Task.FromResult((IEnumerable<IDomainEvent>)eventStream);
             }
             else
                 return Task.FromResult<IEnumerable<IDomainEvent>>(null);
@@ -56,7 +54,7 @@ namespace MDA.EventStoring.InMemory
         }
 
 
-        public Task<IEnumerable<IDomainEvent>> GetEventLogSinceAsync(string principal, long eventId) 
+        public Task<IEnumerable<IDomainEvent>> GetEventLogSinceAsync(string principal, long eventId)
         {
             throw new NotImplementedException();
         }
