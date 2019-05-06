@@ -17,7 +17,7 @@ namespace MDA.Eventing
 
         public async void OnEvent(TDomainEvent data, long sequence, bool endOfBatch)
         {
-            var principal = await _context.GetAsync<TRootEntity>(data.Principal);
+            var principal = await _context.GetAsync<TRootEntity>(data.Principal.Id);
             principal.OnDomainEvent(data);
             await OnEventAsync(principal);
         }

@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\BuildingBlocks\MDA.EventStoring.InMemory\MDA.EventStoring.InMemory.csproj" />
-    <ProjectReference Include="..\..\..\src\BuildingBlocks\MDA.Shared\MDA.Shared.csproj" />
     <ProjectReference Include="..\..\..\src\Core\MDA\MDA.csproj" />
   </ItemGroup>
 

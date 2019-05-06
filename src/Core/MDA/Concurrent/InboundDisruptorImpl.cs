@@ -1,6 +1,9 @@
-﻿using Disruptor;
+﻿using System;
+using System.Threading.Tasks;
+using Disruptor;
 using Disruptor.Dsl;
 using MDA.Cluster;
+using MDA.Commanding;
 using MDA.Eventing;
 using MDA.EventSourcing;
 using MDA.EventStoring;
@@ -8,8 +11,6 @@ using MDA.Persistence;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Threading.Tasks;
 
 namespace MDA.Concurrent
 {
@@ -51,6 +52,7 @@ namespace MDA.Concurrent
         }
 
         public Task<bool> PublishInboundEventAsync<TTranslator, TCommand>(string principal, TCommand command)
+            where TCommand : ICommand
             where TTranslator : IEventTranslatorTwoArg<TDomainEvent, string, TCommand>, new()
         {
             try
