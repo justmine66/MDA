@@ -51,9 +51,9 @@ namespace MDA.Concurrent
             _disruptor.Start();
         }
 
-        public Task<bool> PublishInboundEventAsync<TTranslator, TCommand>(string principal, TCommand command)
+        public Task<bool> PublishInboundEventAsync<TTranslator, TCommand>(BusinessPrincipal principal, TCommand command)
             where TCommand : ICommand
-            where TTranslator : IEventTranslatorTwoArg<TDomainEvent, string, TCommand>, new()
+            where TTranslator : IEventTranslatorTwoArg<TDomainEvent, BusinessPrincipal, TCommand>, new()
         {
             try
             {

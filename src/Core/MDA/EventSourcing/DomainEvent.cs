@@ -6,7 +6,7 @@ namespace MDA.EventSourcing
     {
         public BusinessPrincipal Principal { get; set; }
         public long EventVersion { get; set; }
-        public DateTime OccurredOn { get; set; } = DateTime.Now;
-        public DateTime ProcessingTime { get; set; }
+        public DateTime OccurredOn { get; set; }
+        public DateTime HandledOn { get; set; }
     }
 }

@@ -13,7 +13,7 @@ namespace MDA.EventStoring.InMemory
 
         public Task AppendAsync(IDomainEvent domainEvent)
         {
-            var key = domainEvent.Principal;
+            var key = domainEvent.Principal.Id;
             var entry = new EventLogEntry(domainEvent);
 
             if (_dataContainer.TryGetValue(key, out var eventLog))
@@ -21,7 +21,7 @@ namespace MDA.EventStoring.InMemory
             else
             {
                 eventLog = new List<EventLogEntry> { entry };
-                _dataContainer.TryAdd(domainEvent.Principal, eventLog);
+                _dataContainer.TryAdd(key, eventLog);
             }
 
             return Task.CompletedTask;

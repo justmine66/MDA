@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using MDA.Concurrent;
+using MDA.EventSourcing;
 using Microsoft.Extensions.DependencyInjection;
 using TrackingShips.Application.Commands;
 using TrackingShips.Domain.Model;
@@ -23,13 +24,15 @@ namespace TrackingShips.Application
         public async Task ArrivalSetsShipsLocationAsync(ShipArrivedCommand command)
         {
             var domainEventPublisher = _provider.GetService<IInboundDisruptor<ShipArrived>>();
-            await domainEventPublisher.PublishInboundEventAsync<ShipArrivedMapper, ShipArrivedCommand>(typeof(Ship).FullName, command);
+            var principal = new BusinessPrincipal() { Id = "ship_1", TypeName = typeof(Ship).FullName };
+            await domainEventPublisher.PublishInboundEventAsync<ShipArrivedMapper, ShipArrivedCommand>(principal, command);
         }
 
         public async Task DeparturePutsShipOutToSea(ShipDepartedCommand command)
         {
             var domainEventPublisher = _provider.GetService<IInboundDisruptor<ShipDeparted>>();
-            await domainEventPublisher.PublishInboundEventAsync<ShipDepartedMapper, ShipDepartedCommand>(typeof(Ship).FullName, command);
+            var principal = new BusinessPrincipal() { Id = "ship_2", TypeName = typeof(Ship).FullName };
+            await domainEventPublisher.PublishInboundEventAsync<ShipDepartedMapper, ShipDepartedCommand>(principal, command);
         }
     }
 }

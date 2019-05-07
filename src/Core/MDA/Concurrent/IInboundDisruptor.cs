@@ -6,10 +6,10 @@ using MDA.Commanding;
 namespace MDA.Concurrent
 {
     public interface IInboundDisruptor<TDomainEvent>
-        where TDomainEvent : IDomainEvent, new()
+        where TDomainEvent : DomainEvent, new()
     {
-        Task<bool> PublishInboundEventAsync<TTranslator, TCommand>(string principal, TCommand command)
+        Task<bool> PublishInboundEventAsync<TTranslator, TCommand>(BusinessPrincipal principal, TCommand command)
             where TCommand : ICommand
-            where TTranslator : IEventTranslatorTwoArg<TDomainEvent, string, TCommand>, new();
+            where TTranslator : IEventTranslatorTwoArg<TDomainEvent, BusinessPrincipal, TCommand>, new();
     }
 }
