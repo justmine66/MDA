@@ -45,13 +45,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{9275BA93-9268-4BF0-830C-BB768C34A866}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBank.Domain", "samples\EBank\Domain\EBank.Domain\EBank.Domain.csproj", "{77412C49-6F4A-407E-835B-539E0675206D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBank.Domain", "samples\EBank\Domain\EBank.Domain\EBank.Domain.csproj", "{77412C49-6F4A-407E-835B-539E0675206D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBank.Application.BusinessServer", "samples\EBank\Application\EBank.Application.BusinessServer\EBank.Application.BusinessServer.csproj", "{228C9122-ED27-45D8-BC29-017ED6ED4CED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBank.Application.BusinessServer", "samples\EBank\Application\EBank.Application.BusinessServer\EBank.Application.BusinessServer.csproj", "{228C9122-ED27-45D8-BC29-017ED6ED4CED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBank.Application", "samples\EBank\Application\EBank.Application\EBank.Application.csproj", "{A8755C4C-375D-460C-8F12-ACD082E6B5B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBank.Application", "samples\EBank\Application\EBank.Application\EBank.Application.csproj", "{A8755C4C-375D-460C-8F12-ACD082E6B5B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBank.Application.QueryServer", "samples\EBank\Application\EBank.Application.QueryServer\EBank.Application.QueryServer.csproj", "{EFBB4C36-2892-4555-8983-7965A4E4B574}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBank.Application.Querying", "samples\EBank\Application\EBank.Application.Querying\EBank.Application.Querying.csproj", "{19972CDF-2227-46DA-8459-3383E15C72AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -119,10 +119,10 @@ Global
 		{A8755C4C-375D-460C-8F12-ACD082E6B5B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8755C4C-375D-460C-8F12-ACD082E6B5B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8755C4C-375D-460C-8F12-ACD082E6B5B3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EFBB4C36-2892-4555-8983-7965A4E4B574}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EFBB4C36-2892-4555-8983-7965A4E4B574}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EFBB4C36-2892-4555-8983-7965A4E4B574}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EFBB4C36-2892-4555-8983-7965A4E4B574}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19972CDF-2227-46DA-8459-3383E15C72AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19972CDF-2227-46DA-8459-3383E15C72AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19972CDF-2227-46DA-8459-3383E15C72AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19972CDF-2227-46DA-8459-3383E15C72AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -149,7 +149,7 @@ Global
 		{77412C49-6F4A-407E-835B-539E0675206D} = {9275BA93-9268-4BF0-830C-BB768C34A866}
 		{228C9122-ED27-45D8-BC29-017ED6ED4CED} = {292875E8-0D2C-4D02-B372-2E2A42E59955}
 		{A8755C4C-375D-460C-8F12-ACD082E6B5B3} = {292875E8-0D2C-4D02-B372-2E2A42E59955}
-		{EFBB4C36-2892-4555-8983-7965A4E4B574} = {292875E8-0D2C-4D02-B372-2E2A42E59955}
+		{19972CDF-2227-46DA-8459-3383E15C72AD} = {292875E8-0D2C-4D02-B372-2E2A42E59955}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DC9D9D4F-2190-4530-B529-2F3497D51EA0}

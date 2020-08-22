@@ -2,7 +2,7 @@
 using MDA.Domain.Events;
 using Microsoft.Extensions.Logging;
 
-namespace EBank.Application.QueryServer
+namespace EBank.Application.Querying
 {
     public class BankAccountReadDbStorage :
         IDomainEventHandler<AccountOpenedDomainEvent>,

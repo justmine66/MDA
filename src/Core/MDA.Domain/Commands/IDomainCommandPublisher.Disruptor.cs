@@ -1,5 +1,4 @@
 ﻿using System;
-using Disruptor.Dsl;
 
 namespace MDA.Domain.Commands
 {
@@ -7,8 +6,6 @@ namespace MDA.Domain.Commands
     {
         public void Publish<TDomainCommand>(TDomainCommand command) where TDomainCommand : IDomainCommand
         {
-            var 
-
             throw new NotImplementedException();
         }
 

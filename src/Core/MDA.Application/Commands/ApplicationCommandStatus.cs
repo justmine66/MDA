@@ -6,18 +6,23 @@ namespace MDA.Application.Commands
     public enum ApplicationCommandStatus
     {
         /// <summary>
-        /// 成功
+        /// 已成功
         /// </summary>
-        Success = 1 << 0,
+        Successed = 1 << 0,
 
         /// <summary>
-        /// 失败
+        /// 已失败
         /// </summary>
         Failed = 1 << 1,
 
         /// <summary>
-        /// 超时
+        /// 已超时
         /// </summary>
-        TimeOut = 1 << 2
+        Timeouted = 1 << 2,
+
+        /// <summary>
+        /// 已取消
+        /// </summary>
+        Canceled = 1 << 3,
     }
 }
