@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace MDA.Application.Commands
 {
@@ -11,6 +12,6 @@ namespace MDA.Application.Commands
     public interface IAsyncApplicationCommandHandler<in TApplicationCommand>
         where TApplicationCommand : IApplicationCommand
     {
-        Task HandleAsync(IApplicationCommandContext context, TApplicationCommand command);
+        Task HandleAsync(IApplicationCommandContext context, TApplicationCommand command, CancellationToken token = default);
     }
 }

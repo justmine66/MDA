@@ -1,6 +1,6 @@
 ﻿namespace MDA.Domain.Commands
 {
-    public interface IDomainCommandTranslator<in TDomainCommand, in TArg>
+    public interface IDomainCommandFiller<in TDomainCommand, in TArg>
         where TDomainCommand : IDomainCommand
     {
         /// <summary>
@@ -11,7 +11,7 @@
         void TranslateTo(TDomainCommand command, TArg arg);
     }
 
-    public interface IDomainCommandTranslator<in TDomainCommand, in TArg1, in TArg2>
+    public interface IDomainCommandFiller<in TDomainCommand, in TArg1, in TArg2>
         where TDomainCommand : IDomainCommand
     {
         /// <summary>
@@ -23,7 +23,7 @@
         void TranslateTo(TDomainCommand command, TArg1 arg1, TArg2 arg2);
     }
 
-    public interface IDomainCommandTranslator<in TDomainCommand, in TArg1, in TArg2, in TArg3>
+    public interface IDomainCommandFiller<in TDomainCommand, in TArg1, in TArg2, in TArg3>
         where TDomainCommand : IDomainCommand
     {
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace MDA.Domain.Notifications
 {
@@ -11,6 +12,6 @@ namespace MDA.Domain.Notifications
     public interface IAsyncDomainNotificationHandler<in TDomainNotification>
         where TDomainNotification : IDomainNotification
     {
-        Task HandleAsync(TDomainNotification notification);
+        Task HandleAsync(TDomainNotification notification, CancellationToken token = default);
     }
 }

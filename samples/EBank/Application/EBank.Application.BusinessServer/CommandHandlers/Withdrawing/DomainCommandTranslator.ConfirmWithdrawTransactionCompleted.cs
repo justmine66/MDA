@@ -6,7 +6,7 @@ using System;
 namespace EBank.Application.BusinessServer.CommandHandlers.Withdrawing
 {
     public class ConfirmWithdrawTransactionCompletedDomainCommandTranslator :
-        IDomainCommandTranslator<ConfirmWithdrawTransactionCompletedDomainCommand, ConfirmWithdrawTransactionCompletedApplicationCommand>
+        IDomainCommandFiller<ConfirmWithdrawTransactionCompletedDomainCommand, ConfirmWithdrawTransactionCompletedApplicationCommand>
     {
         private static readonly Lazy<ConfirmWithdrawTransactionCompletedDomainCommandTranslator> _instance = new Lazy<ConfirmWithdrawTransactionCompletedDomainCommandTranslator>(() => new ConfirmWithdrawTransactionCompletedDomainCommandTranslator());
 

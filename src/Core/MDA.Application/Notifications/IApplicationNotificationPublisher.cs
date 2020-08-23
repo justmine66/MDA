@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace MDA.Application.Notifications
 {
@@ -13,6 +14,6 @@ namespace MDA.Application.Notifications
     {
         Task PublishAsync(IApplicationNotification notification);
 
-        Task PublishAsync<TId>(IApplicationNotification<TId> notification);
+        Task PublishAsync<TId>(IApplicationNotification<TId> notification, CancellationToken token = default);
     }
 }

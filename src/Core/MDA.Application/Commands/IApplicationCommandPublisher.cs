@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace MDA.Application.Commands
 {
@@ -11,8 +12,8 @@ namespace MDA.Application.Commands
 
     public interface IAsyncApplicationCommandPublisher : IApplicationCommandPublisher
     {
-        Task PublishAsync(IApplicationCommand command);
+        Task PublishAsync(IApplicationCommand command, CancellationToken token = default);
 
-        Task PublishAsync<TId>(IApplicationCommand<TId> command);
+        Task PublishAsync<TId>(IApplicationCommand<TId> command, CancellationToken token = default);
     }
 }

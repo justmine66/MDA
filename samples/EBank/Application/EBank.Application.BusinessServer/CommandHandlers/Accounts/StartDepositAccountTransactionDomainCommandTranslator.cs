@@ -6,7 +6,7 @@ using System;
 namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
 {
     public class StartDepositAccountTransactionDomainCommandTranslator :
-        IDomainCommandTranslator<StartDepositAccountTransactionDomainCommand, StartDepositAccountTransactionApplicationCommand>
+        IDomainCommandFiller<StartDepositAccountTransactionDomainCommand, StartDepositAccountTransactionApplicationCommand>
     {
         private static readonly Lazy<StartDepositAccountTransactionDomainCommandTranslator> _instance = new Lazy<StartDepositAccountTransactionDomainCommandTranslator>(() => new StartDepositAccountTransactionDomainCommandTranslator());
 

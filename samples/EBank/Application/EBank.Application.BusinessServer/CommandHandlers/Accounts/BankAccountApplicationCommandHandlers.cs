@@ -1,4 +1,5 @@
-﻿using EBank.Application.Commands.Accounts;
+﻿using System.Threading;
+using EBank.Application.Commands.Accounts;
 using EBank.Application.Commands.Depositing;
 using EBank.Application.Commands.Transferring;
 using EBank.Application.Notifications.Depositing;
@@ -30,7 +31,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
             _accountQuery = accountQuery;
         }
 
-        public async Task HandleAsync(IApplicationCommandContext context, OpenBankAccountApplicationCommand command)
+        public async Task HandleAsync(IApplicationCommandContext context, OpenBankAccountApplicationCommand command, CancellationToken token = default)
         {
             var hadAccountName = await _accountIndex.HadAccountNameAsync(command.AccountName).ConfigureAwait(false);
             if (hadAccountName)
@@ -50,7 +51,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                     });
         }
 
-        public async Task HandleAsync(IApplicationCommandContext context, ValidateTransferTransactionApplicationCommand command)
+        public async Task HandleAsync(IApplicationCommandContext context, ValidateTransferTransactionApplicationCommand command, CancellationToken token = default)
         {
             var accountToValidate = command.Account;
             var account = await _accountQuery.GetAccountAsync(accountToValidate.Id);
@@ -64,7 +65,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                     Reason = "账户不存在"
                 };
 
-                await context.NotificationPublisher.PublishAsync(failed);
+                await context.ApplicationNotificationPublisher.PublishAsync(failed);
                 return;
             }
 
@@ -78,7 +79,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                     Reason = "账户名不正确"
                 };
 
-                await context.NotificationPublisher.PublishAsync(failed);
+                await context.ApplicationNotificationPublisher.PublishAsync(failed);
                 return;
             }
 
@@ -92,7 +93,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                     Reason = "开户行不正确"
                 };
 
-                await context.NotificationPublisher.PublishAsync(failed);
+                await context.ApplicationNotificationPublisher.PublishAsync(failed);
                 return;
             }
 
@@ -102,10 +103,10 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                 AccountType = command.AccountType
             };
 
-            await context.NotificationPublisher.PublishAsync(passed);
+            await context.ApplicationNotificationPublisher.PublishAsync(passed);
         }
 
-        public async Task HandleAsync(IApplicationCommandContext context, ValidateDepositTransactionApplicationCommand command)
+        public async Task HandleAsync(IApplicationCommandContext context, ValidateDepositTransactionApplicationCommand command, CancellationToken token = default)
         {
             var account = await _accountQuery.GetAccountAsync(command.AccountId);
             if (account == null)
@@ -116,7 +117,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                     Reason = "账户不存在"
                 };
 
-                await context.NotificationPublisher.PublishAsync(failed);
+                await context.ApplicationNotificationPublisher.PublishAsync(failed);
                 return;
             }
 
@@ -128,7 +129,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                     Reason = "账户名不正确"
                 };
 
-                await context.NotificationPublisher.PublishAsync(failed);
+                await context.ApplicationNotificationPublisher.PublishAsync(failed);
                 return;
             }
 
@@ -140,7 +141,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                     Reason = "开户行不正确"
                 };
 
-                await context.NotificationPublisher.PublishAsync(failed);
+                await context.ApplicationNotificationPublisher.PublishAsync(failed);
                 return;
             }
 
@@ -149,7 +150,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                 TransactionId = command.TransactionId
             };
 
-            await context.NotificationPublisher.PublishAsync(passed);
+            await context.ApplicationNotificationPublisher.PublishAsync(passed);
         }
 
         public void Handle(IApplicationCommandContext context, StartDepositAccountTransactionApplicationCommand command)

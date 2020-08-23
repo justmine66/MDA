@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace MDA.Application.Notifications
 {
@@ -11,6 +12,6 @@ namespace MDA.Application.Notifications
     public interface IAsyncApplicationNotificationHandler<in TApplicationNotification>
         where TApplicationNotification : IApplicationNotification
     {
-        Task HandleAsync(TApplicationNotification notification);
+        Task HandleAsync(TApplicationNotification notification, CancellationToken token = default);
     }
 }

@@ -15,11 +15,13 @@
 
         public object Result { get; private set; }
 
-        public static ApplicationCommandResult Success(string commandId, object result = null) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.Successed, result);
+        public static ApplicationCommandResult Succeed(string commandId, object result = null) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.Succeed, result);
 
         public static ApplicationCommandResult Failed(string commandId, object result = null) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.Failed, result);
 
-        public static ApplicationCommandResult TimeOut(string commandId, object result = null) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.Timeouted, result);
+        public static ApplicationCommandResult TimeOuted(string commandId, object result = null) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.TimeOuted, result);
+
+        public static ApplicationCommandResult Canceled(string commandId, object result = null) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.Canceled, result);
     }
 
     public class ApplicationCommandResult<TResult> : ApplicationCommandResult
@@ -32,11 +34,13 @@
 
         public new TResult Result { get; private set; }
 
-        public static ApplicationCommandResult Success(string commandId, TResult result = default) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.Successed, result);
+        public static ApplicationCommandResult Succeed(string commandId, TResult result = default) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.Succeed, result);
 
         public static ApplicationCommandResult Failed(string commandId, TResult result = default) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.Failed, result);
 
-        public static ApplicationCommandResult TimeOut(string commandId, TResult result = default) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.Timeouted, result);
+        public static ApplicationCommandResult TimeOuted(string commandId, TResult result = default) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.TimeOuted, result);
+
+        public static ApplicationCommandResult Canceled(string commandId, TResult result = default) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.Canceled, result);
     }
 
     public class ApplicationCommandResult<TResult, TCommandId> : ApplicationCommandResult<TResult>

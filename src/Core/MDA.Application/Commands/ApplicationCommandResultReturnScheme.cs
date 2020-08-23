@@ -9,21 +9,27 @@ namespace MDA.Application.Commands
     public enum ApplicationCommandResultReturnScheme
     {
         /// <summary>
+        /// 当应用层命令被发送后，返回执行结果。
+        /// </summary>
+
+        OnApplicationCommandSent = 1 << 0,
+
+        /// <summary>
         /// 当应用层命令被处理后，返回执行结果。
         /// </summary>
 
-        OnApplicationCommandHandled = 1 << 0,
+        OnApplicationCommandHandled = 1 << 1,
 
         /// <summary>
         /// 当领域命令被处理后，返回执行结果。
         /// </summary>
 
-        OnDomainCommandHandled = 1 << 1,
+        OnDomainCommandHandled = 1 << 2,
 
         /// <summary>
         /// 当领域事件被处理后，返回执行结果。
         /// </summary>
 
-        OnDomainEventHandled = 1 << 2,
+        OnDomainEventHandled = 1 << 3
     }
 }

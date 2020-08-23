@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace MDA.Domain.Events
 {
@@ -11,6 +12,6 @@ namespace MDA.Domain.Events
     public interface IAsyncDomainEventHandler<in TDomainEvent>
         where TDomainEvent : IDomainEvent
     {
-        Task HandleAsync(TDomainEvent @event);
+        Task HandleAsync(TDomainEvent @event, CancellationToken token = default);
     }
 }

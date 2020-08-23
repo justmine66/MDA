@@ -8,7 +8,7 @@ namespace MDA.Domain.Commands
         /// <summary>
         /// 成功
         /// </summary>
-        Success = 1 << 0,
+        Succeed = 1 << 0,
 
         /// <summary>
         /// 失败
@@ -18,6 +18,16 @@ namespace MDA.Domain.Commands
         /// <summary>
         /// 超时
         /// </summary>
-        TimeOut = 1 << 2
+        TimeOuted = 1 << 2,
+
+        /// <summary>
+        /// 已取消
+        /// </summary>
+        Canceled = 1 << 3,
+
+        /// <summary>
+        /// 已发布
+        /// </summary>
+        Published = 1 << 4
     }
 }

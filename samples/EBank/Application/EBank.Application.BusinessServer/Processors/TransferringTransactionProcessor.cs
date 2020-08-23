@@ -1,4 +1,5 @@
-﻿using EBank.Application.Commands.Accounts;
+﻿using System.Threading;
+using EBank.Application.Commands.Accounts;
 using EBank.Application.Commands.Transferring;
 using EBank.Application.Notifications.Transferring;
 using EBank.Domain.Events.Transferring;
@@ -39,7 +40,7 @@ namespace EBank.Application.BusinessServer.Processors
         public TransferringTransactionProcessor(IApplicationCommandService commandService)
             => _commandService = commandService;
 
-        public async Task HandleAsync(TransferTransactionStartedDomainEvent @event)
+        public async Task HandleAsync(TransferTransactionStartedDomainEvent @event, CancellationToken token = default)
         {
             // 1. 验证源账户
             var validateSource = new ValidateTransferTransactionApplicationCommand()
@@ -49,7 +50,7 @@ namespace EBank.Application.BusinessServer.Processors
                 AccountType = TransferTransactionAccountType.Source
             };
 
-            await _commandService.PublishAsync(validateSource);
+            await _commandService.PublishAsync(validateSource, token);
 
             // 2. 验证目标账户
             var validateSink = new ValidateTransferTransactionApplicationCommand()
@@ -59,7 +60,7 @@ namespace EBank.Application.BusinessServer.Processors
                 AccountType = TransferTransactionAccountType.Sink
             };
 
-            await _commandService.PublishAsync(validateSink);
+            await _commandService.PublishAsync(validateSink, token);
         }
 
         public void Handle(TransferTransactionAccountValidatePassedApplicationNotification notification)

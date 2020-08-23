@@ -8,27 +8,27 @@ namespace MDA.Domain.Commands
             where TDomainCommand : IDomainCommand;
 
         void Publish<TDomainCommand, TArg>(
-            IDomainCommandTranslator<TDomainCommand, TArg> translator)
-            where TDomainCommand : IDomainCommand;
+            IDomainCommandFiller<TDomainCommand, TArg> translator, TArg arg)
+            where TDomainCommand : class, IDomainCommand;
 
         void Publish<TDomainCommand, TArg>(
-            Action<TDomainCommand, TArg> translator)
-            where TDomainCommand : IDomainCommand;
+            Action<TDomainCommand, TArg> translator, TArg arg)
+            where TDomainCommand : class, IDomainCommand;
 
         void Publish<TDomainCommand, TArg1, TArg2>(
-            IDomainCommandTranslator<TDomainCommand, TArg1, TArg2> translator)
-            where TDomainCommand : IDomainCommand;
+            IDomainCommandFiller<TDomainCommand, TArg1, TArg2> translator, TArg1 arg1, TArg2 arg2)
+            where TDomainCommand : class, IDomainCommand;
 
         void Publish<TDomainCommand, TArg1, TArg2>(
-            Action<TDomainCommand, TArg1, TArg2> translator)
-            where TDomainCommand : IDomainCommand;
+            Action<TDomainCommand, TArg1, TArg2> translator, TArg1 arg1, TArg2 arg2)
+            where TDomainCommand : class, IDomainCommand;
 
         void Publish<TDomainCommand, TArg1, TArg2, TArg3>(
-            IDomainCommandTranslator<TDomainCommand, TArg1, TArg2, TArg3> translator)
-            where TDomainCommand : IDomainCommand;
+            IDomainCommandFiller<TDomainCommand, TArg1, TArg2, TArg3> translator, TArg1 arg1, TArg2 arg2, TArg3 arg3)
+            where TDomainCommand : class, IDomainCommand;
 
         void Publish<TDomainCommand, TArg1, TArg2, TArg3>(
-            Action<TDomainCommand, TArg1, TArg2, TArg3> translator)
-            where TDomainCommand : IDomainCommand;
+            Action<TDomainCommand, TArg1, TArg2, TArg3> translator, TArg1 arg1, TArg2 arg2, TArg3 arg3)
+            where TDomainCommand : class, IDomainCommand;
     }
 }

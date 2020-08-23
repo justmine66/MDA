@@ -2,6 +2,10 @@
 
 namespace MDA.Domain.Shared
 {
+    /// <summary>
+    /// 基于雪花算法的全局唯一标识
+    /// 源自：https://github.com/dotnetcore/CAP/blob/aaecabe58976ef078d77e6678cad7608c5368043/src/DotNetCore.CAP/Internal/SnowflakeId.cs
+    /// </summary>
     public class SnowflakeId
     {
         public const long Twepoch = 1288834974657L;
@@ -108,5 +112,4 @@ namespace MDA.Domain.Shared
             return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         }
     }
-
 }

@@ -7,6 +7,6 @@ namespace MDA.Application.Commands
     {
         IDomainCommandPublisher DomainCommandPublisher { get; set; }
 
-        IAsyncApplicationNotificationPublisher NotificationPublisher { get; set; }
+        IAsyncApplicationNotificationPublisher ApplicationNotificationPublisher { get; set; }
     }
 }

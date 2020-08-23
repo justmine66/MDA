@@ -8,7 +8,7 @@ namespace MDA.Application.Commands
         /// <summary>
         /// 已成功
         /// </summary>
-        Successed = 1 << 0,
+        Succeed = 1 << 0,
 
         /// <summary>
         /// 已失败
@@ -18,7 +18,7 @@ namespace MDA.Application.Commands
         /// <summary>
         /// 已超时
         /// </summary>
-        Timeouted = 1 << 2,
+        TimeOuted = 1 << 2,
 
         /// <summary>
         /// 已取消

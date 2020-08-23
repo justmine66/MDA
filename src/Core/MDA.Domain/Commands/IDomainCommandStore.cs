@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace MDA.Domain.Commands
 {
@@ -6,6 +7,6 @@ namespace MDA.Domain.Commands
     {
         Task Append(IDomainCommand command);
 
-        Task AppendAsync(IDomainCommand command);
+        Task AppendAsync(IDomainCommand command, CancellationToken token = default);
     }
 }
