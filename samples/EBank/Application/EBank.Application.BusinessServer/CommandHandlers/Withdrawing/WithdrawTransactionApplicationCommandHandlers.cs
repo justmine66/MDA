@@ -13,17 +13,17 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Withdrawing
     {
         public void Handle(IApplicationCommandContext context, ConfirmWithdrawTransactionValidatePassedApplicationCommand command)
         {
-            context.DomainCommandPublisher.Publish(ConfirmWithdrawTransactionValidatePassedDomainCommandTranslator.Instance);
+            context.DomainCommandPublisher.Publish(ConfirmWithdrawTransactionValidatePassedDomainCommandTranslator.Instance, command);
         }
 
         public void Handle(IApplicationCommandContext context, CancelWithdrawTransactionApplicationCommand command)
         {
-            context.DomainCommandPublisher.Publish(CancelWithdrawTransactionDomainCommandTranslator.Instance);
+            context.DomainCommandPublisher.Publish(CancelWithdrawTransactionDomainCommandTranslator.Instance, command);
         }
 
         public void Handle(IApplicationCommandContext context, ConfirmWithdrawTransactionCompletedApplicationCommand command)
         {
-            context.DomainCommandPublisher.Publish(ConfirmWithdrawTransactionCompletedDomainCommandTranslator.Instance);
+            context.DomainCommandPublisher.Publish(ConfirmWithdrawTransactionCompletedDomainCommandTranslator.Instance, command);
         }
     }
 }

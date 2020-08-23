@@ -48,7 +48,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                         domainCommand.AccountName = appCommand.AccountName;
                         domainCommand.Bank = appCommand.Bank;
                         domainCommand.InitialBalance = appCommand.InitialBalance;
-                    });
+                    }, command);
         }
 
         public async Task HandleAsync(IApplicationCommandContext context, ValidateTransferTransactionApplicationCommand command, CancellationToken token = default)
@@ -155,12 +155,12 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
 
         public void Handle(IApplicationCommandContext context, StartDepositAccountTransactionApplicationCommand command)
         {
-            context.DomainCommandPublisher.Publish(StartDepositAccountTransactionDomainCommandTranslator.Instance);
+            context.DomainCommandPublisher.Publish(StartDepositAccountTransactionDomainCommandFiller.Instance, command);
         }
 
         public void Handle(IApplicationCommandContext context, StartWithdrawAccountTransactionApplicationCommand command)
         {
-            context.DomainCommandPublisher.Publish(StartWithdrawAccountTransactionDomainCommandTranslator.Instance);
+            context.DomainCommandPublisher.Publish(StartWithdrawAccountTransactionDomainCommandFiller.Instance, command);
         }
     }
 }

@@ -9,6 +9,7 @@ namespace EBank.Application.Commands.Transferring
     public class ConfirmTransferTransactionValidatePassedApplicationCommand : ApplicationCommand<long>
     {
         public long TransactionId { get; set; }
+
         public TransferTransactionAccountType AccountType { get; set; }
     }
 }

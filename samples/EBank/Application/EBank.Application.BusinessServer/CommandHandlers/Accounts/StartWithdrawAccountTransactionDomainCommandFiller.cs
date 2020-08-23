@@ -5,12 +5,12 @@ using System;
 
 namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
 {
-    public class StartWithdrawAccountTransactionDomainCommandTranslator :
+    public class StartWithdrawAccountTransactionDomainCommandFiller :
         IDomainCommandFiller<StartWithdrawAccountTransactionDomainCommand, StartWithdrawAccountTransactionApplicationCommand>
     {
-        private static readonly Lazy<StartWithdrawAccountTransactionDomainCommandTranslator> _instance = new Lazy<StartWithdrawAccountTransactionDomainCommandTranslator>(() => new StartWithdrawAccountTransactionDomainCommandTranslator());
+        private static readonly Lazy<StartWithdrawAccountTransactionDomainCommandFiller> _instance = new Lazy<StartWithdrawAccountTransactionDomainCommandFiller>(() => new StartWithdrawAccountTransactionDomainCommandFiller());
 
-        public static StartWithdrawAccountTransactionDomainCommandTranslator Instance => _instance.Value;
+        public static StartWithdrawAccountTransactionDomainCommandFiller Instance => _instance.Value;
 
         public void TranslateTo(StartWithdrawAccountTransactionDomainCommand domainCommand, StartWithdrawAccountTransactionApplicationCommand appCommand)
         {
