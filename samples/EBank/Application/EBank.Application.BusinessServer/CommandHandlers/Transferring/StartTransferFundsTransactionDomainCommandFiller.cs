@@ -12,7 +12,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Transferring
 
         public static ConfirmDepositTransactionValidatePassedDomainCommandTranslator Instance => _instance.Value;
 
-        public void TranslateTo(StartTransferTransactionDomainCommand domainCommand, TransferFundsApplicationCommand appCommand)
+        public void Fill(StartTransferTransactionDomainCommand domainCommand, TransferFundsApplicationCommand appCommand)
         {
             domainCommand.SourceAccount = appCommand.SourceAccount;
             domainCommand.SinkAccount = appCommand.SinkAccount;

@@ -12,7 +12,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
 
         public static StartWithdrawAccountTransactionDomainCommandFiller Instance => _instance.Value;
 
-        public void TranslateTo(StartWithdrawAccountTransactionDomainCommand domainCommand, StartWithdrawAccountTransactionApplicationCommand appCommand)
+        public void Fill(StartWithdrawAccountTransactionDomainCommand domainCommand, StartWithdrawAccountTransactionApplicationCommand appCommand)
         {
             domainCommand.AggregateRootId = appCommand.AccountId;
             domainCommand.AccountName = appCommand.AccountName;

@@ -12,7 +12,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Withdrawing
 
         public static ConfirmWithdrawTransactionValidatePassedDomainCommandTranslator Instance => _instance.Value;
 
-        public void TranslateTo(ConfirmWithdrawTransactionValidatePassedDomainCommand domainCommand, ConfirmWithdrawTransactionValidatePassedApplicationCommand appCommand)
+        public void Fill(ConfirmWithdrawTransactionValidatePassedDomainCommand domainCommand, ConfirmWithdrawTransactionValidatePassedApplicationCommand appCommand)
         {
             domainCommand.AggregateRootId = appCommand.TransactionId;
         }

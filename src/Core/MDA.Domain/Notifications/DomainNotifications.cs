@@ -1,12 +1,22 @@
-﻿using MDA.Messages;
+﻿using System;
 
 namespace MDA.Domain.Notifications
 {
     /// <summary>
     /// 表示一个领域通知
     /// </summary>
-    public interface IDomainNotification : IStreamedMessage
+    public interface IDomainNotification
     {
+        /// <summary>
+        /// 标识
+        /// </summary>
+        string Id { get; set; }
+
+        /// <summary>
+        /// 时间戳，单位：毫秒。
+        /// </summary>
+        long Timestamp { get; set; }
+
         /// <summary>
         /// 领域命令标识
         /// </summary>
@@ -50,10 +60,13 @@ namespace MDA.Domain.Notifications
     /// </summary>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
     /// <typeparam name="TId">事件标识类型</typeparam>
-    public interface IDomainNotification<TAggregateRootId, TId> :
-        IDomainNotification<TAggregateRootId>,
-        IStreamedMessage<TId>
-    { }
+    public interface IDomainNotification<TAggregateRootId, TId> : IDomainNotification<TAggregateRootId>
+    {
+        /// <summary>
+        /// 标识
+        /// </summary>
+        new TId Id { get; set; }
+    }
 
     /// <summary>
     /// 表示一个领域通知
@@ -72,7 +85,7 @@ namespace MDA.Domain.Notifications
     /// <summary>
     /// 领域通知基类
     /// </summary>
-    public abstract class DomainNotification : StreamedMessage, IDomainNotification
+    public abstract class DomainNotification : IDomainNotification
     {
         protected DomainNotification() { }
         protected DomainNotification(
@@ -82,6 +95,8 @@ namespace MDA.Domain.Notifications
             string aggregateRootTypeFullName,
             int version = 1)
         {
+            Id = Guid.NewGuid().ToString("N");
+            Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             DomainCommandId = domainCommandId;
             DomainCommandTypeFullName = domainCommandTypeFullName;
             AggregateRootId = aggregateRootId;
@@ -89,6 +104,8 @@ namespace MDA.Domain.Notifications
             Version = version;
         }
 
+        public string Id { get; set; }
+        public long Timestamp { get; set; }
         public string DomainCommandId { get; set; }
         public string DomainCommandTypeFullName { get; set; }
 

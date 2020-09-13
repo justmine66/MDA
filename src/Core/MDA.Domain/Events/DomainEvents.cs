@@ -1,12 +1,27 @@
-﻿using MDA.Messages;
+﻿using System;
 
 namespace MDA.Domain.Events
 {
     /// <summary>
     /// 表示一个领域事件
     /// </summary>
-    public interface IDomainEvent : IStreamedMessage
+    public interface IDomainEvent
     {
+        /// <summary>
+        /// 标识
+        /// </summary>
+        string Id { get; set; }
+
+        /// <summary>
+        /// 时间戳，单位：毫秒。
+        /// </summary>
+        long Timestamp { get; set; }
+
+        /// <summary>
+        /// 版本
+        /// </summary>
+        int Version { get; set; }
+
         /// <summary>
         /// 领域命令标识
         /// </summary>
@@ -26,11 +41,6 @@ namespace MDA.Domain.Events
         /// 聚合根类型完全限定名称
         /// </summary>
         string AggregateRootTypeFullName { get; set; }
-
-        /// <summary>
-        /// 版本
-        /// </summary>
-        int Version { get; set; }
     }
 
     /// <summary>
@@ -50,10 +60,13 @@ namespace MDA.Domain.Events
     /// </summary>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
     /// <typeparam name="TId">事件标识类型</typeparam>
-    public interface IDomainEvent<TAggregateRootId, TId> :
-        IDomainEvent<TAggregateRootId>,
-        IStreamedMessage<TId>
-    { }
+    public interface IDomainEvent<TAggregateRootId, TId> : IDomainEvent<TAggregateRootId>
+    {
+        /// <summary>
+        /// 标识
+        /// </summary>
+        new TId Id { get; set; }
+    }
 
     /// <summary>
     /// 表示一个领域事件
@@ -72,7 +85,7 @@ namespace MDA.Domain.Events
     /// <summary>
     /// 领域事件基类
     /// </summary>
-    public abstract class DomainEvent : StreamedMessage, IDomainEvent
+    public abstract class DomainEvent :  IDomainEvent
     {
         protected DomainEvent() { }
         protected DomainEvent(
@@ -82,11 +95,13 @@ namespace MDA.Domain.Events
             string aggregateRootTypeFullName,
             int version = 1)
         {
+            Id = Guid.NewGuid().ToString("N");
+            Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            Version = version;
             DomainCommandId = domainCommandId;
             DomainCommandTypeFullName = domainCommandTypeFullName;
             AggregateRootId = aggregateRootId;
             AggregateRootTypeFullName = aggregateRootTypeFullName;
-            Version = version;
         }
 
         public string DomainCommandId { get; set; }
@@ -95,6 +110,8 @@ namespace MDA.Domain.Events
         public string AggregateRootId { get; set; }
         public string AggregateRootTypeFullName { get; set; }
 
+        public string Id { get; set; }
+        public long Timestamp { get; set; }
         public int Version { get; set; }
     }
 

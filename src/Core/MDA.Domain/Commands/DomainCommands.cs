@@ -1,13 +1,27 @@
-﻿using MDA.Messages;
-using System;
+﻿using System;
 
 namespace MDA.Domain.Commands
 {
     /// <summary>
     /// 表示一个领域命令
     /// </summary>
-    public interface IDomainCommand : IStreamedMessage
+    public interface IDomainCommand
     {
+        /// <summary>
+        /// 标识
+        /// </summary>
+        string Id { get; set; }
+
+        /// <summary>
+        /// 时间戳，单位：毫秒。
+        /// </summary>
+        long Timestamp { get; set; }
+
+        /// <summary>
+        /// 版本
+        /// </summary>
+        int Version { get; set; }
+
         /// <summary>
         /// 应用层命令标识
         /// </summary>
@@ -27,11 +41,6 @@ namespace MDA.Domain.Commands
         /// 聚合根类型完全限定名
         /// </summary>
         string AggregateRootTypeFullName { get; set; }
-
-        /// <summary>
-        /// 版本
-        /// </summary>
-        int Version { get; set; }
     }
 
     /// <summary>
@@ -51,10 +60,13 @@ namespace MDA.Domain.Commands
     /// </summary>
     /// <typeparam name="TId">领域命令标识类型</typeparam>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
-    public interface IDomainCommand<TId, TAggregateRootId> :
-        IDomainCommand<TAggregateRootId>,
-        IStreamedMessage<TId>
-    { }
+    public interface IDomainCommand<TId, TAggregateRootId> : IDomainCommand<TAggregateRootId>
+    {
+        /// <summary>
+        /// 标识
+        /// </summary>
+        new TId Id { get; set; }
+    }
 
     /// <summary>
     /// 表示一个领域命令
@@ -62,9 +74,7 @@ namespace MDA.Domain.Commands
     /// <typeparam name="TApplicationCommandId">应用层命令标识类型</typeparam>
     /// <typeparam name="TId">领域命令标识类型</typeparam>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
-    public interface IDomainCommand<TApplicationCommandId, TId, TAggregateRootId> :
-        IDomainCommand<TAggregateRootId>,
-        IStreamedMessage<TId>
+    public interface IDomainCommand<TApplicationCommandId, TId, TAggregateRootId> : IDomainCommand<TId, TAggregateRootId>
     {
         /// <summary>
         /// 应用层命令标识
@@ -75,7 +85,7 @@ namespace MDA.Domain.Commands
     /// <summary>
     /// 领域命令基类
     /// </summary>
-    public abstract class DomainCommand : StreamedMessage, IDomainCommand
+    public abstract class DomainCommand : IDomainCommand
     {
         protected DomainCommand() { }
         protected DomainCommand(
@@ -86,18 +96,21 @@ namespace MDA.Domain.Commands
             int version = 1)
         {
             Id = Guid.NewGuid().ToString("N");
+            Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            Version = version;
             ApplicationCommandId = applicationCommandId;
             ApplicationCommandTypeFullName = applicationCommandTypeFullName;
             AggregateRootId = aggregateRootId;
             AggregateRootTypeFullName = aggregateRootTypeFullName;
-            Version = version;
         }
 
+        public string Id { get; set; }
+        public long Timestamp { get; set; }
+        public int Version { get; set; }
         public string ApplicationCommandId { get; set; }
         public string ApplicationCommandTypeFullName { get; set; }
         public string AggregateRootId { get; set; }
         public string AggregateRootTypeFullName { get; set; }
-        public int Version { get; set; }
     }
 
     /// <summary>

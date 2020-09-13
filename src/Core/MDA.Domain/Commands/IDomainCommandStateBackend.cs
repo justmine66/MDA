@@ -3,7 +3,10 @@ using System.Threading.Tasks;
 
 namespace MDA.Domain.Commands
 {
-    public interface IDomainCommandStore
+    /// <summary>
+    /// 领域命令状态后端
+    /// </summary>
+    public interface IDomainCommandStateBackend
     {
         Task Append(IDomainCommand command);
 
