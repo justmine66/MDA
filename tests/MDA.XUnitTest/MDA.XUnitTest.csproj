@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Core\MDA.MessageBus\MDA.MessageBus.csproj" />
+    <ProjectReference Include="..\..\src\Core\MDA.MessageBus.Disruptor\MDA.MessageBus.Disruptor.csproj" />
   </ItemGroup>
 
 </Project>

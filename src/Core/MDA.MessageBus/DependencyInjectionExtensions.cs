@@ -7,9 +7,8 @@ namespace MDA.MessageBus
 {
     public static class DependencyInjectionExtensions
     {
-        public static IServiceCollection AddMessageBus(this IServiceCollection services, params Assembly[] assemblies)
+        public static IServiceCollection AddMessageBusCore(this IServiceCollection services, params Assembly[] assemblies)
         {
-            services.AddSingleton<IMessageQueueService, DisruptorMessageQueueService>();
             services.AddSingleton<IMessageSubscriber, MessageSubscriber>();
             services.AddSingleton<IMessagePublisher, MessagePublisher>();
             services.AddSingleton<IMessageBus, MessageBus>();

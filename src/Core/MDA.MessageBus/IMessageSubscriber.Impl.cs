@@ -15,13 +15,24 @@ namespace MDA.MessageBus
         }
 
         public void Subscribe<TMessage, TMessageHandler>()
-            where TMessage : IMessage 
+            where TMessage : IMessage
             where TMessageHandler : IMessageHandler<TMessage>
         {
             var messageType = typeof(TMessage);
             var subscriber = new MessageSubscriberInfo(messageType, typeof(TMessageHandler));
 
-            _state.AddOrUpdate(messageType, key => new List<MessageSubscriberInfo>() {subscriber}, (key, oldValue) => oldValue);
+            _state.AddOrUpdate(messageType, key => new List<MessageSubscriberInfo>() { subscriber }, (key, oldValue) => oldValue);
+        }
+
+        public void Unsubscribe<TMessage, TMessageHandler>() where TMessage : IMessage where TMessageHandler : IMessageHandler<TMessage>
+        {
+            var messageType = typeof(TMessage);
+            var subscriber = new MessageSubscriberInfo(messageType, typeof(TMessageHandler));
+
+            if (_state.TryGetValue(messageType, out var subscribers))
+            {
+                subscribers.Remove(subscriber);
+            }
         }
 
         public IEnumerable<MessageSubscriberInfo> GetMessageSubscribers(Type messageType)

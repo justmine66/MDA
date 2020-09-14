@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 
-namespace MDA.MessageBus
+namespace MDA.MessageBus.Disruptor
 {
     public class DisruptorTransportEventHandler : IEventHandler<DisruptorTransportEvent>
     {

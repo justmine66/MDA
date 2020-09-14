@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 
-namespace MDA.MessageBus
+namespace MDA.MessageBus.Disruptor
 {
     public class DisruptorMessageQueueService : IMessageQueueService
     {

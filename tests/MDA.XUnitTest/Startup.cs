@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
+using MDA.MessageBus.Disruptor;
 using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
 
@@ -20,7 +21,7 @@ namespace MDA.XUnitTest
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddLogging();
-            services.AddMessageBus(Assembly.GetExecutingAssembly());
+            services.AddMessageBusDisruptor();
             services.AddTransient<IMessageHandler<FakeMessage>, FakeMessageHandler>();
             services.AddTransient<IMessageHandler<FakeMessageWithPartitionKey>, FakeMessageWithPartitionKeyHandler>();
         }

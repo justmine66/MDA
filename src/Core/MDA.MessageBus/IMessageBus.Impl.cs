@@ -25,6 +25,11 @@ namespace MDA.MessageBus
             where TMessageHandler : IMessageHandler<TMessage>
             => _subscriber.Subscribe<TMessage, TMessageHandler>();
 
+        public void Unsubscribe<TMessage, TMessageHandler>()
+            where TMessage : IMessage
+            where TMessageHandler : IMessageHandler<TMessage>
+            => _subscriber.Unsubscribe<TMessage, TMessageHandler>();
+
         public IEnumerable<MessageSubscriberInfo> GetMessageSubscribers(Type messageType)
             => _subscriber.GetMessageSubscribers(messageType);
     }
