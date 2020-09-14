@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,11 +7,11 @@ namespace MDA.MessageBus
 {
     public class MessageSubscriber : IMessageSubscriber
     {
-        private readonly Dictionary<Type, List<MessageSubscriberInfo>> _state;
+        private readonly ConcurrentDictionary<Type, List<MessageSubscriberInfo>> _state;
 
         public MessageSubscriber()
         {
-            _state = new Dictionary<Type, List<MessageSubscriberInfo>>();
+            _state = new ConcurrentDictionary<Type, List<MessageSubscriberInfo>>();
         }
 
         public void Subscribe<TMessage, TMessageHandler>()
@@ -20,14 +21,7 @@ namespace MDA.MessageBus
             var messageType = typeof(TMessage);
             var subscriber = new MessageSubscriberInfo(messageType, typeof(TMessageHandler));
 
-            if (_state.TryGetValue(messageType, out var handlers))
-            {
-                handlers.Add(subscriber);
-            }
-            else
-            {
-                _state[messageType] = new List<MessageSubscriberInfo>() { subscriber };
-            }
+            _state.AddOrUpdate(messageType, key => new List<MessageSubscriberInfo>() {subscriber}, (key, oldValue) => oldValue);
         }
 
         public IEnumerable<MessageSubscriberInfo> GetMessageSubscribers(Type messageType)
