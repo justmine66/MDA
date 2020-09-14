@@ -1,7 +1,7 @@
 ﻿using MDA.MessageBus;
 using Microsoft.Extensions.Logging;
 
-namespace MDA.XUnitTest.Messages
+namespace MDA.XUnitTest.MessageBus
 {
     public class FakeMessageHandler : IMessageHandler<FakeMessage>
     {

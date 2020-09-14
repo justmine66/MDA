@@ -1,5 +1,5 @@
 ﻿using MDA.MessageBus;
-using MDA.XUnitTest.Messages;
+using MDA.XUnitTest.MessageBus;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

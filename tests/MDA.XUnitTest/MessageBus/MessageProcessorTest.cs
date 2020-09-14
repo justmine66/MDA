@@ -1,7 +1,7 @@
 ﻿using MDA.MessageBus;
 using Xunit;
 
-namespace MDA.XUnitTest.Messages
+namespace MDA.XUnitTest.MessageBus
 {
     public class MessageProcessorTest
     {
