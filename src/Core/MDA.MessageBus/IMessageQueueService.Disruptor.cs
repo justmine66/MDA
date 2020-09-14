@@ -12,15 +12,7 @@ namespace MDA.MessageBus
 
         public DisruptorMessageQueueService(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
 
-        public void Start()
-        {
-            var disruptor = new Disruptor<DisruptorTransportEvent>(() => new DisruptorTransportEvent(), 1024);
-
-            disruptor.HandleEventsWith(new DisruptorTransportEventHandler());
-            disruptor.Start();
-
-            _queues[MessagePartitionKeys.GlobalPartitionKey] = disruptor;
-        }
+        public void Start() => _queues[MessagePartitionKeys.GlobalPartitionKey] = CreateAndStartDisruptor();
 
         public void Enqueue(IMessage message) => DoEnqueue(message);
 
@@ -38,14 +30,7 @@ namespace MDA.MessageBus
         {
             var partitionKey = message.PartitionKey;
 
-            _queues.AddOrUpdate(partitionKey, (key) =>
-                {
-                    var newDisruptor = new Disruptor<DisruptorTransportEvent>(() => new DisruptorTransportEvent(), 1024);
-
-                    newDisruptor.Start();
-
-                    return newDisruptor;
-                }, (key, oldValue) => oldValue);
+            _queues.AddOrUpdate(partitionKey, (key) => CreateAndStartDisruptor(), (key, oldValue) => oldValue);
 
             var ringBuffer = _queues[partitionKey].RingBuffer;
             var publishable = ringBuffer.TryNext(out var sequence);
@@ -61,6 +46,16 @@ namespace MDA.MessageBus
             transportMessage.ServiceProvider = _serviceProvider;
 
             ringBuffer.Publish(sequence);
+        }
+
+        private Disruptor<DisruptorTransportEvent> CreateAndStartDisruptor()
+        {
+            var newDisruptor = new Disruptor<DisruptorTransportEvent>(() => new DisruptorTransportEvent(), 1024);
+
+            newDisruptor.HandleEventsWith(new DisruptorTransportEventHandler());
+            newDisruptor.Start();
+
+            return newDisruptor;
         }
     }
 

@@ -1,0 +1,20 @@
+﻿using MDA.MessageBus;
+using Microsoft.Extensions.Logging;
+
+namespace MDA.XUnitTest.MessageBus
+{
+    public class FakeMessageWithPartitionKeyHandler : IMessageHandler<FakeMessageWithPartitionKey>
+    {
+        private readonly ILogger<FakeMessageWithPartitionKeyHandler> _logger;
+
+        public FakeMessageWithPartitionKeyHandler(ILogger<FakeMessageWithPartitionKeyHandler> logger)
+        {
+            _logger = logger;
+        }
+
+        public void OnMessage(FakeMessageWithPartitionKey message)
+        {
+            _logger.LogInformation($"The message: {nameof(FakeMessage)}[Payload: {message.Payload}] handled.");
+        }
+    }
+}

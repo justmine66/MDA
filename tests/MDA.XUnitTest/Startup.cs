@@ -22,6 +22,7 @@ namespace MDA.XUnitTest
             services.AddLogging();
             services.AddMessageBus(Assembly.GetExecutingAssembly());
             services.AddTransient<IMessageHandler<FakeMessage>, FakeMessageHandler>();
+            services.AddTransient<IMessageHandler<FakeMessageWithPartitionKey>, FakeMessageWithPartitionKeyHandler>();
         }
 
         public void Configure(IServiceProvider provider, ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor)
@@ -36,6 +37,7 @@ namespace MDA.XUnitTest
             var subscriber = provider.GetService<IMessageSubscriber>();
 
             subscriber.Subscribe<FakeMessage, IMessageHandler<FakeMessage>>();
+            subscriber.Subscribe<FakeMessageWithPartitionKey, IMessageHandler<FakeMessageWithPartitionKey>>();
 
             var queueService = provider.GetService<IMessageQueueService>();
 
