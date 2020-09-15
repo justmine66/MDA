@@ -2,11 +2,13 @@
 
 namespace MDA.XUnitTest.MessageBus
 {
-    public class FakeMessageWithPartitionKey : Message<long>
+    public class FakeMessageWithPartitionKey : Message
     {
         public FakeMessageWithPartitionKey()
         {
             PartitionKey = 1;
         }
+
+        public long Payload { get; set; }
     }
 }

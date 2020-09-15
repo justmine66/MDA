@@ -9,12 +9,12 @@ namespace MDA.MessageBus
             : this(Guid.NewGuid().ToString("N"))
         { }
 
-        protected Message(string id)
+        protected Message(string id, long? partitionKey = default)
         {
             Id = id;
             Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             Items = new Dictionary<string, byte[]>();
-            PartitionKey = MessagePartitionKeys.GlobalPartitionKey;
+            PartitionKey = partitionKey ?? MessagePartitionKeys.GlobalPartitionKey;
         }
 
         public string Id { get; set; }
@@ -23,24 +23,15 @@ namespace MDA.MessageBus
 
         public long PartitionKey { get; set; }
 
-        public object Payload { get; set; }
-
         public IDictionary<string, byte[]> Items { get; set; }
     }
 
-    public abstract class Message<TPayload> : Message, IMessage<TPayload>
+    public abstract class Message<TId> : Message, IMessage<TId>
     {
         protected Message() { }
 
-        protected Message(string id) : base(id) { }
-
-        public new TPayload Payload { get; set; }
-    }
-
-    public abstract class Message<TId, TPayload> : Message<TPayload>, IMessage<TId, TPayload>
-    {
-        protected Message() { }
-        protected Message(TId id) : base(string.Empty)
+        protected Message(TId id, long? partitionKey = default) 
+            : base(id?.ToString(), partitionKey)
         {
             Id = id;
         }

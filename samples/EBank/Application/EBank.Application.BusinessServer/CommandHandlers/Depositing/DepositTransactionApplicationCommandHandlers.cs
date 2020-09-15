@@ -11,17 +11,17 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Depositing
         IApplicationCommandHandler<CancelDepositTransactionApplicationCommand>,
         IApplicationCommandHandler<ConfirmDepositTransactionCompletedApplicationCommand>
     {
-        public void Handle(IApplicationCommandContext context, ConfirmDepositTransactionValidatePassedApplicationCommand command)
+        public void OnApplicationCommand(IApplicationCommandContext context, ConfirmDepositTransactionValidatePassedApplicationCommand command)
         {
             context.DomainCommandPublisher.Publish(ConfirmDepositTransactionValidatePassedDomainCommandTranslator.Instance, command);
         }
 
-        public void Handle(IApplicationCommandContext context, CancelDepositTransactionApplicationCommand command)
+        public void OnApplicationCommand(IApplicationCommandContext context, CancelDepositTransactionApplicationCommand command)
         {
             context.DomainCommandPublisher.Publish(CancelDepositTransactionDomainCommandTranslator.Instance, command);
         }
 
-        public void Handle(IApplicationCommandContext context, ConfirmDepositTransactionCompletedApplicationCommand command)
+        public void OnApplicationCommand(IApplicationCommandContext context, ConfirmDepositTransactionCompletedApplicationCommand command)
         {
             context.DomainCommandPublisher.Publish(ConfirmDepositTransactionCompletedDomainCommandTranslator.Instance, command);
         }

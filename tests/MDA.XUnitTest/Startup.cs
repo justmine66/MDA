@@ -1,11 +1,12 @@
-﻿using MDA.MessageBus;
+﻿using MDA.Application.Notifications;
+using MDA.MessageBus;
+using MDA.MessageBus.Disruptor;
+using MDA.XUnitTest.ApplicationNotifications;
 using MDA.XUnitTest.MessageBus;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Reflection;
-using MDA.MessageBus.Disruptor;
 using Xunit.DependencyInjection;
 using Xunit.DependencyInjection.Logging;
 
@@ -22,8 +23,10 @@ namespace MDA.XUnitTest
         {
             services.AddLogging();
             services.AddMessageBusDisruptor();
+            services.AddApplicationNotifications();
             services.AddTransient<IMessageHandler<FakeMessage>, FakeMessageHandler>();
             services.AddTransient<IMessageHandler<FakeMessageWithPartitionKey>, FakeMessageWithPartitionKeyHandler>();
+            services.AddTransient<IMessageHandler<FakeApplicationNotification>, FakeApplicationNotificationHandler>();
         }
 
         public void Configure(IServiceProvider provider, ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor)
@@ -39,6 +42,7 @@ namespace MDA.XUnitTest
 
             subscriber.Subscribe<FakeMessage, IMessageHandler<FakeMessage>>();
             subscriber.Subscribe<FakeMessageWithPartitionKey, IMessageHandler<FakeMessageWithPartitionKey>>();
+            subscriber.Subscribe<FakeApplicationNotification, IMessageHandler<FakeApplicationNotification>>();
 
             var queueService = provider.GetService<IMessageQueueService>();
 

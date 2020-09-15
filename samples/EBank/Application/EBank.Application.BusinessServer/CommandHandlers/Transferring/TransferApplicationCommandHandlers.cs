@@ -7,13 +7,13 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Transferring
         IApplicationCommandHandler<TransferFundsApplicationCommand>,
         IApplicationCommandHandler<ConfirmTransferTransactionValidatePassedApplicationCommand>
     {
-        public void Handle(IApplicationCommandContext context, TransferFundsApplicationCommand command)
+        public void OnApplicationCommand(IApplicationCommandContext context, TransferFundsApplicationCommand command)
         {
             // 1. 发起转账交易
             context.DomainCommandPublisher.Publish(ConfirmDepositTransactionValidatePassedDomainCommandTranslator.Instance, command);
         }
 
-        public void Handle(IApplicationCommandContext context,
+        public void OnApplicationCommand(IApplicationCommandContext context,
             ConfirmTransferTransactionValidatePassedApplicationCommand command)
         {
             // 2. 验证账户

@@ -11,17 +11,17 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Withdrawing
         IApplicationCommandHandler<CancelWithdrawTransactionApplicationCommand>,
         IApplicationCommandHandler<ConfirmWithdrawTransactionCompletedApplicationCommand>
     {
-        public void Handle(IApplicationCommandContext context, ConfirmWithdrawTransactionValidatePassedApplicationCommand command)
+        public void OnApplicationCommand(IApplicationCommandContext context, ConfirmWithdrawTransactionValidatePassedApplicationCommand command)
         {
             context.DomainCommandPublisher.Publish(ConfirmWithdrawTransactionValidatePassedDomainCommandTranslator.Instance, command);
         }
 
-        public void Handle(IApplicationCommandContext context, CancelWithdrawTransactionApplicationCommand command)
+        public void OnApplicationCommand(IApplicationCommandContext context, CancelWithdrawTransactionApplicationCommand command)
         {
             context.DomainCommandPublisher.Publish(CancelWithdrawTransactionDomainCommandTranslator.Instance, command);
         }
 
-        public void Handle(IApplicationCommandContext context, ConfirmWithdrawTransactionCompletedApplicationCommand command)
+        public void OnApplicationCommand(IApplicationCommandContext context, ConfirmWithdrawTransactionCompletedApplicationCommand command)
         {
             context.DomainCommandPublisher.Publish(ConfirmWithdrawTransactionCompletedDomainCommandTranslator.Instance, command);
         }

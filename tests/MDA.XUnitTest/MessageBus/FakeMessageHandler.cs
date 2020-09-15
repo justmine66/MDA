@@ -12,7 +12,7 @@ namespace MDA.XUnitTest.MessageBus
             _logger = logger;
         }
 
-        public void OnMessage(FakeMessage message)
+        public void Handle(FakeMessage message)
         {
             _logger.LogInformation($"The message: {nameof(FakeMessage)}[Payload: {message.Payload}] handled.");
         }

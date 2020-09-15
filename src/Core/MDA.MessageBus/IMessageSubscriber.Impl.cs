@@ -35,7 +35,7 @@ namespace MDA.MessageBus
             }
         }
 
-        public IEnumerable<MessageSubscriberInfo> GetMessageSubscribers(Type messageType)
+        public IEnumerable<MessageSubscriberInfo> GetSubscribers(Type messageType)
             => _state.TryGetValue(messageType, out var handlers) ? handlers : Enumerable.Empty<MessageSubscriberInfo>();
     }
 }

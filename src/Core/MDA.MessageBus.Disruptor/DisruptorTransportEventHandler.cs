@@ -13,7 +13,7 @@ namespace MDA.MessageBus.Disruptor
             var provider = data.ServiceProvider;
             var manager = provider.GetService<IMessageSubscriber>();
             var logger = provider.GetService<ILogger<DisruptorTransportEventHandler>>();
-            var subscribers = manager.GetMessageSubscribers(messageType);
+            var subscribers = manager.GetSubscribers(messageType);
 
             if (!subscribers.Any())
             {
@@ -32,7 +32,7 @@ namespace MDA.MessageBus.Disruptor
                     continue;
                 }
 
-                messageHandlerType.GetMethod("OnMessage")?.Invoke(handler, new object[] { data.Message });
+                messageHandlerType.GetMethod("Handle")?.Invoke(handler, new object[] { data.Message });
             }
         }
     }

@@ -23,12 +23,7 @@ namespace MDA.MessageBus
         long PartitionKey { get; set; }
 
         /// <summary>
-        /// 消息载荷
-        /// </summary>
-        object Payload { get; set; }
-
-        /// <summary>
-        /// 补充项列表
+        /// 额外信息
         /// </summary>
         IDictionary<string, byte[]> Items { get; set; }
     }
@@ -36,21 +31,8 @@ namespace MDA.MessageBus
     /// <summary>
     /// 表示一条消息
     /// </summary>
-    /// <typeparam name="TPayload">消息载荷类型</typeparam>
-    public interface IMessage<TPayload>: IMessage
-    {
-        /// <summary>
-        /// 消息载荷
-        /// </summary>
-        new TPayload Payload { get; set; }
-    }
-
-    /// <summary>
-    /// 表示一条消息
-    /// </summary>
     /// <typeparam name="TId">消息标识类型</typeparam>
-    /// <typeparam name="TPayload">消息载荷类型</typeparam>
-    public interface IMessage<TId, TPayload> : IMessage<TPayload>
+    public interface IMessage<TId> : IMessage
     {
         /// <summary>
         /// 标识

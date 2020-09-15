@@ -35,9 +35,6 @@ namespace EBank.Application
         /// 转账
         /// </summary>
         /// <param name="command"></param>
-        public void TransferFunds(TransferFundsApplicationCommand command)
-        {
-            _commandService.Publish(command);
-        }
+        public void TransferFunds(TransferFundsApplicationCommand command) => _commandService.Publish(command);
     }
 }

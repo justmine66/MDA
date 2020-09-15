@@ -1,4 +1,7 @@
 ﻿namespace MDA.Application.Commands
 {
-    public interface IApplicationCommandService : IAsyncApplicationCommandPublisher, IApplicationCommandExecutor { }
+    public interface IApplicationCommandService : 
+        IAsyncApplicationCommandPublisher,
+        IApplicationCommandExecutor 
+    { }
 }

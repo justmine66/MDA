@@ -1,59 +1,37 @@
-﻿using System;
+﻿using MDA.MessageBus;
+using System;
 
 namespace MDA.Application.Notifications
 {
     /// <summary>
     /// 表示一个应用层通知消息
     /// </summary>
-    public interface IApplicationNotification
-    {
-        /// <summary>
-        /// 标识
-        /// </summary>
-        string Id { get; set; }
-
-        /// <summary>
-        /// 时间戳，单位：毫秒。
-        /// </summary>
-        long Timestamp { get; set; }
-    }
+    public interface IApplicationNotification : IMessage { }
 
     /// <summary>
     /// 表示一个应用层通知消息
     /// </summary>
     /// <typeparam name="TId">标识类型</typeparam>
-    public interface IApplicationNotification<TId> : IApplicationNotification
-    {
-        /// <summary>
-        /// 标识
-        /// </summary>
-        new TId Id { get; set; }
-    }
+    public interface IApplicationNotification<TId> : IApplicationNotification, IMessage<TId> { }
 
     /// <summary>
     /// 应用层通知消息基类
     /// </summary>
-    public abstract class ApplicationNotification : IApplicationNotification
+    public abstract class ApplicationNotification : Message, IApplicationNotification
     {
-        protected ApplicationNotification()
-        {
-            Id = Guid.NewGuid().ToString("N");
-            Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        }
-
-        public string Id { get; set; }
-        public long Timestamp { get; set; }
+        protected ApplicationNotification() { }
+        protected ApplicationNotification(string id, long? partitionKey = default)
+            : base(id, partitionKey) { }
     }
 
     /// <summary>
     /// 应用层通知消息基类
     /// </summary>
     /// <typeparam name="TId">标识类型</typeparam>
-    public abstract class ApplicationNotification<TId> : ApplicationNotification, IApplicationNotification<TId>
+    public abstract class ApplicationNotification<TId> : Message<TId>, IApplicationNotification<TId>
     {
         protected ApplicationNotification() { }
-        protected ApplicationNotification(TId id) => Id = id;
-
-        public new TId Id { get; set; }
+        protected ApplicationNotification(TId id, long? partitionKey = default)
+            : base(id, partitionKey) { }
     }
 }

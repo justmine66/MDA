@@ -3,15 +3,15 @@ using System.Threading.Tasks;
 
 namespace MDA.Application.Commands
 {
-    public interface IApplicationCommandHandler<in TApplicationCommand>
+    public interface IApplicationCommandHandler<in TApplicationCommand> 
         where TApplicationCommand : IApplicationCommand
     {
-        void Handle(IApplicationCommandContext context, TApplicationCommand command);
+        void OnApplicationCommand(IApplicationCommandContext context, TApplicationCommand command);
     }
 
     public interface IAsyncApplicationCommandHandler<in TApplicationCommand>
         where TApplicationCommand : IApplicationCommand
     {
-        Task HandleAsync(IApplicationCommandContext context, TApplicationCommand command, CancellationToken token = default);
+        Task OnApplicationCommandAsync(IApplicationCommandContext context, TApplicationCommand command, CancellationToken token = default);
     }
 }

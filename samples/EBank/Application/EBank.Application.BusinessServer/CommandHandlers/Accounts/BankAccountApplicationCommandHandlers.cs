@@ -31,7 +31,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
             _accountQuery = accountQuery;
         }
 
-        public async Task HandleAsync(IApplicationCommandContext context, OpenBankAccountApplicationCommand command, CancellationToken token = default)
+        public async Task OnApplicationCommandAsync(IApplicationCommandContext context, OpenBankAccountApplicationCommand command, CancellationToken token = default)
         {
             var hadAccountName = await _accountIndex.HadAccountNameAsync(command.AccountName).ConfigureAwait(false);
             if (hadAccountName)
@@ -51,7 +51,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                     }, command);
         }
 
-        public async Task HandleAsync(IApplicationCommandContext context, ValidateTransferTransactionApplicationCommand command, CancellationToken token = default)
+        public async Task OnApplicationCommandAsync(IApplicationCommandContext context, ValidateTransferTransactionApplicationCommand command, CancellationToken token = default)
         {
             var accountToValidate = command.Account;
             var account = await _accountQuery.GetAccountAsync(accountToValidate.Id);
@@ -106,7 +106,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
             await context.ApplicationNotificationPublisher.PublishAsync(passed);
         }
 
-        public async Task HandleAsync(IApplicationCommandContext context, ValidateDepositTransactionApplicationCommand command, CancellationToken token = default)
+        public async Task OnApplicationCommandAsync(IApplicationCommandContext context, ValidateDepositTransactionApplicationCommand command, CancellationToken token = default)
         {
             var account = await _accountQuery.GetAccountAsync(command.AccountId);
             if (account == null)
@@ -153,12 +153,12 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
             await context.ApplicationNotificationPublisher.PublishAsync(passed);
         }
 
-        public void Handle(IApplicationCommandContext context, StartDepositAccountTransactionApplicationCommand command)
+        public void OnApplicationCommand(IApplicationCommandContext context, StartDepositAccountTransactionApplicationCommand command)
         {
             context.DomainCommandPublisher.Publish(StartDepositAccountTransactionDomainCommandFiller.Instance, command);
         }
 
-        public void Handle(IApplicationCommandContext context, StartWithdrawAccountTransactionApplicationCommand command)
+        public void OnApplicationCommand(IApplicationCommandContext context, StartWithdrawAccountTransactionApplicationCommand command)
         {
             context.DomainCommandPublisher.Publish(StartWithdrawAccountTransactionDomainCommandFiller.Instance, command);
         }

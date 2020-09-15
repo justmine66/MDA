@@ -13,7 +13,7 @@ namespace MDA.MessageBus
             where TMessage : IMessage
             where TMessageHandler : IMessageHandler<TMessage>;
 
-        IEnumerable<MessageSubscriberInfo> GetMessageSubscribers(Type messageType);
+        IEnumerable<MessageSubscriberInfo> GetSubscribers(Type messageType);
     }
 
     public class MessageSubscriberInfo

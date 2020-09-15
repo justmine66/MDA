@@ -1,17 +1,18 @@
-﻿using System.Threading;
+﻿using MDA.MessageBus;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MDA.Application.Notifications
 {
-    public interface IApplicationNotificationHandler<in TApplicationNotification>
+    public interface IApplicationNotificationHandler<in TApplicationNotification> : IMessageHandler<TApplicationNotification>
         where TApplicationNotification : IApplicationNotification
     {
-        void Handle(TApplicationNotification notification);
+        new void Handle(TApplicationNotification notification);
     }
 
-    public interface IAsyncApplicationNotificationHandler<in TApplicationNotification>
+    public interface IAsyncApplicationNotificationHandler<in TApplicationNotification> : IAsyncMessageHandler<TApplicationNotification>
         where TApplicationNotification : IApplicationNotification
     {
-        Task HandleAsync(TApplicationNotification notification, CancellationToken token = default);
+        new Task HandleAsync(TApplicationNotification notification, CancellationToken token = default);
     }
 }

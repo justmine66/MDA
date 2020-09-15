@@ -5,11 +5,11 @@ namespace MDA.MessageBus
 {
     public interface IMessageHandler<in TMessage> where TMessage : IMessage
     {
-        void OnMessage(TMessage message);
+        void Handle(TMessage message);
     }
 
     public interface IAsyncMessageHandler<in TMessage> where TMessage : IMessage
     {
-        Task OnMessageAsync(TMessage message, CancellationToken token = default);
+        Task HandleAsync(TMessage message, CancellationToken token = default);
     }
 }

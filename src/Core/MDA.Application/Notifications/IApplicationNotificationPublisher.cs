@@ -5,15 +5,13 @@ namespace MDA.Application.Notifications
 {
     public interface IApplicationNotificationPublisher
     {
-        void Publish(IApplicationNotification notification);
-
-        void Publish<TId>(IApplicationNotification<TId> notification);
+        void Publish<TApplicationNotification>(TApplicationNotification notification)
+            where TApplicationNotification : IApplicationNotification;
     }
 
     public interface IAsyncApplicationNotificationPublisher : IApplicationNotificationPublisher
     {
-        Task PublishAsync(IApplicationNotification notification);
-
-        Task PublishAsync<TId>(IApplicationNotification<TId> notification, CancellationToken token = default);
+        Task PublishAsync<TApplicationNotification>(TApplicationNotification notification, CancellationToken token = default)
+            where TApplicationNotification : IApplicationNotification;
     }
 }

@@ -12,7 +12,7 @@ namespace MDA.XUnitTest.MessageBus
             _logger = logger;
         }
 
-        public void OnMessage(FakeMessageWithPartitionKey message)
+        public void Handle(FakeMessageWithPartitionKey message)
         {
             _logger.LogInformation($"The message: {nameof(FakeMessage)}[Payload: {message.Payload}] handled.");
         }
