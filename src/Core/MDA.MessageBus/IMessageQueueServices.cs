@@ -9,8 +9,6 @@ namespace MDA.MessageBus
 
         void Enqueue(IMessage message);
 
-        void Enqueue<TPayload>(IMessage<TPayload> message);
-
         void Stop();
     }
 
@@ -19,8 +17,6 @@ namespace MDA.MessageBus
         Task StartAsync(CancellationToken token = default);
 
         Task EnqueueAsync(IMessage message, CancellationToken token = default);
-
-        Task EnqueueAsync<TPayload>(IMessage<TPayload> message, CancellationToken token = default);
 
         Task StopAsync(CancellationToken token = default);
     }
