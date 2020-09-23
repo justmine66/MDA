@@ -16,8 +16,6 @@ namespace MDA.MessageBus.Disruptor
 
         public void Enqueue(IMessage message) => DoEnqueue(message);
 
-        public void Enqueue<TPayload>(IMessage<TPayload> message) => DoEnqueue(message);
-
         public void Stop()
         {
             foreach (var queue in _queues)
