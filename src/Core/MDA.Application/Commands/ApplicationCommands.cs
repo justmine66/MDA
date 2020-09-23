@@ -19,7 +19,7 @@ namespace MDA.Application.Commands
     public abstract class ApplicationCommand : Message, IApplicationCommand
     {
         protected ApplicationCommand() { }
-        protected ApplicationCommand(string id, long? partitionKey = default)
+        protected ApplicationCommand(string id, int? partitionKey = default)
             : base(id, partitionKey) { }
     }
 
@@ -30,7 +30,7 @@ namespace MDA.Application.Commands
     public abstract class ApplicationCommand<TId> : Message<TId>, IApplicationCommand<TId>
     {
         protected ApplicationCommand() { }
-        protected ApplicationCommand(TId id, long? partitionKey = default)
+        protected ApplicationCommand(TId id, int? partitionKey = default)
             : base(id, partitionKey) { }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using MDA.Domain.Models;
 
 namespace MDA.Domain.Commands
 {
@@ -7,9 +8,13 @@ namespace MDA.Domain.Commands
         void Publish<TDomainCommand>(TDomainCommand command)
             where TDomainCommand : IDomainCommand;
 
+        void Publish<TAggregateRoot, TDomainCommand>(TDomainCommand command)
+            where TDomainCommand : IDomainCommand
+            where TAggregateRoot : IAggregateRoot;
+
         void Publish<TDomainCommand, TArg>(
-            IDomainCommandFiller<TDomainCommand, TArg> filler, TArg arg)
-            where TDomainCommand : class, IDomainCommand;
+        IDomainCommandFiller<TDomainCommand, TArg> filler, TArg arg)
+        where TDomainCommand : class, IDomainCommand;
 
         void Publish<TDomainCommand, TArg>(
             Action<TDomainCommand, TArg> filler, TArg arg)

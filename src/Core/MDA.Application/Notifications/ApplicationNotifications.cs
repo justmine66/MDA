@@ -1,5 +1,4 @@
 ﻿using MDA.MessageBus;
-using System;
 
 namespace MDA.Application.Notifications
 {
@@ -20,8 +19,8 @@ namespace MDA.Application.Notifications
     public abstract class ApplicationNotification : Message, IApplicationNotification
     {
         protected ApplicationNotification() { }
-        protected ApplicationNotification(string id, long? partitionKey = default)
-            : base(id, partitionKey) { }
+        protected ApplicationNotification(string id, int? partitionKey = default)
+            : base(id) { }
     }
 
     /// <summary>
@@ -31,7 +30,7 @@ namespace MDA.Application.Notifications
     public abstract class ApplicationNotification<TId> : Message<TId>, IApplicationNotification<TId>
     {
         protected ApplicationNotification() { }
-        protected ApplicationNotification(TId id, long? partitionKey = default)
+        protected ApplicationNotification(TId id, int? partitionKey = default)
             : base(id, partitionKey) { }
     }
 }

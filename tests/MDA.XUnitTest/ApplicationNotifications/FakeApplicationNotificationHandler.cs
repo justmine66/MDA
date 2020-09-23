@@ -14,7 +14,7 @@ namespace MDA.XUnitTest.ApplicationNotifications
 
         public void Handle(FakeApplicationNotification notification)
         {
-            _logger.LogInformation($"The application nootification: {nameof(notification)}[Payload: {notification.Payload}] handled.");
+            _logger.LogInformation($"The application notification: {nameof(notification)}[Payload: {notification.Payload}] handled.");
         }
     }
 }

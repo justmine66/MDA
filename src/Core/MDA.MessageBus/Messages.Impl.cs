@@ -9,19 +9,22 @@ namespace MDA.MessageBus
             : this(Guid.NewGuid().ToString("N"))
         { }
 
-        protected Message(string id, long? partitionKey = default)
+        protected Message(string id, int? partitionKey = default)
         {
             Id = id;
             Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             Items = new Dictionary<string, byte[]>();
             PartitionKey = partitionKey ?? MessagePartitionKeys.GlobalPartitionKey;
+            Topic = MessageTopics.GlobalTopic;
         }
 
         public string Id { get; set; }
 
         public long Timestamp { get; set; }
 
-        public long PartitionKey { get; set; }
+        public string Topic { get; set; }
+
+        public int PartitionKey { get; set; }
 
         public IDictionary<string, byte[]> Items { get; set; }
     }
@@ -30,7 +33,7 @@ namespace MDA.MessageBus
     {
         protected Message() { }
 
-        protected Message(TId id, long? partitionKey = default) 
+        protected Message(TId id, int? partitionKey = default)
             : base(id?.ToString(), partitionKey)
         {
             Id = id;

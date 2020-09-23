@@ -18,9 +18,14 @@ namespace MDA.MessageBus
         long Timestamp { get; set; }
 
         /// <summary>
+        /// 主题
+        /// </summary>
+        string Topic { get; set; }
+
+        /// <summary>
         /// 分区键
         /// </summary>
-        long PartitionKey { get; set; }
+        int PartitionKey { get; set; }
 
         /// <summary>
         /// 额外信息

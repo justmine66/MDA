@@ -11,13 +11,29 @@ namespace MDA.Domain.Models
     /// <summary>
     /// 聚合根，封装业务对象的不变性。
     /// </summary>
-    /// <typeparam name="TId"></typeparam>
-    public interface IAggregateRoot<TId> : IEquatable<IAggregateRoot<TId>>
+    public interface IAggregateRoot
     {
         /// <summary>
         /// 标识
         /// </summary>
-        TId Id { get; }
+        string Id { get; set; }
+
+        /// <summary>
+        /// 版本
+        /// </summary>
+        long Version { get; set; }
+    }
+
+    /// <summary>
+    /// 聚合根，封装业务对象的不变性。
+    /// </summary>
+    /// <typeparam name="TId">标识类型</typeparam>
+    public interface IAggregateRoot<TId> : IAggregateRoot, IEquatable<IAggregateRoot<TId>>
+    {
+        /// <summary>
+        /// 标识
+        /// </summary>
+        new TId Id { get; set; }
     }
 
     public interface IAggregateRootWithCompositeId<TId> : IAggregateRoot<TId>
@@ -31,14 +47,8 @@ namespace MDA.Domain.Models
     /// <summary>
     /// 聚合根，封装业务对象的不变性。
     /// </summary>
-    /// <typeparam name="TId"></typeparam>
-    public interface IEventSourcedAggregateRoot<TId> : IAggregateRoot<TId>
+    public interface IEventSourcedAggregateRoot : IAggregateRoot
     {
-        /// <summary>
-        /// 版本
-        /// </summary>
-        int Version { get; }
-
         /// <summary>
         /// 获取当前变更的领域事件列表
         /// </summary>
@@ -82,39 +92,48 @@ namespace MDA.Domain.Models
     /// 聚合根，封装业务对象的不变性。
     /// </summary>
     /// <typeparam name="TId"></typeparam>
+    public interface IEventSourcedAggregateRoot<TId> : IEventSourcedAggregateRoot, IAggregateRoot<TId> { }
+
+    /// <summary>
+    /// 聚合根，封装业务对象的不变性。
+    /// </summary>
+    /// <typeparam name="TId"></typeparam>
     public interface IEventSourcedAggregateRootWithCompositeId<TId> :
         IEventSourcedAggregateRoot<TId>,
         IAggregateRootWithCompositeId<TId>
     { }
 
-    public abstract class EventSourcedAggregateRoot<TId> : IEventSourcedAggregateRoot<TId>
+    public abstract class EventSourcedAggregateRoot : IEventSourcedAggregateRoot
     {
         private readonly int _version;
         private readonly IList<IDomainEvent> _changes;
 
-        protected EventSourcedAggregateRoot(TId id)
-            : this(id, 1)
-        { }
+        protected EventSourcedAggregateRoot() { }
 
-        protected EventSourcedAggregateRoot(TId id, int version)
+        protected EventSourcedAggregateRoot(string id, int version = 1)
         {
             Id = id;
             _changes = new List<IDomainEvent>();
             _version = version;
         }
 
-        public TId Id { get; protected set; }
-        public int Version => _version + 1;
         public IEnumerable<IDomainEvent> Events => _changes;
+        public string Id { get; set; }
+        public long Version { get; set; }
 
-        public virtual void ReplayDomainEvents(IEnumerable<IDomainEvent> events)
+        public virtual void ApplyDomainEvent(IDomainEvent @event)
         {
-            if (events == null) return;
+            throw new NotImplementedException();
+        }
 
-            foreach (var domainEvent in events)
-            {
-                OnDomainEvent(domainEvent);
-            }
+        public virtual void OnDomainCommand(IDomainCommand command)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void OnDomainEvent(IDomainEvent @event)
+        {
+            throw new NotImplementedException();
         }
 
         public virtual void PublishDomainNotification(IDomainNotification notification)
@@ -122,35 +141,25 @@ namespace MDA.Domain.Models
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// 处理命令。
-        /// </summary>
-        /// <param name="command">领域命令</param>
-        public virtual void OnDomainCommand(IDomainCommand command)
+        public virtual void ReplayDomainEvents(IEnumerable<IDomainEvent> events)
         {
-            // todo: 获取命令关联的聚合根状态
+            throw new NotImplementedException();
+        }
+    }
 
-            (this as dynamic).OnDomainCommand(command);
+    public abstract class EventSourcedAggregateRoot<TId> : EventSourcedAggregateRoot, IEventSourcedAggregateRoot<TId>
+    {
+        private readonly int _version;
+        private readonly IList<IDomainEvent> _changes;
+
+        protected EventSourcedAggregateRoot(TId id, int version = 1) : base(id?.ToString(), version)
+        {
+            Id = id;
+            _changes = new List<IDomainEvent>();
+            _version = version;
         }
 
-        /// <summary>
-        /// 填充事件信息到领域模型。
-        /// </summary>
-        /// <param name="@event">领域事件</param>
-        public virtual void OnDomainEvent(IDomainEvent @event)
-            => (this as dynamic).OnDomainEvent(@event);
-
-        /// <summary>
-        /// 应用领域事件。
-        /// 1. 添加到领域事件列表；
-        /// 2. 填充事件信息到领域模型。
-        /// </summary>
-        /// <param name="@event">领域事件</param>
-        public virtual void ApplyDomainEvent(IDomainEvent @event)
-        {
-            _changes.Add(@event);
-            OnDomainEvent(@event);
-        }
+        public new TId Id { get; set; }
 
         protected virtual bool Equals(IEventSourcedAggregateRoot<TId> other)
         {

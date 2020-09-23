@@ -1,22 +1,14 @@
-﻿using System;
+﻿using MDA.MessageBus;
+using MDA.Shared.Hashes;
+using System;
 
 namespace MDA.Domain.Commands
 {
     /// <summary>
     /// 表示一个领域命令
     /// </summary>
-    public interface IDomainCommand
+    public interface IDomainCommand : IMessage
     {
-        /// <summary>
-        /// 标识
-        /// </summary>
-        string Id { get; set; }
-
-        /// <summary>
-        /// 时间戳，单位：毫秒。
-        /// </summary>
-        long Timestamp { get; set; }
-
         /// <summary>
         /// 版本
         /// </summary>
@@ -28,9 +20,9 @@ namespace MDA.Domain.Commands
         string ApplicationCommandId { get; set; }
 
         /// <summary>
-        /// 应用层命令类型完全限定名
+        /// 应用层命令类型
         /// </summary>
-        string ApplicationCommandTypeFullName { get; set; }
+        Type ApplicationCommandType { get; set; }
 
         /// <summary>
         /// 聚合根标识。
@@ -38,9 +30,9 @@ namespace MDA.Domain.Commands
         string AggregateRootId { get; set; }
 
         /// <summary>
-        /// 聚合根类型完全限定名
+        /// 聚合根类型
         /// </summary>
-        string AggregateRootTypeFullName { get; set; }
+        Type AggregateRootType { get; set; }
     }
 
     /// <summary>
@@ -60,13 +52,7 @@ namespace MDA.Domain.Commands
     /// </summary>
     /// <typeparam name="TId">领域命令标识类型</typeparam>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
-    public interface IDomainCommand<TId, TAggregateRootId> : IDomainCommand<TAggregateRootId>
-    {
-        /// <summary>
-        /// 标识
-        /// </summary>
-        new TId Id { get; set; }
-    }
+    public interface IDomainCommand<TId, TAggregateRootId> : IDomainCommand<TAggregateRootId>, IMessage<TId> { }
 
     /// <summary>
     /// 表示一个领域命令
@@ -85,32 +71,30 @@ namespace MDA.Domain.Commands
     /// <summary>
     /// 领域命令基类
     /// </summary>
-    public abstract class DomainCommand : IDomainCommand
+    public abstract class DomainCommand : Message, IDomainCommand
     {
         protected DomainCommand() { }
         protected DomainCommand(
             string applicationCommandId,
-            string applicationCommandTypeFullName,
+            Type applicationCommandType,
             string aggregateRootId,
-            string aggregateRootTypeFullName,
+            Type aggregateRootType,
             int version = 1)
         {
-            Id = Guid.NewGuid().ToString("N");
-            Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             Version = version;
             ApplicationCommandId = applicationCommandId;
-            ApplicationCommandTypeFullName = applicationCommandTypeFullName;
+            ApplicationCommandType = applicationCommandType;
             AggregateRootId = aggregateRootId;
-            AggregateRootTypeFullName = aggregateRootTypeFullName;
+            AggregateRootType = aggregateRootType;
+            PartitionKey = MurMurHash3.Hash(aggregateRootType.FullName);
+            Version = version;
         }
 
-        public string Id { get; set; }
-        public long Timestamp { get; set; }
         public int Version { get; set; }
         public string ApplicationCommandId { get; set; }
-        public string ApplicationCommandTypeFullName { get; set; }
+        public Type ApplicationCommandType { get; set; }
         public string AggregateRootId { get; set; }
-        public string AggregateRootTypeFullName { get; set; }
+        public Type AggregateRootType { get; set; }
     }
 
     /// <summary>
@@ -124,14 +108,37 @@ namespace MDA.Domain.Commands
         protected DomainCommand() { }
         protected DomainCommand(
             string applicationCommandId,
-            string applicationCommandTypeFullName,
+            Type applicationCommandType,
             TAggregateRootId aggregateRootId,
-            string aggregateRootTypeFullName,
+            Type aggregateRootType,
             int version = 1)
             : base(applicationCommandId,
-                applicationCommandTypeFullName,
+                applicationCommandType,
                 string.Empty,
-                aggregateRootTypeFullName,
+                aggregateRootType,
+                version) => AggregateRootId = aggregateRootId;
+
+        public new TAggregateRootId AggregateRootId { get; set; }
+    }
+
+    /// <summary>
+    /// 领域命令基类
+    /// </summary>
+    /// <typeparam name="TAggregateRoot">聚合根类型</typeparam>
+    /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
+    public abstract class DomainCommand<TAggregateRoot, TAggregateRootId> : DomainCommand<TAggregateRootId>
+    {
+        protected DomainCommand() => AggregateRootType = typeof(TAggregateRoot);
+
+        protected DomainCommand(
+            string applicationCommandId,
+            Type applicationCommandType,
+            TAggregateRootId aggregateRootId,
+            int version = 1)
+            : base(applicationCommandId,
+                applicationCommandType,
+                aggregateRootId,
+                typeof(TAggregateRoot),
                 version) => AggregateRootId = aggregateRootId;
 
         public new TAggregateRootId AggregateRootId { get; set; }
@@ -142,22 +149,21 @@ namespace MDA.Domain.Commands
     /// </summary>
     /// <typeparam name="TId">领域命令标识类型</typeparam>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
-    public abstract class DomainCommand<TId, TAggregateRootId> :
-        DomainCommand<TAggregateRootId>,
+    /// <typeparam name="TAggregateRoot">聚合根类型</typeparam>
+    public abstract class DomainCommand<TAggregateRoot, TId, TAggregateRootId> :
+        DomainCommand<TAggregateRoot, TAggregateRootId>,
         IDomainCommand<TId, TAggregateRootId>
     {
         protected DomainCommand() { }
         protected DomainCommand(
             TId id,
             string applicationCommandId,
-            string applicationCommandTypeFullName,
+            Type applicationCommandType,
             TAggregateRootId aggregateRootId,
-            string aggregateRootTypeFullName,
             int version = 1)
             : base(applicationCommandId,
-                applicationCommandTypeFullName,
+                applicationCommandType,
                 aggregateRootId,
-                aggregateRootTypeFullName,
                 version) => Id = id;
 
         public new TId Id { get; set; }
@@ -169,23 +175,22 @@ namespace MDA.Domain.Commands
     /// <typeparam name="TApplicationCommandId">应用层命令标识类型</typeparam>
     /// <typeparam name="TId">领域命令标识类型</typeparam>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
-    public abstract class DomainCommand<TApplicationCommandId, TId, TAggregateRootId> :
-        DomainCommand<TId, TAggregateRootId>,
+    /// <typeparam name="TAggregateRoot">聚合根类型</typeparam>
+    public abstract class DomainCommand<TAggregateRoot, TApplicationCommandId, TId, TAggregateRootId> :
+        DomainCommand<TAggregateRoot, TId, TAggregateRootId>,
         IDomainCommand<TApplicationCommandId, TId, TAggregateRootId>
     {
         protected DomainCommand() { }
         protected DomainCommand(
             TId id,
             TApplicationCommandId applicationCommandId,
-            string applicationCommandTypeFullName,
+            Type applicationCommandType,
             TAggregateRootId aggregateRootId,
-            string aggregateRootTypeFullName,
             int version = 1)
             : base(id,
                 string.Empty,
-                applicationCommandTypeFullName,
+                applicationCommandType,
                 aggregateRootId,
-                aggregateRootTypeFullName,
                 version) => ApplicationCommandId = applicationCommandId;
 
         public new TApplicationCommandId ApplicationCommandId { get; set; }

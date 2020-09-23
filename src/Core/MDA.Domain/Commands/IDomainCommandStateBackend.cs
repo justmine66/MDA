@@ -8,8 +8,6 @@ namespace MDA.Domain.Commands
     /// </summary>
     public interface IDomainCommandStateBackend
     {
-        Task Append(IDomainCommand command);
-
         Task AppendAsync(IDomainCommand command, CancellationToken token = default);
     }
 }

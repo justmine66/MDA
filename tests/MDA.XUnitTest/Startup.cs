@@ -12,7 +12,7 @@ using Xunit.DependencyInjection.Logging;
 
 namespace MDA.XUnitTest
 {
-    public class Startup
+    public partial class Startup
     {
         public void ConfigureHost(IHostBuilder hostBuilder)
         {
@@ -26,7 +26,7 @@ namespace MDA.XUnitTest
             services.AddApplicationNotifications();
             services.AddTransient<IMessageHandler<FakeMessage>, FakeMessageHandler>();
             services.AddTransient<IMessageHandler<FakeMessageWithPartitionKey>, FakeMessageWithPartitionKeyHandler>();
-            services.AddTransient<IMessageHandler<FakeApplicationNotification>, FakeApplicationNotificationHandler>();
+            services.AddTransient<IApplicationNotificationHandler<FakeApplicationNotification>, FakeApplicationNotificationHandler>();
         }
 
         public void Configure(IServiceProvider provider, ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor)
@@ -42,7 +42,7 @@ namespace MDA.XUnitTest
 
             subscriber.Subscribe<FakeMessage, IMessageHandler<FakeMessage>>();
             subscriber.Subscribe<FakeMessageWithPartitionKey, IMessageHandler<FakeMessageWithPartitionKey>>();
-            subscriber.Subscribe<FakeApplicationNotification, IMessageHandler<FakeApplicationNotification>>();
+            subscriber.Subscribe<FakeApplicationNotification, IApplicationNotificationHandler<FakeApplicationNotification>>();
 
             var queueService = provider.GetService<IMessageQueueService>();
 
