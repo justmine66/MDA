@@ -5,8 +5,8 @@ namespace MDA.Application.Commands
 {
     public interface IApplicationCommandContext
     {
-        IDomainCommandPublisher DomainCommandPublisher { get; set; }
+        IDomainCommandPublisher DomainCommandPublisher { get; }
 
-        IAsyncApplicationNotificationPublisher ApplicationNotificationPublisher { get; set; }
+        IApplicationNotificationPublisher ApplicationNotificationPublisher { get; }
     }
 }

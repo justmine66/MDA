@@ -31,8 +31,7 @@ namespace MDA.MessageBus
 
     public abstract class Message<TId> : Message, IMessage<TId>
     {
-        protected Message() { }
-
+        protected Message() => base.Id = Id?.ToString();
         protected Message(TId id, int? partitionKey = default)
             : base(id?.ToString(), partitionKey)
         {

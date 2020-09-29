@@ -8,11 +8,11 @@ namespace MDA.Domain.Models
     public class AggregateRootSavePoint<TAggregateRoot>
         where TAggregateRoot : IEventSourcedAggregateRoot
     {
-        public AggregateRootSavePoint(TAggregateRoot aggregateRoot, long domainEventOffset = 0)
+        public AggregateRootSavePoint(TAggregateRoot aggregateRoot, int generation = 1)
         {
             AggregateRoot = aggregateRoot;
-            DomainEventOffset = domainEventOffset;
-            Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            LastModified = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            Generation = generation;
         }
 
         /// <summary>
@@ -21,13 +21,25 @@ namespace MDA.Domain.Models
         public TAggregateRoot AggregateRoot { get; set; }
 
         /// <summary>
-        /// 领域事件位点
+        /// 最后更新时间戳
         /// </summary>
-        public long DomainEventOffset { get; set; }
+        public long LastModified { get; set; }
 
         /// <summary>
-        /// 时间戳
+        /// 第几代
         /// </summary>
-        public long Timestamp { get; set; }
+        public int Generation { get; set; }
+
+        public AggregateRootSavePoint<TAggregateRoot> Refresh(TAggregateRoot aggregateRoot)
+        {
+            AggregateRoot = aggregateRoot;
+            LastModified = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            Generation++;
+
+            return this;
+        }
+
+        public override string ToString() 
+            => $"AggregateRootId: {AggregateRoot.Id},AggregateRootType: {AggregateRoot.GetType()}, Generation: {Generation}, LastModified: {LastModified}";
     }
 }

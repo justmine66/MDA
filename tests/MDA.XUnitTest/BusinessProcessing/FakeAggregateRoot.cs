@@ -1,25 +1,31 @@
-﻿using MDA.Domain.Commands;
-using MDA.Domain.Models;
+﻿using MDA.Domain.Models;
 
 namespace MDA.XUnitTest.BusinessProcessing
 {
-    public sealed class FakeAggregateRoot : EventSourcedAggregateRoot<long>, IDomainCommandHandler<ChangePayloadDomainCommand>
+    public partial class FakeAggregateRoot
     {
-        public FakeAggregateRoot(long id, long payload, int version = 1)
-            : base(id, version)
+        public FakeAggregateRoot(long payload)
+        {
+            Payload = payload;
+        }
+
+        public long Payload { get; private set; }
+    }
+
+    public partial class FakeAggregateRoot : EventSourcedAggregateRoot<long>
+    {
+        #region [ Inbound Domain Commands ]
+
+        public void HandleDomainCommand(CreateDomainCommand command)
         {
             // 1. 参数预检
             // todo
 
-            // 2. 记录状态
-            ApplyDomainEvent(new FakeAggregateRootCreatedDomainEvent(payload));
+            // 2. 输出事件
+            ApplyDomainEvent(new FakeAggregateRootCreatedDomainEvent(command.Payload));
         }
 
-        public long Payload { get; private set; }
-
-        #region [ Inbound Domain Commands ]
-
-        public void Handle(ChangePayloadDomainCommand command)
+        public void HandleDomainCommand(ChangePayloadDomainCommand command)
         {
             // 1. 参数预检
             // todo
@@ -27,7 +33,7 @@ namespace MDA.XUnitTest.BusinessProcessing
             // 2. 业务操作
             // todo
 
-            // 3. 记录状态
+            // 3. 输出事件
             ApplyDomainEvent(new FakePayloadChangedDomainEvent(command.Payload));
         }
 
@@ -35,12 +41,12 @@ namespace MDA.XUnitTest.BusinessProcessing
 
         #region [ Outbound Domain Events ]
 
-        public void Handle(FakeAggregateRootCreatedDomainEvent @event)
+        public void HandleDomainEvent(FakeAggregateRootCreatedDomainEvent @event)
         {
-            Payload = @event.Payload;
+           new FakeAggregateRoot(@event.Payload);
         }
 
-        public void Handle(FakePayloadChangedDomainEvent @event)
+        public void HandleDomainEvent(FakePayloadChangedDomainEvent @event)
         {
             Payload = @event.Payload;
         }

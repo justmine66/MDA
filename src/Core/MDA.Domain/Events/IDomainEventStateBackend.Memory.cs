@@ -71,6 +71,11 @@ namespace MDA.Domain.Events
             long endOffset = long.MaxValue,
             CancellationToken token = default)
         {
+            if (string.IsNullOrWhiteSpace(aggregateRootId))
+            {
+                return Enumerable.Empty<IDomainEvent>();
+            }
+
             if (_dict.TryGetValue(aggregateRootId, out var events))
             {
                 return events.SkipWhile(it => it.Version < startOffset);

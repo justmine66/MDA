@@ -9,7 +9,7 @@ namespace MDA.Application.Notifications
             where TApplicationNotification : IApplicationNotification;
     }
 
-    public interface IAsyncApplicationNotificationPublisher : IApplicationNotificationPublisher
+    public interface IAsyncApplicationNotificationPublisher 
     {
         Task PublishAsync<TApplicationNotification>(TApplicationNotification notification, CancellationToken token = default)
             where TApplicationNotification : IApplicationNotification;

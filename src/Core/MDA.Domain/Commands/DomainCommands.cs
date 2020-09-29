@@ -73,25 +73,35 @@ namespace MDA.Domain.Commands
     /// </summary>
     public abstract class DomainCommand : Message, IDomainCommand
     {
-        protected DomainCommand() { }
+        protected DomainCommand()
+        {
+            AggregateRootId = Guid.NewGuid().ToString("N");
+        }
         protected DomainCommand(
-            string applicationCommandId,
-            Type applicationCommandType,
             string aggregateRootId,
             Type aggregateRootType,
             int version = 1)
         {
             Version = version;
-            ApplicationCommandId = applicationCommandId;
-            ApplicationCommandType = applicationCommandType;
             AggregateRootId = aggregateRootId;
             AggregateRootType = aggregateRootType;
             PartitionKey = MurMurHash3.Hash(aggregateRootType.FullName);
             Version = version;
         }
 
+        protected DomainCommand(
+            string applicationCommandId,
+            Type applicationCommandType,
+            string aggregateRootId,
+            Type aggregateRootType,
+            int version = 1) : this(aggregateRootId, aggregateRootType, version)
+        {
+            ApplicationCommandId = applicationCommandId;
+            ApplicationCommandType = applicationCommandType;
+        }
+
         public int Version { get; set; }
-        public string ApplicationCommandId { get; set; }
+        public string ApplicationCommandId { get; set; } = string.Empty;
         public Type ApplicationCommandType { get; set; }
         public string AggregateRootId { get; set; }
         public Type AggregateRootType { get; set; }
@@ -105,7 +115,16 @@ namespace MDA.Domain.Commands
         DomainCommand,
         IDomainCommand<TAggregateRootId>
     {
-        protected DomainCommand() { }
+        protected DomainCommand() 
+            => base.AggregateRootId = AggregateRootId?.ToString();
+
+        protected DomainCommand(
+            TAggregateRootId aggregateRootId,
+            Type aggregateRootType,
+            int version = 1)
+            : base(aggregateRootId?.ToString(),
+                aggregateRootType,
+                version) => AggregateRootId = aggregateRootId;
         protected DomainCommand(
             string applicationCommandId,
             Type applicationCommandType,
@@ -114,7 +133,7 @@ namespace MDA.Domain.Commands
             int version = 1)
             : base(applicationCommandId,
                 applicationCommandType,
-                string.Empty,
+                aggregateRootId?.ToString(),
                 aggregateRootType,
                 version) => AggregateRootId = aggregateRootId;
 
@@ -128,7 +147,17 @@ namespace MDA.Domain.Commands
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
     public abstract class DomainCommand<TAggregateRoot, TAggregateRootId> : DomainCommand<TAggregateRootId>
     {
-        protected DomainCommand() => AggregateRootType = typeof(TAggregateRoot);
+        protected DomainCommand()
+        {
+            AggregateRootType = typeof(TAggregateRoot);
+        }
+
+        protected DomainCommand(
+            TAggregateRootId aggregateRootId,
+            int version = 1)
+            : base(aggregateRootId,
+                typeof(TAggregateRoot),
+                version) => AggregateRootId = aggregateRootId;
 
         protected DomainCommand(
             string applicationCommandId,
@@ -188,7 +217,7 @@ namespace MDA.Domain.Commands
             TAggregateRootId aggregateRootId,
             int version = 1)
             : base(id,
-                string.Empty,
+                applicationCommandId.ToString(),
                 applicationCommandType,
                 aggregateRootId,
                 version) => ApplicationCommandId = applicationCommandId;

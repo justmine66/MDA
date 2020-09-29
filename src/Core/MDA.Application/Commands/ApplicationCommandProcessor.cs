@@ -16,6 +16,9 @@ namespace MDA.Application.Commands
             _handler = handler;
         }
 
-        public void Handle(TApplicationCommand message) => _handler.OnApplicationCommand(_context, message);
-    }
+        public void Handle(TApplicationCommand message)
+        {
+            _handler.OnApplicationCommand(_context, message);
+        }
+    } 
 }

@@ -1,4 +1,6 @@
 ﻿using MDA.Application.Commands;
+using MDA.XUnitTest.ApplicationCommands;
+using Xunit;
 
 namespace MDA.XUnitTest.BusinessProcessing
 {
@@ -11,6 +13,7 @@ namespace MDA.XUnitTest.BusinessProcessing
             _publisher = publisher;
         }
 
+        [Fact]
         public void TestCreate()
         {
             _publisher.Publish(new CreateApplicationCommand { Payload = 1 });

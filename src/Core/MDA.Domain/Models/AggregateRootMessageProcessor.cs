@@ -17,7 +17,7 @@ namespace MDA.Domain.Models
 
         public AggregateRootMessageProcessor(
             IAggregateRootMemoryCache cache,
-            IAggregateRootStateBackend stateBackend, 
+            IAggregateRootStateBackend stateBackend,
             ILogger<AggregateRootMessageProcessor> logger)
         {
             _cache = cache;
@@ -27,7 +27,7 @@ namespace MDA.Domain.Models
 
         public void Handle(DomainCommandTransportMessage message)
         {
-            throw new NotImplementedException();
+            HandleAsync(message).GetAwaiter().GetResult();
         }
 
         public async Task HandleAsync(DomainCommandTransportMessage message, CancellationToken token = default)
@@ -36,8 +36,8 @@ namespace MDA.Domain.Models
             var aggregateRootId = command.AggregateRootId;
             var aggregateRootType = command.AggregateRootType;
 
-            var aggregate = _cache.Get(aggregateRootId) ??
-                            await _stateBackend.GetAsync(aggregateRootId, token);
+            var aggregate = _cache.Get(aggregateRootId, aggregateRootType) ??
+                            await _stateBackend.GetAsync(aggregateRootId, aggregateRootType, token);
 
             if (aggregate == null)
             {
@@ -46,7 +46,16 @@ namespace MDA.Domain.Models
                 return;
             }
 
-            aggregate.OnDomainCommand(command);
+            try
+            {
+                aggregate.OnDomainCommand(command);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Handler domain command has a error, reason: {e}.");
+
+                return;
+            }
         }
     }
 }

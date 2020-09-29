@@ -1,22 +1,13 @@
 ﻿using System;
+using MDA.MessageBus;
 
 namespace MDA.Domain.Events
 {
     /// <summary>
     /// 表示一个领域事件
     /// </summary>
-    public interface IDomainEvent
+    public interface IDomainEvent : IMessage
     {
-        /// <summary>
-        /// 标识
-        /// </summary>
-        string Id { get; set; }
-
-        /// <summary>
-        /// 时间戳，单位：毫秒。
-        /// </summary>
-        long Timestamp { get; set; }
-
         /// <summary>
         /// 版本
         /// </summary>
@@ -28,9 +19,9 @@ namespace MDA.Domain.Events
         string DomainCommandId { get; set; }
 
         /// <summary>
-        /// 领域命令类型完全限定名称。
+        /// 领域命令类型
         /// </summary>
-        string DomainCommandTypeFullName { get; set; }
+        Type DomainCommandType { get; set; }
 
         /// <summary>
         /// 聚合根标识
@@ -38,9 +29,9 @@ namespace MDA.Domain.Events
         string AggregateRootId { get; set; }
 
         /// <summary>
-        /// 聚合根类型完全限定名称
+        /// 聚合根类型
         /// </summary>
-        string AggregateRootTypeFullName { get; set; }
+        Type AggregateRootType { get; set; }
     }
 
     /// <summary>
@@ -60,13 +51,7 @@ namespace MDA.Domain.Events
     /// </summary>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
     /// <typeparam name="TId">事件标识类型</typeparam>
-    public interface IDomainEvent<TAggregateRootId, TId> : IDomainEvent<TAggregateRootId>
-    {
-        /// <summary>
-        /// 标识
-        /// </summary>
-        new TId Id { get; set; }
-    }
+    public interface IDomainEvent<TAggregateRootId, TId> : IDomainEvent<TAggregateRootId>, IMessage<TId> { }
 
     /// <summary>
     /// 表示一个领域事件
@@ -85,33 +70,31 @@ namespace MDA.Domain.Events
     /// <summary>
     /// 领域事件基类
     /// </summary>
-    public abstract class DomainEvent :  IDomainEvent
+    public abstract class DomainEvent : Message, IDomainEvent
     {
         protected DomainEvent() { }
         protected DomainEvent(
             string domainCommandId,
-            string domainCommandTypeFullName,
+            Type domainCommandType,
             string aggregateRootId,
-            string aggregateRootTypeFullName,
+            Type aggregateRootType,
             int version = 1)
         {
             Id = Guid.NewGuid().ToString("N");
             Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             Version = version;
             DomainCommandId = domainCommandId;
-            DomainCommandTypeFullName = domainCommandTypeFullName;
+            DomainCommandType = domainCommandType;
             AggregateRootId = aggregateRootId;
-            AggregateRootTypeFullName = aggregateRootTypeFullName;
+            AggregateRootType = aggregateRootType;
         }
 
-        public string DomainCommandId { get; set; }
-        public string DomainCommandTypeFullName { get; set; }
+        public string DomainCommandId { get; set; } = string.Empty;
+        public Type DomainCommandType { get; set; }
 
-        public string AggregateRootId { get; set; }
-        public string AggregateRootTypeFullName { get; set; }
+        public string AggregateRootId { get; set; } = string.Empty;
+        public Type AggregateRootType { get; set; }
 
-        public string Id { get; set; }
-        public long Timestamp { get; set; }
         public int Version { get; set; }
     }
 
@@ -119,19 +102,23 @@ namespace MDA.Domain.Events
     /// 领域事件基类
     /// </summary>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
-    public abstract class DomainEvent<TAggregateRootId> : DomainEvent, IDomainEvent<TAggregateRootId>
+    public abstract class DomainEvent<TAggregateRootId> :
+        DomainEvent,
+        IDomainEvent<TAggregateRootId>
     {
-        protected DomainEvent() { }
+        protected DomainEvent()
+            => base.AggregateRootId = AggregateRootId?.ToString();
+
         protected DomainEvent(
             string domainCommandId,
-            string domainCommandTypeFullName,
+            Type domainCommandType,
             TAggregateRootId aggregateRootId,
-            string aggregateRootTypeFullName,
+            Type aggregateRootType,
             int version = 1)
             : base(domainCommandId,
-            domainCommandTypeFullName,
-            string.Empty,
-            aggregateRootTypeFullName,
+            domainCommandType,
+            aggregateRootId?.ToString(),
+            aggregateRootType,
             version)
         {
             AggregateRootId = aggregateRootId;
@@ -149,18 +136,21 @@ namespace MDA.Domain.Events
         DomainEvent<TAggregateRootId>,
         IDomainEvent<TAggregateRootId, TId>
     {
-        protected DomainEvent() { }
+        protected DomainEvent()
+        {
+            base.Id = Id?.ToString();
+        }
         protected DomainEvent(
             TId id,
             string domainCommandId,
-            string domainCommandTypeFullName,
+            Type domainCommandType,
             TAggregateRootId aggregateRootId,
-            string aggregateRootTypeFullName,
+            Type aggregateRootType,
             int version = 1)
             : base(domainCommandId,
-                domainCommandTypeFullName,
+                domainCommandType,
                 aggregateRootId,
-                aggregateRootTypeFullName,
+                aggregateRootType,
                 version)
         {
             Id = id;
@@ -175,21 +165,26 @@ namespace MDA.Domain.Events
     /// <typeparam name="TDomainCommandId">领域命令标识类型</typeparam>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
     /// <typeparam name="TId">领域事件标识类型</typeparam>
-    public abstract class DomainEvent<TDomainCommandId, TAggregateRootId, TId> : DomainEvent<TAggregateRootId, TId>, IDomainEvent<TDomainCommandId, TAggregateRootId, TId>
+    public abstract class DomainEvent<TDomainCommandId, TAggregateRootId, TId> :
+        DomainEvent<TAggregateRootId, TId>,
+        IDomainEvent<TDomainCommandId, TAggregateRootId, TId>
     {
-        protected DomainEvent() { }
+        protected DomainEvent()
+        {
+            base.DomainCommandId = DomainCommandId?.ToString();
+        }
         protected DomainEvent(
             TId id,
             TDomainCommandId domainCommandId,
-            string domainCommandTypeFullName,
+            Type domainCommandType,
             TAggregateRootId aggregateRootId,
-            string aggregateRootTypeFullName,
+            Type aggregateRootType,
             int version = 1)
             : base(id,
-                string.Empty,
-                domainCommandTypeFullName,
+                domainCommandId?.ToString(),
+                domainCommandType,
                 aggregateRootId,
-                aggregateRootTypeFullName,
+                aggregateRootType,
                 version)
         {
             DomainCommandId = domainCommandId;

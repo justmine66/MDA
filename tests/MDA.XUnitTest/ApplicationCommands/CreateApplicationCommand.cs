@@ -1,6 +1,6 @@
 ﻿using MDA.Application.Commands;
 
-namespace MDA.XUnitTest.BusinessProcessing
+namespace MDA.XUnitTest.ApplicationCommands
 {
     public class CreateApplicationCommand : ApplicationCommand
     {
