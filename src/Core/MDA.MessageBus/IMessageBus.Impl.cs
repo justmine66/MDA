@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MDA.MessageBus
@@ -15,9 +16,13 @@ namespace MDA.MessageBus
             _subscriber = subscriber;
         }
 
-        public void Publish(IMessage message) => _publisher.Publish(message);
+        public void Publish(IMessage message) 
+            => _publisher.Publish(message);
 
-        public void Subscribe(Type messageType, Type messageHandlerType) 
+        public async Task PublishAsync(IMessage message, CancellationToken token) 
+            => await _publisher.PublishAsync(message, token);
+
+        public void Subscribe(Type messageType, Type messageHandlerType)
             => _subscriber.Subscribe(messageType, messageHandlerType);
 
         public void Subscribe<TMessage, TMessageHandler>()

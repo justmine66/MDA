@@ -43,7 +43,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA.XUnitTest", "tests\MDA.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA.MessageBus", "src\Core\MDA.MessageBus\MDA.MessageBus.csproj", "{14A876E0-9D75-4E24-A12E-44C2C3BCEA97}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDA.MessageBus.Disruptor", "src\Core\MDA.MessageBus.Disruptor\MDA.MessageBus.Disruptor.csproj", "{88E5700D-A8DD-45B8-B19D-73F9AD65804D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA.MessageBus.Disruptor", "src\Core\MDA.MessageBus.Disruptor\MDA.MessageBus.Disruptor.csproj", "{88E5700D-A8DD-45B8-B19D-73F9AD65804D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

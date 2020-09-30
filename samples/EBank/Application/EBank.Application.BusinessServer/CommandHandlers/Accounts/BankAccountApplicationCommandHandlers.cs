@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using EBank.Application.Commands.Accounts;
+﻿using EBank.Application.Commands.Accounts;
 using EBank.Application.Commands.Depositing;
 using EBank.Application.Commands.Transferring;
 using EBank.Application.Notifications.Depositing;
@@ -9,6 +8,7 @@ using EBank.Domain.Commands.Accounts;
 using EBank.Domain.Models.Accounts;
 using MDA.Application.Commands;
 using MDA.Domain.Shared;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
@@ -65,7 +65,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                     Reason = "账户不存在"
                 };
 
-                await context.ApplicationNotificationPublisher.PublishAsync(failed);
+                await context.ApplicationNotificationPublisher.PublishAsync(failed, token);
                 return;
             }
 
@@ -79,7 +79,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                     Reason = "账户名不正确"
                 };
 
-                await context.ApplicationNotificationPublisher.PublishAsync(failed);
+                await context.ApplicationNotificationPublisher.PublishAsync(failed, token);
                 return;
             }
 
@@ -93,7 +93,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                     Reason = "开户行不正确"
                 };
 
-                await context.ApplicationNotificationPublisher.PublishAsync(failed);
+                await context.ApplicationNotificationPublisher.PublishAsync(failed, token);
                 return;
             }
 
@@ -103,7 +103,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                 AccountType = command.AccountType
             };
 
-            await context.ApplicationNotificationPublisher.PublishAsync(passed);
+            await context.ApplicationNotificationPublisher.PublishAsync(passed, token);
         }
 
         public async Task OnApplicationCommandAsync(IApplicationCommandContext context, ValidateDepositTransactionApplicationCommand command, CancellationToken token = default)
@@ -117,7 +117,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                     Reason = "账户不存在"
                 };
 
-                await context.ApplicationNotificationPublisher.PublishAsync(failed);
+                await context.ApplicationNotificationPublisher.PublishAsync(failed, token);
                 return;
             }
 
@@ -129,7 +129,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                     Reason = "账户名不正确"
                 };
 
-                await context.ApplicationNotificationPublisher.PublishAsync(failed);
+                await context.ApplicationNotificationPublisher.PublishAsync(failed, token);
                 return;
             }
 
@@ -141,7 +141,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                     Reason = "开户行不正确"
                 };
 
-                await context.ApplicationNotificationPublisher.PublishAsync(failed);
+                await context.ApplicationNotificationPublisher.PublishAsync(failed, token);
                 return;
             }
 
@@ -150,7 +150,7 @@ namespace EBank.Application.BusinessServer.CommandHandlers.Accounts
                 TransactionId = command.TransactionId
             };
 
-            await context.ApplicationNotificationPublisher.PublishAsync(passed);
+            await context.ApplicationNotificationPublisher.PublishAsync(passed, token);
         }
 
         public void OnApplicationCommand(IApplicationCommandContext context, StartDepositAccountTransactionApplicationCommand command)

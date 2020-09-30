@@ -18,6 +18,8 @@ namespace MDA.Domain.Models
 
         /// <summary>
         /// 版本号
+        /// 随着聚合根变更不断递增，以实现多版本并发控制(Mutil-Version Concurrency Control)机制。
+        /// 即每次收到入站领域命令，版本号便加1。
         /// </summary>
         int Version { get; set; }
     }
@@ -48,9 +50,9 @@ namespace MDA.Domain.Models
     public interface IEventSourcedAggregateRoot : IAggregateRoot
     {
         /// <summary>
-        /// 获取当前变更的领域事件列表
+        /// 获取变更产生的领域事件列表
         /// </summary>
-        IEnumerable<IDomainEvent> Events { get; }
+        IEnumerable<IDomainEvent> MutatingDomainEvents { get; }
 
         /// <summary>
         /// 重放变更的领域事件

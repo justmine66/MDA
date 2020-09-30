@@ -1,7 +1,10 @@
 ﻿using MDA.Domain.Commands;
+using MDA.Domain.Events;
 using MDA.MessageBus;
+using MDA.Shared.Utils;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,6 +36,8 @@ namespace MDA.Domain.Models
         public async Task HandleAsync(DomainCommandTransportMessage message, CancellationToken token = default)
         {
             var command = message.DomainCommand;
+            var commandId = command.Id;
+            var commandType = command.GetType();
             var aggregateRootId = command.AggregateRootId;
             var aggregateRootType = command.AggregateRootType;
 
@@ -41,7 +46,7 @@ namespace MDA.Domain.Models
 
             if (aggregate == null)
             {
-                _logger.LogCritical($"Failed to restore aggregate root state, DomainCommand: {command.GetType().FullName}, AggregateRootType: {aggregateRootType.FullName}, AggregateRootId: {aggregateRootId}.");
+                _logger.LogCritical($"Failed to restore aggregate root: [Id: {aggregateRootId}, Type: {aggregateRootType.FullName}] for domain command: [Id: {commandId}, Type: {commandType.FullName}] from cache and state backend.");
 
                 return;
             }
@@ -52,9 +57,30 @@ namespace MDA.Domain.Models
             }
             catch (Exception e)
             {
-                _logger.LogError($"Handler domain command has a error, reason: {e}.");
+                _logger.LogError($"Handler domain command: [Id: {commandId}, Type: {commandType.FullName}] has a unknown exception: {e}.");
 
                 return;
+            }
+
+            var mutatingDomainEvents = aggregate.MutatingDomainEvents;
+            if (mutatingDomainEvents.IsEmpty())
+            {
+                _logger.LogWarning($"The domain command: [Id: {commandId}, Type: {commandType.FullName}] dit not apply domain event for aggregate root: [Id: {aggregateRootId}, Type: {aggregateRootType.FullName}], please confirm whether the state will be lost.");
+
+                return;
+            }
+
+            FillDomainCommandFor(mutatingDomainEvents, commandId, commandType);
+
+            await _stateBackend.AppendMutatingDomainEventsAsync(mutatingDomainEvents, token);
+        }
+
+        private void FillDomainCommandFor(IEnumerable<IDomainEvent> domainEvents, string commandId, Type commandType)
+        {
+            foreach (var domainEvent in domainEvents)
+            {
+                domainEvent.DomainCommandId = commandId;
+                domainEvent.DomainCommandType = commandType;
             }
         }
     }

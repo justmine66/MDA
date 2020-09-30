@@ -17,7 +17,7 @@ namespace MDA.Domain.Events
         }
 
         public async Task AppendAsync(
-            IDomainEvent @event, 
+            IDomainEvent @event,
             CancellationToken token = default)
         {
             if (@event != null)
@@ -30,29 +30,23 @@ namespace MDA.Domain.Events
                     });
             }
 
-
             await Task.CompletedTask;
         }
 
         public async Task AppendAsync(
-            IEnumerable<IDomainEvent> events, 
+            IEnumerable<IDomainEvent> events,
             CancellationToken token = default)
         {
             if (events.IsNotEmpty())
             {
-                var eventsOfAggregate = events.GroupBy(it => it.AggregateRootId);
-
-                foreach (var group in eventsOfAggregate)
+                foreach (var @event in events)
                 {
-                    foreach (var @event in group)
-                    {
-                        _dict.AddOrUpdate(@event.AggregateRootId, new List<IDomainEvent>() { @event },
-                            (key, oldValue) =>
-                            {
-                                oldValue.Add(@event);
-                                return oldValue;
-                            });
-                    }
+                    _dict.AddOrUpdate(@event.AggregateRootId, new List<IDomainEvent>() { @event },
+                        (key, oldValue) =>
+                        {
+                            oldValue.Add(@event);
+                            return oldValue;
+                        });
                 }
             }
 
@@ -60,14 +54,14 @@ namespace MDA.Domain.Events
         }
 
         public async Task<IEnumerable<IDomainEvent>> GetEventStreamAsync(
-            string aggregateRootId, 
-            long startOffset = 0, 
-            CancellationToken token = default) 
+            string aggregateRootId,
+            long startOffset = 0,
+            CancellationToken token = default)
             => await GetEventStreamAsync(aggregateRootId, startOffset, long.MaxValue, token);
 
         public async Task<IEnumerable<IDomainEvent>> GetEventStreamAsync(
-            string aggregateRootId, 
-            long startOffset = 0, 
+            string aggregateRootId,
+            long startOffset = 0,
             long endOffset = long.MaxValue,
             CancellationToken token = default)
         {
@@ -81,7 +75,7 @@ namespace MDA.Domain.Events
                 return events.SkipWhile(it => it.Version < startOffset);
             }
 
-            return  await Task.FromResult(Enumerable.Empty<IDomainEvent>());
+            return await Task.FromResult(Enumerable.Empty<IDomainEvent>());
         }
     }
 }

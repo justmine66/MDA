@@ -12,10 +12,16 @@ namespace MDA.Domain.Models
             services.AddSingleton<IAggregateRootStateBackend, DefaultAggregateRootStateBackend>();
             services.AddSingleton<IAggregateRootSavePointManager, MemoryAggregateRootSavePointManager>();
 
-            services.Configure<AggregateRootCacheOptions>(ops => { });
+            services.Configure<AggregateRootCacheOptions>(_ => { });
             if (configuration != null)
             {
                 services.Configure<AggregateRootCacheOptions>(configuration.GetSection(nameof(AggregateRootCacheOptions)));
+            }
+
+            services.Configure<AggregateRootStateBackendOptions>(_ => { });
+            if (configuration != null)
+            {
+                services.Configure<AggregateRootStateBackendOptions>(configuration.GetSection(nameof(AggregateRootStateBackendOptions)));
             }
 
             return services;

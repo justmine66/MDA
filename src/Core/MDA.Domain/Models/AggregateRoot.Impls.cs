@@ -11,20 +11,21 @@ using System.Reflection;
 
 namespace MDA.Domain.Models
 {
-    public abstract class EventSourcedAggregateRoot : IEventSourcedAggregateRoot
+    public abstract class EventSourcedAggregateRoot : IEventSourcedAggregateRoot, IEquatable<IEventSourcedAggregateRoot>
     {
-        private IList<IDomainEvent> _changes;
+        private Type ThisType => GetType();
+        private IList<IDomainEvent> _mutatingDomainEvents;
 
-        protected EventSourcedAggregateRoot() { _changes = new List<IDomainEvent>(); }
+        protected EventSourcedAggregateRoot() => _mutatingDomainEvents = new List<IDomainEvent>();
 
         protected EventSourcedAggregateRoot(string id, int version = 1)
         {
             Id = id;
-            _changes = new List<IDomainEvent>();
+            _mutatingDomainEvents = new List<IDomainEvent>();
             Version = version;
         }
 
-        public IEnumerable<IDomainEvent> Events => _changes;
+        public IEnumerable<IDomainEvent> MutatingDomainEvents => _mutatingDomainEvents;
         public string Id { get; set; } = string.Empty;
         public int Version { get; set; } = 1;
 
@@ -33,24 +34,21 @@ namespace MDA.Domain.Models
             // 1. 填充事件信息到模型
             if (@event == null) return;
 
-            @event.AggregateRootId = Id;
-            @event.AggregateRootType = GetType();
-            @event.Version = Version;
-
             OnDomainEvent(@event);
 
             // 2. 添加到变更事件流
-            if (_changes == null)
+            if (_mutatingDomainEvents == null)
             {
                 Version = 1;
-                _changes = new List<IDomainEvent>();
+                _mutatingDomainEvents = new List<IDomainEvent>();
             }
 
-            _changes.Add(@event);
+            _mutatingDomainEvents.Add(@event);
         }
 
         public virtual void OnDomainCommand(IDomainCommand command)
         {
+            Version++;
             Id = command.AggregateRootId;
 
             ExecuteDomainMessage(DomainMessageType.Command, "HandleDomainCommand", command);
@@ -58,6 +56,10 @@ namespace MDA.Domain.Models
 
         public virtual void OnDomainEvent(IDomainEvent @event)
         {
+            @event.AggregateRootId = Id;
+            @event.AggregateRootType = ThisType;
+            @event.Version = Version;
+
             ExecuteDomainMessage(DomainMessageType.Event, "HandleDomainEvent", @event);
         }
 
@@ -68,10 +70,7 @@ namespace MDA.Domain.Models
 
         public virtual void ReplayDomainEvents(IEnumerable<IDomainEvent> events)
         {
-            if (events == null)
-            {
-                return;
-            }
+            if (events == null) return;
 
             foreach (var @event in events)
             {
@@ -81,7 +80,7 @@ namespace MDA.Domain.Models
 
         private void ExecuteDomainMessage(DomainMessageType messageType, string methodName, IMessage message)
         {
-            var methods = GetType().GetRuntimeMethods();
+            var methods = ThisType.GetRuntimeMethods();
             if (methods.IsEmpty())
             {
                 return;
@@ -89,35 +88,53 @@ namespace MDA.Domain.Models
 
             foreach (var method in methods)
             {
-                if (method.Name == methodName)
+                if (method.Name != methodName) continue;
+
+                var parameters = method.GetParameters();
+                var parameterType = parameters[0].ParameterType;
+
+                switch (messageType)
                 {
-                    var parameters = method.GetParameters();
-                    var parameterType = parameters[0].ParameterType;
+                    case DomainMessageType.Command:
+                        if (typeof(IDomainCommand).IsAssignableFrom(parameterType) &&
+                            parameterType == message.GetType())
+                        {
+                            method.Invoke(this, new object[] { message });
 
-                    switch (messageType)
-                    {
-                        case DomainMessageType.Command:
-                            if (typeof(IDomainCommand).IsAssignableFrom(parameterType) &&
-                                parameterType == message.GetType())
-                            {
-                                method.Invoke(this, new object[] { message });
+                            return;
+                        }
+                        break;
+                    case DomainMessageType.Event:
+                        if (typeof(IDomainEvent).IsAssignableFrom(parameterType) &&
+                            parameterType == message.GetType())
+                        {
+                            method.Invoke(this, new object[] { message });
 
-                                return;
-                            }
-                            break;
-                        case DomainMessageType.Event:
-                            if (typeof(IDomainEvent).IsAssignableFrom(parameterType) &&
-                                parameterType == message.GetType())
-                            {
-                                method.Invoke(this, new object[] { message });
-
-                                return;
-                            }
-                            break;
-                    }
+                            return;
+                        }
+                        break;
                 }
             }
         }
+
+        public bool Equals(IEventSourcedAggregateRoot other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+
+            return Id.Equals(other.Id) && Version == other.Version;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != ThisType) return false;
+
+            return obj is IEventSourcedAggregateRoot other && Equals(other);
+        }
+
+        public override int GetHashCode()
+            => HashHelper.ComputeHashCode(Id, Version);
     }
 
     public abstract class EventSourcedAggregateRoot<TId> : EventSourcedAggregateRoot, IEventSourcedAggregateRoot<TId>

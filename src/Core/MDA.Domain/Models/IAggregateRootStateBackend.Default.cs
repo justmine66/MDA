@@ -1,6 +1,8 @@
 ﻿using MDA.Domain.Events;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,17 +14,20 @@ namespace MDA.Domain.Models
         private readonly IAggregateRootMemoryCache _memoryCache;
         private readonly IDomainEventStateBackend _eventStateBackend;
         private readonly IAggregateRootSavePointManager _savePointManager;
+        private readonly AggregateRootStateBackendOptions _options;
 
         public DefaultAggregateRootStateBackend(
             IDomainEventStateBackend stateBackend,
             IAggregateRootMemoryCache memoryCache,
-            IAggregateRootSavePointManager savePointManager, 
-            ILogger<DefaultAggregateRootStateBackend> logger)
+            IAggregateRootSavePointManager savePointManager,
+            ILogger<DefaultAggregateRootStateBackend> logger,
+            IOptions<AggregateRootStateBackendOptions> options)
         {
             _eventStateBackend = stateBackend;
             _memoryCache = memoryCache;
             _savePointManager = savePointManager;
             _logger = logger;
+            _options = options.Value;
         }
 
         public async Task<IEventSourcedAggregateRoot> GetAsync(string aggregateRootId, Type aggregateRootType, CancellationToken token = default)
@@ -49,12 +54,22 @@ namespace MDA.Domain.Models
 
                 return null;
             }
-           
+
 
             // 4. 设置缓存
             _memoryCache.Set(aggregateRoot);
 
             return aggregateRoot;
+        }
+
+        public async Task AppendMutatingDomainEventsAsync(IEnumerable<IDomainEvent> events, CancellationToken token = default)
+        {
+            var batchSize = _options.SubmitBatchSize;
+            var duration = _options.SubmitDurationInMilliseconds;
+
+            // todo: 实现按批、超时提交。
+
+            await _eventStateBackend.AppendAsync(events, token);
         }
     }
 }

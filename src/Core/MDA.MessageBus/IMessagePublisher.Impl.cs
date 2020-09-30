@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MDA.MessageBus
 {
@@ -9,6 +11,13 @@ namespace MDA.MessageBus
         public MessagePublisher(IMessageQueueService queueService) => _queueService = queueService;
 
         public void Publish(IMessage message) => DoPublish(message);
+
+        public async Task PublishAsync(IMessage message, CancellationToken token)
+        {
+            DoPublish(message);
+
+            await Task.CompletedTask;
+        }
 
         private void DoPublish(IMessage message)
         {
