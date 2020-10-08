@@ -3,7 +3,7 @@ using MDA.Domain.Events;
 
 namespace EBank.Domain.Events.Transferring
 {
-    public class TransferTransactionValidateCompletedDomainEvent : DomainEvent<long>
+    public class TransferTransactionValidateCompletedDomainEvent : DomainEvent<long, long>
     {
         public TransferTransactionValidateCompletedDomainEvent(
             TransferTransactionAccount sourceAccount, 

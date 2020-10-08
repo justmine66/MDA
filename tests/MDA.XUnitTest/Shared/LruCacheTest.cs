@@ -13,7 +13,7 @@ namespace MDA.XUnitTest.Shared
             const int maxSize = 10;
             var maxAge = new TimeSpan(0, 1, 0, 0);
 
-            var target = new LRUCache<string, string>(maxSize, maxAge);
+            var target = new LruCache<string, string>(maxSize, maxAge);
             Assert.Equal(0, target.Count);  // "Count wrong after construction"
 
             target.Add("1", "one");
@@ -29,7 +29,7 @@ namespace MDA.XUnitTest.Shared
             const int maxSize = 10;
             var maxAge = new TimeSpan(0, 1, 0, 0);
 
-            var target = new LRUCache<string, string>(maxSize, maxAge);
+            var target = new LruCache<string, string>(maxSize, maxAge);
             for (var i = 1; i <= maxSize + 5; i++)
             {
                 var s = i.ToString();
@@ -51,7 +51,7 @@ namespace MDA.XUnitTest.Shared
             const int maxSize = 10;
             var maxAge = new TimeSpan(0, 1, 0, 0);
 
-            var target = new LRUCache<string, string>(maxSize, maxAge);
+            var target = new LruCache<string, string>(maxSize, maxAge);
 
             // Fill the LRU with "1" through "10"
             for (var i = 1; i <= maxSize; i++)

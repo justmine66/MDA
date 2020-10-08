@@ -13,4 +13,28 @@ namespace MDA.Domain.Commands
 
         public IDomainCommand DomainCommand { get; private set; }
     }
+
+    public class DomainCommandTransportMessage<TAggregateRootId> 
+        : DomainCommandTransportMessage
+    {
+        public DomainCommandTransportMessage(IDomainCommand<TAggregateRootId> domainCommand)
+            : base(domainCommand)
+        { }
+    }
+
+    public class DomainCommandTransportMessage<TId, TAggregateRootId> 
+        : DomainCommandTransportMessage<TAggregateRootId>
+    {
+        public DomainCommandTransportMessage(IDomainCommand<TId, TAggregateRootId> domainCommand)
+            : base(domainCommand)
+        { }
+    }
+
+    public class DomainCommandTransportMessage<TApplicationCommandId, TId, TAggregateRootId> 
+        : DomainCommandTransportMessage<TId, TAggregateRootId>
+    {
+        public DomainCommandTransportMessage(IDomainCommand<TApplicationCommandId, TId, TAggregateRootId> domainCommand)
+            : base(domainCommand)
+        { }
+    }
 }

@@ -2,12 +2,12 @@
 
 namespace EBank.Domain.Events.Depositing
 {
-    public class DepositTransactionStartedDomainEvent : DomainEvent<long>
+    public class DepositTransactionStartedDomainEvent : DomainEvent<long, long>
     {
         public DepositTransactionStartedDomainEvent(
-            long accountId, 
-            string accountName, 
-            string bank, 
+            long accountId,
+            string accountName,
+            string bank,
             decimal amount)
         {
             AccountId = accountId;

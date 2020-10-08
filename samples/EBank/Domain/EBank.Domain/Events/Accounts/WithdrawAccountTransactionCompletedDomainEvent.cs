@@ -5,7 +5,7 @@ namespace EBank.Domain.Events.Accounts
     /// <summary>
     /// 取款账户交易已完成的领域事件
     /// </summary>
-    public class WithdrawAccountTransactionCompletedDomainEvent : DomainEvent<long>
+    public class WithdrawAccountTransactionCompletedDomainEvent : DomainEvent<long, long>
     {
         public WithdrawAccountTransactionCompletedDomainEvent(
             long transactionId,

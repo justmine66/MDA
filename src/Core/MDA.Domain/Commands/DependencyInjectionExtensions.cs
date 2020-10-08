@@ -9,8 +9,8 @@ namespace MDA.Domain.Commands
         public static IServiceCollection AddDomainCommands(this IServiceCollection services)
         {
             services.AddSingleton<IDomainCommandPublisher, DomainCommandPublisher>();
-            services.AddTransient<IMessageHandler<DomainCommandTransportMessage>, AggregateRootMessageProcessor>();
-            services.AddTransient<IAsyncMessageHandler<DomainCommandTransportMessage>, AggregateRootMessageProcessor>();
+            services.AddScoped<IMessageHandler<DomainCommandTransportMessage>, AggregateRootMessageProcessor>();
+            services.AddScoped<IAsyncMessageHandler<DomainCommandTransportMessage>, AggregateRootMessageProcessor>();
 
             return services;
         }

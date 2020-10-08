@@ -15,7 +15,7 @@ namespace MDA.Shared.DataStructures
     /// </summary>
     /// <typeparam name="TKey">The type of key</typeparam>
     /// <typeparam name="TValue">The type of value</typeparam>
-    public class LRUCache<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
+    public class LruCache<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
     {
         // Delegate type for fetching the value associated with a given key.
         public delegate TValue FetchValueDelegate(TKey key);
@@ -50,7 +50,7 @@ namespace MDA.Shared.DataStructures
             public readonly TValue Value;
             public long Generation;
 
-            public TimestampedValue(LRUCache<TKey, TValue> lru, TValue value)
+            public TimestampedValue(LruCache<TKey, TValue> lru, TValue value)
             {
                 Generation = Interlocked.Increment(ref lru._nextGeneration);
                 Value = value;
@@ -70,7 +70,7 @@ namespace MDA.Shared.DataStructures
         /// <param name="maxSize">Maximum number of entries to allow.</param>
         /// <param name="maxAge">Maximum age of an entry.</param>
         /// <param name="fetcher"></param>
-        public LRUCache(int maxSize, TimeSpan maxAge, FetchValueDelegate fetcher = null)
+        public LruCache(int maxSize, TimeSpan maxAge, FetchValueDelegate fetcher = null)
         {
             if (maxSize <= 0)
             {

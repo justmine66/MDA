@@ -20,11 +20,19 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Xunit.SkippableFact" Version="1.4.13" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Core\MDA.Application\MDA.Application.csproj" />
     <ProjectReference Include="..\..\src\Core\MDA.MessageBus.Disruptor\MDA.MessageBus.Disruptor.csproj" />
+    <ProjectReference Include="..\..\src\StateBackends\MDA.StateBackend.MySql\MDA.StateBackend.MySql.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

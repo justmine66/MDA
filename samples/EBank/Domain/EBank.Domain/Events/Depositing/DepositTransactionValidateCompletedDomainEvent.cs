@@ -5,7 +5,7 @@ namespace EBank.Domain.Events.Depositing
     /// <summary>
     /// 存款交易信息验证完成的领域事件
     /// </summary>
-    public class DepositTransactionValidateCompletedDomainEvent : DomainEvent<long>
+    public class DepositTransactionValidateCompletedDomainEvent : DomainEvent<long, long>
     {
         public DepositTransactionValidateCompletedDomainEvent(
             long accountId, 

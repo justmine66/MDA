@@ -6,7 +6,7 @@ namespace EBank.Domain.Events.Transferring
     /// <summary>
     /// 从源账户完成扣款的账户交易已确认领域事件
     /// </summary>
-    public class WithdrawAccountTransactionCompleteConfirmedDomainEvent : DomainEvent<long>
+    public class WithdrawAccountTransactionCompleteConfirmedDomainEvent : DomainEvent<long, long>
     {
         /// <summary>
         /// 交易标识

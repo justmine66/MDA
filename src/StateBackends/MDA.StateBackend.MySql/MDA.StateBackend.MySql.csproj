@@ -5,11 +5,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MySql.Data" Version="8.0.21" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.8" />
+    <PackageReference Include="MySqlConnector" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\MDA.Domain\MDA.Domain.csproj" />
+    <ProjectReference Include="..\MDA.StateBackend.RDBMS.Shared\MDA.StateBackend.RDBMS.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="MySql-Persistence-Template.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

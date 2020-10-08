@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using MDA.Shared.Utils;
 
 namespace MDA.Domain.Models
 {
@@ -42,19 +43,20 @@ namespace MDA.Domain.Models
 
             // 2. 获取从保存点开始产生的事件流
             var eventStream = await _eventStateBackend.GetEventStreamAsync(aggregateRoot.Id, aggregateRoot.Version, token);
-
-            // 3. 重放事件
-            try
+            if (eventStream.IsNotEmpty())
             {
-                aggregateRoot.ReplayDomainEvents(eventStream);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Replay domain event for aggregateRoot[Id: {aggregateRootId}, Type: {aggregateRootType.FullName}] has a error, reason: {e}.");
+                // 3. 重放事件
+                try
+                {
+                    aggregateRoot.ReplayDomainEvents(eventStream);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError($"Replay domain event for aggregateRoot[Id: {aggregateRootId}, Type: {aggregateRootType.FullName}] has a error, reason: {e}.");
 
-                return null;
+                    return null;
+                }
             }
-
 
             // 4. 设置缓存
             _memoryCache.Set(aggregateRoot);

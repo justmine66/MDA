@@ -1,6 +1,5 @@
-﻿using System;
-using MDA.Domain.Models;
-using MDA.MessageBus;
+﻿using MDA.MessageBus;
+using System;
 
 namespace MDA.Domain.Commands
 {
@@ -13,7 +12,7 @@ namespace MDA.Domain.Commands
             _messagePublisher = messagePublisher;
         }
 
-        public void Publish<TDomainCommand>(TDomainCommand command) where TDomainCommand : IDomainCommand
+        public void Publish(IDomainCommand command)
         {
             if (command == null)
             {
@@ -25,9 +24,16 @@ namespace MDA.Domain.Commands
             _messagePublisher.Publish(message);
         }
 
-        public void Publish<TAggregateRoot, TDomainCommand>(TDomainCommand command) where TAggregateRoot : IAggregateRoot where TDomainCommand : IDomainCommand
+        public void Publish<TAggregateRootId>(IDomainCommand<TAggregateRootId> command)
         {
-            throw new NotImplementedException();
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
+
+            var message = new DomainCommandTransportMessage(command);
+
+            _messagePublisher.Publish(message);
         }
 
         public void Publish<TDomainCommand, TArg>(IDomainCommandFiller<TDomainCommand, TArg> filler, TArg arg) where TDomainCommand : class, IDomainCommand

@@ -10,22 +10,22 @@ namespace MDA.Shared.Utils
     /// </summary>
     public class SafeRandom
     {
-        private static readonly RandomNumberGenerator globalCryptoProvider = RandomNumberGenerator.Create();
+        private static readonly RandomNumberGenerator GlobalCryptoProvider = RandomNumberGenerator.Create();
 
         [ThreadStatic]
-        private static Random random;
+        private static Random _random;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Random GetRandom()
         {
-            if (random == null)
-            {
-                var buffer = new byte[4];
-                globalCryptoProvider.GetBytes(buffer);
-                random = new Random(BitConverter.ToInt32(buffer, 0));
-            }
+            if (_random != null) return _random;
 
-            return random;
+            var buffer = new byte[4];
+
+            GlobalCryptoProvider.GetBytes(buffer);
+            _random = new Random(BitConverter.ToInt32(buffer, 0));
+
+            return _random;
         }
 
         public int Next() => GetRandom().Next();

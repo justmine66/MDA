@@ -9,13 +9,13 @@ namespace MDA.Domain.Models
     {
         private const string CacheKeyMask = "{0}.{1}";
 
-        private readonly LRUCache<string, IEventSourcedAggregateRoot> _cache;
+        private readonly LruCache<string, IEventSourcedAggregateRoot> _cache;
         private readonly ILogger _logger;
 
         public LruAggregateRootMemoryCache(IOptions<AggregateRootCacheOptions> options, ILogger<LruAggregateRootMemoryCache> logger)
         {
             _logger = logger;
-            _cache = new LRUCache<string, IEventSourcedAggregateRoot>(options.Value.MaxSize, options.Value.ToTimeSpan());
+            _cache = new LruCache<string, IEventSourcedAggregateRoot>(options.Value.MaxSize, options.Value.ToTimeSpan());
         }
 
         public IEventSourcedAggregateRoot Get(string aggregateRootId, Type aggregateRootType)
