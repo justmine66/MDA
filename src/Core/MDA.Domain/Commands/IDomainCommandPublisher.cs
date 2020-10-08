@@ -1,16 +1,14 @@
 ﻿using System;
-using MDA.Domain.Models;
 
 namespace MDA.Domain.Commands
 {
     public interface IDomainCommandPublisher
     {
-        void Publish<TDomainCommand>(TDomainCommand command)
-            where TDomainCommand : IDomainCommand;
+        void Publish(IDomainCommand command);
 
-        void Publish<TAggregateRoot, TDomainCommand>(TDomainCommand command)
-            where TDomainCommand : IDomainCommand
-            where TAggregateRoot : IAggregateRoot;
+        void Publish<TAggregateRootId>(IDomainCommand<TAggregateRootId> command);
+
+        void Publish<TId, TAggregateRootId>(IDomainCommand<TId, TAggregateRootId> command);
 
         void Publish<TDomainCommand, TArg>(
         IDomainCommandFiller<TDomainCommand, TArg> filler, TArg arg)

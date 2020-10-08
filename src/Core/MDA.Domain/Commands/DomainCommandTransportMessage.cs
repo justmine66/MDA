@@ -11,30 +11,42 @@ namespace MDA.Domain.Commands
             PartitionKey = domainCommand.PartitionKey;
         }
 
-        public IDomainCommand DomainCommand { get; private set; }
+        public IDomainCommand DomainCommand { get; }
     }
 
-    public class DomainCommandTransportMessage<TAggregateRootId> 
+    public class DomainCommandTransportMessage<TAggregateRootId>
         : DomainCommandTransportMessage
     {
         public DomainCommandTransportMessage(IDomainCommand<TAggregateRootId> domainCommand)
             : base(domainCommand)
-        { }
+        {
+            DomainCommand = domainCommand;
+        }
+
+        public new IDomainCommand<TAggregateRootId> DomainCommand { get; }
     }
 
-    public class DomainCommandTransportMessage<TId, TAggregateRootId> 
+    public class DomainCommandTransportMessage<TId, TAggregateRootId>
         : DomainCommandTransportMessage<TAggregateRootId>
     {
         public DomainCommandTransportMessage(IDomainCommand<TId, TAggregateRootId> domainCommand)
             : base(domainCommand)
-        { }
+        {
+            DomainCommand = domainCommand;
+        }
+
+        public new IDomainCommand<TId, TAggregateRootId> DomainCommand { get; }
     }
 
-    public class DomainCommandTransportMessage<TApplicationCommandId, TId, TAggregateRootId> 
-        : DomainCommandTransportMessage<TId, TAggregateRootId>
+    public class DomainCommandTransportMessage<TApplicationCommandId, TId, TAggregateRootId>
+        : DomainCommandTransportMessage<TAggregateRootId>
     {
         public DomainCommandTransportMessage(IDomainCommand<TApplicationCommandId, TId, TAggregateRootId> domainCommand)
             : base(domainCommand)
-        { }
+        {
+            DomainCommand = domainCommand;
+        }
+
+        public new IDomainCommand<TApplicationCommandId, TId, TAggregateRootId> DomainCommand { get; }
     }
 }

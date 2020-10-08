@@ -33,33 +33,13 @@ namespace MDA.Domain.Commands
         /// 聚合根类型
         /// </summary>
         Type AggregateRootType { get; set; }
-
-        /// <summary>
-        /// 有效载荷
-        /// </summary>
-        object Payload { get; set; }
-    }
-
-    /// <summary>
-    /// 表示一个领域命令
-    /// </summary>
-    /// <typeparam name="TPayload">有效载荷类型</typeparam>
-    public interface IDomainCommand<TPayload>
-        : IDomainCommand
-    {
-        /// <summary>
-        /// 有效载荷
-        /// </summary>
-        new TPayload Payload { get; set; }
     }
 
     /// <summary>
     /// 表示一个领域命令
     /// </summary>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
-    /// <typeparam name="TPayload">有效载荷类型</typeparam>
-    public interface IDomainCommand<TAggregateRootId, TPayload>
-        : IDomainCommand<TPayload>
+    public interface IDomainCommand<TAggregateRootId> : IDomainCommand
     {
         /// <summary>
         /// 聚合根标识，一般为聚合根标识。
@@ -72,9 +52,8 @@ namespace MDA.Domain.Commands
     /// </summary>
     /// <typeparam name="TId">领域命令标识类型</typeparam>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
-    /// <typeparam name="TPayload">有效载荷类型</typeparam>
-    public interface IDomainCommand<TId, TAggregateRootId, TPayload>
-        : IDomainCommand<TAggregateRootId, TPayload>, IMessage<TId>
+    public interface IDomainCommand<TId, TAggregateRootId>
+        : IDomainCommand<TAggregateRootId>, IMessage<TId>
     { }
 
     /// <summary>
@@ -83,9 +62,8 @@ namespace MDA.Domain.Commands
     /// <typeparam name="TApplicationCommandId">应用层命令标识类型</typeparam>
     /// <typeparam name="TId">领域命令标识类型</typeparam>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
-    /// <typeparam name="TPayload">有效载荷类型</typeparam>
-    public interface IDomainCommand<TApplicationCommandId, TId, TAggregateRootId, TPayload>
-        : IDomainCommand<TId, TAggregateRootId, TPayload>
+    public interface IDomainCommand<TApplicationCommandId, TId, TAggregateRootId>
+        : IDomainCommand<TId, TAggregateRootId>
     {
         /// <summary>
         /// 应用层命令标识
@@ -130,50 +108,15 @@ namespace MDA.Domain.Commands
         public Type ApplicationCommandType { get; set; }
         public string AggregateRootId { get; set; }
         public Type AggregateRootType { get; set; }
-        public object Payload { get; set; }
-    }
-
-    /// <summary>
-    /// 领域命令基类
-    /// </summary>
-    /// <typeparam name="TPayload">有效载荷类型</typeparam>
-    public abstract class DomainCommand<TPayload> :
-        DomainCommand,
-        IDomainCommand<TPayload>
-    {
-        protected DomainCommand() { }
-
-        protected DomainCommand(
-            string aggregateRootId,
-            Type aggregateRootType,
-            int version = 1)
-            : base(aggregateRootId,
-                aggregateRootType,
-                version) => AggregateRootId = aggregateRootId;
-
-        protected DomainCommand(
-            string applicationCommandId,
-            Type applicationCommandType,
-            string aggregateRootId,
-            Type aggregateRootType,
-            int version = 1)
-            : base(applicationCommandId,
-                applicationCommandType,
-                aggregateRootId,
-                aggregateRootType,
-                version) => AggregateRootId = aggregateRootId;
-
-        public new TPayload Payload { get; set; }
     }
 
     /// <summary>
     /// 领域命令基类
     /// </summary>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
-    /// <typeparam name="TPayload">有效载荷类型</typeparam>
-    public abstract class DomainCommand<TAggregateRootId, TPayload> :
-        DomainCommand<TPayload>,
-        IDomainCommand<TAggregateRootId, TPayload>
+    public abstract class DomainCommand<TAggregateRootId> :
+        DomainCommand,
+        IDomainCommand<TAggregateRootId>
     {
         protected DomainCommand()
             => base.AggregateRootId = AggregateRootId?.ToString();
@@ -205,10 +148,9 @@ namespace MDA.Domain.Commands
     /// </summary>
     /// <typeparam name="TAggregateRoot">聚合根类型</typeparam>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
-    /// <typeparam name="TPayload">有效载荷类型</typeparam>
-    public abstract class DomainCommand<TAggregateRoot, TAggregateRootId, TPayload> 
-        : DomainCommand<TAggregateRootId, TPayload>,
-            IDomainCommand<TAggregateRootId, TPayload>
+    public abstract class DomainCommand<TAggregateRoot, TAggregateRootId>
+        : DomainCommand<TAggregateRootId>,
+            IDomainCommand<TAggregateRootId>
     {
         protected DomainCommand()
         {
@@ -242,10 +184,9 @@ namespace MDA.Domain.Commands
     /// <typeparam name="TId">领域命令标识类型</typeparam>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
     /// <typeparam name="TAggregateRoot">聚合根类型</typeparam>
-    /// <typeparam name="TPayload">有效载荷类型</typeparam>
-    public abstract class DomainCommand<TAggregateRoot, TId, TAggregateRootId, TPayload> :
-        DomainCommand<TAggregateRoot, TAggregateRootId, TPayload>,
-        IDomainCommand<TId, TAggregateRootId, TPayload>
+    public abstract class DomainCommand<TAggregateRoot, TId, TAggregateRootId> :
+        DomainCommand<TAggregateRoot, TAggregateRootId>,
+        IDomainCommand<TId, TAggregateRootId>
     {
         protected DomainCommand() { }
         protected DomainCommand(

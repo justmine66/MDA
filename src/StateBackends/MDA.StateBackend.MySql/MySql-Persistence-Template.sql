@@ -2,7 +2,7 @@
 
 USE `mda`;
 
-CREATE TABLE `domain_events`
+CREATE TABLE `domain_event_indices`
 (
   `pkId` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增长标识',
   `DomainCommandId` varchar(36) DEFAULT '' NOT NULL COMMENT '领域命令标识',
@@ -17,7 +17,7 @@ CREATE TABLE `domain_events`
   `CreatedTime` bigint(20) NOT NULL COMMENT '创建时间，时间戳，单位：毫秒',
   PRIMARY KEY (`pkId`),
   UNIQUE KEY `IX_Command_AggregateRoot_Event` (`DomainCommandId`,`AggregateRootId`,`DomainEventId`)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='领域事件记录表';
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='领域事件索引表';
 
 CREATE TABLE `domain_event_payloads`
 (

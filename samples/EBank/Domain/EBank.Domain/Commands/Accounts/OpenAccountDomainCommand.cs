@@ -10,7 +10,7 @@ namespace EBank.Domain.Commands.Accounts
         public OpenAccountDomainCommand(
             string accountName,
             string bank,
-            decimal initialBalance) 
+            decimal initialBalance)
         {
             AccountName = accountName;
             Bank = bank;

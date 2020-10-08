@@ -10,7 +10,7 @@
     {
         public class Tables
         {
-            public string DomainEvents { get; set; } = "domain_events";
+            public string DomainEvents { get; set; } = "domain_event_indices";
 
             public string DomainEventContents { get; set; } = "domain_event_payloads";
         }

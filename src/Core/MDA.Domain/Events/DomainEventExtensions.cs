@@ -8,8 +8,7 @@
                @event.DomainCommandType != null &&
                !string.IsNullOrWhiteSpace(@event.AggregateRootId) &&
                @event.AggregateRootType != null &&
-               !string.IsNullOrWhiteSpace(@event.Id) &&
-               @event.Payload != null;
+               !string.IsNullOrWhiteSpace(@event.Id);
 
         public static string Print(this IDomainEvent @event)
         {

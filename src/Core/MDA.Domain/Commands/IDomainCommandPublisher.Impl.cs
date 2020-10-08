@@ -36,6 +36,18 @@ namespace MDA.Domain.Commands
             _messagePublisher.Publish(message);
         }
 
+        public void Publish<TAggregateRootId, TPayload>(IDomainCommand<TAggregateRootId, TPayload> command)
+        {
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
+
+            var message = new DomainCommandTransportMessage(command);
+
+            _messagePublisher.Publish(message);
+        }
+
         public void Publish<TDomainCommand, TArg>(IDomainCommandFiller<TDomainCommand, TArg> filler, TArg arg) where TDomainCommand : class, IDomainCommand
         {
             throw new NotImplementedException();

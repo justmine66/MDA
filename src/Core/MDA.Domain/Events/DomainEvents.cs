@@ -42,32 +42,14 @@ namespace MDA.Domain.Events
         /// 聚合根版本
         /// </summary>
         int AggregateRootVersion { get; set; }
-
-        /// <summary>
-        /// 有效载荷
-        /// </summary>
-        object Payload { get; set; }
-    }
-
-    /// <summary>
-    /// 表示一个领域事件
-    /// </summary>
-    /// <typeparam name="TPayload">有效载荷类型</typeparam>
-    public interface IDomainEvent<TPayload> : IDomainEvent
-    {
-        /// <summary>
-        /// 有效载荷
-        /// </summary>
-        new TPayload Payload { get; set; }
     }
 
     /// <summary>
     /// 表示一个领域事件
     /// </summary>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
-    /// <typeparam name="TPayload">有效载荷类型</typeparam>
-    public interface IDomainEvent<TAggregateRootId, TPayload> 
-        : IDomainEvent<TPayload>
+    public interface IDomainEvent<TAggregateRootId> 
+        : IDomainEvent
     {
         /// <summary>
         /// 聚合根标识
@@ -80,9 +62,8 @@ namespace MDA.Domain.Events
     /// </summary>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
     /// <typeparam name="TId">事件标识类型</typeparam>
-    /// <typeparam name="TPayload">有效载荷类型</typeparam>
-    public interface IDomainEvent<TAggregateRootId, TId, TPayload> 
-        : IDomainEvent<TAggregateRootId, TPayload>, IMessage<TId> { }
+    public interface IDomainEvent<TAggregateRootId, TId> 
+        : IDomainEvent<TAggregateRootId>, IMessage<TId> { }
 
     /// <summary>
     /// 表示一个领域事件
@@ -90,8 +71,7 @@ namespace MDA.Domain.Events
     /// <typeparam name="TDomainCommandId">领域命令标识类型</typeparam>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
     /// <typeparam name="TId">事件标识类型</typeparam>
-    /// <typeparam name="TPayload">有效载荷类型</typeparam>
-    public interface IDomainEvent<TDomainCommandId, TAggregateRootId, TId, TPayload> : IDomainEvent<TAggregateRootId, TId, TPayload>
+    public interface IDomainEvent<TDomainCommandId, TAggregateRootId, TId> : IDomainEvent<TAggregateRootId, TId>
     {
         /// <summary>
         /// 领域命令标识
@@ -132,47 +112,15 @@ namespace MDA.Domain.Events
         public int AggregateRootVersion { get; set; }
 
         public int Version { get; set; }
-
-        public object Payload { get; set; }
-    }
-
-    /// <summary>
-    /// 领域事件基类
-    /// </summary>
-    /// <typeparam name="TPayload">有效载荷类型</typeparam>
-    public abstract class DomainEvent<TPayload> :
-        DomainEvent,
-        IDomainEvent<TPayload>
-    {
-        protected DomainEvent() { }
-        protected DomainEvent(
-            string domainCommandId,
-            Type domainCommandType,
-            string aggregateRootId,
-            Type aggregateRootType,
-            int aggregateRootVersion,
-            int version = 1)
-            : base(domainCommandId,
-                domainCommandType,
-                aggregateRootId,
-                aggregateRootType,
-                aggregateRootVersion,
-                version)
-        {
-            AggregateRootId = aggregateRootId;
-        }
-
-        public new TPayload Payload { get; set; }
     }
 
     /// <summary>
     /// 领域事件基类
     /// </summary>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
-    /// <typeparam name="TPayload">有效载荷类型</typeparam>
-    public abstract class DomainEvent<TAggregateRootId, TPayload> :
-        DomainEvent<TPayload>,
-        IDomainEvent<TAggregateRootId, TPayload>
+    public abstract class DomainEvent<TAggregateRootId> :
+        DomainEvent,
+        IDomainEvent<TAggregateRootId>
     {
         protected DomainEvent()
             => base.AggregateRootId = AggregateRootId?.ToString();
@@ -202,10 +150,9 @@ namespace MDA.Domain.Events
     /// </summary>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
     /// <typeparam name="TId">领域事件标识类型</typeparam>
-    /// <typeparam name="TPayload">有效载荷类型</typeparam>
-    public abstract class DomainEvent<TAggregateRootId, TId, TPayload> :
-        DomainEvent<TAggregateRootId, TPayload>,
-        IDomainEvent<TAggregateRootId, TId, TPayload>
+    public abstract class DomainEvent<TAggregateRootId, TId> :
+        DomainEvent<TAggregateRootId>,
+        IDomainEvent<TAggregateRootId, TId>
     {
         protected DomainEvent()
         {
@@ -238,10 +185,9 @@ namespace MDA.Domain.Events
     /// <typeparam name="TDomainCommandId">领域命令标识类型</typeparam>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
     /// <typeparam name="TId">领域事件标识类型</typeparam>
-    /// <typeparam name="TPayload">有效载荷类型</typeparam>
-    public abstract class DomainEvent<TDomainCommandId, TAggregateRootId, TId, TPayload> :
-        DomainEvent<TAggregateRootId, TId, TPayload>,
-        IDomainEvent<TDomainCommandId, TAggregateRootId, TId, TPayload>
+    public abstract class DomainEvent<TDomainCommandId, TAggregateRootId, TId> :
+        DomainEvent<TAggregateRootId, TId>,
+        IDomainEvent<TDomainCommandId, TAggregateRootId, TId>
     {
         protected DomainEvent()
         {
