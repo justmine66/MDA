@@ -7,7 +7,7 @@ namespace EBank.Application
         public static IServiceCollection AddEBankAppServices(this IServiceCollection services)
         {
             services.AddSingleton<IEBankApplicationService, EBankApplicationService>();
-
+            
             return services;
         }
     }

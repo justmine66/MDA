@@ -51,7 +51,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA.StateBackend.MySql", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA.StateBackend.RDBMS.Shared", "src\StateBackends\MDA.StateBackend.RDBMS.Shared\MDA.StateBackend.RDBMS.Shared.csproj", "{2D05BD52-2B33-440E-A898-141B96C86632}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDA.MessageBus.Kafka", "src\Core\MDA.MessageBus.Kafka\MDA.MessageBus.Kafka.csproj", "{A9B041CF-B616-4295-A05C-1CEFB6876875}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA.MessageBus.Kafka", "src\Core\MDA.MessageBus.Kafka\MDA.MessageBus.Kafka.csproj", "{A9B041CF-B616-4295-A05C-1CEFB6876875}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBank.Domain.MySql", "samples\EBank\Domain\EBank.Domain.MySql\EBank.Domain.MySql.csproj", "{A982AB52-75D3-42FD-842A-1BD0D9D2D14C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -123,6 +125,10 @@ Global
 		{A9B041CF-B616-4295-A05C-1CEFB6876875}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9B041CF-B616-4295-A05C-1CEFB6876875}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9B041CF-B616-4295-A05C-1CEFB6876875}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A982AB52-75D3-42FD-842A-1BD0D9D2D14C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A982AB52-75D3-42FD-842A-1BD0D9D2D14C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A982AB52-75D3-42FD-842A-1BD0D9D2D14C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A982AB52-75D3-42FD-842A-1BD0D9D2D14C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -150,6 +156,7 @@ Global
 		{A9D71ABC-83EB-471C-8B17-056639FEEF2C} = {48819596-519F-4840-8A96-785B6B0B17FB}
 		{2D05BD52-2B33-440E-A898-141B96C86632} = {48819596-519F-4840-8A96-785B6B0B17FB}
 		{A9B041CF-B616-4295-A05C-1CEFB6876875} = {3B3AF354-42CD-4709-8D1D-35883A33F752}
+		{A982AB52-75D3-42FD-842A-1BD0D9D2D14C} = {9275BA93-9268-4BF0-830C-BB768C34A866}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DC9D9D4F-2190-4530-B529-2F3497D51EA0}

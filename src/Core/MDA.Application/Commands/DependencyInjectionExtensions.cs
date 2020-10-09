@@ -11,7 +11,9 @@ namespace MDA.Application.Commands
             params Assembly[] assemblies)
         {
             services.AddSingleton<IApplicationCommandPublisher, ApplicationCommandPublisher>();
+            services.AddSingleton<IApplicationCommandExecutor, ApplicationCommandExecutor>();
             services.AddSingleton<IApplicationCommandContext, ApplicationCommandContext>();
+            services.AddSingleton<IApplicationCommandService, ApplicationCommandService>();
 
             return services;
         }
@@ -22,6 +24,7 @@ namespace MDA.Application.Commands
             where TApplicationCommand : IApplicationCommand
         {
             services.AddScoped(typeof(IMessageHandler<TApplicationCommand>), typeof(ApplicationCommandProcessor<TApplicationCommand>));
+            services.AddScoped(typeof(IAsyncMessageHandler<TApplicationCommand>), typeof(ApplicationCommandProcessor<TApplicationCommand>));
 
             return services;
         }

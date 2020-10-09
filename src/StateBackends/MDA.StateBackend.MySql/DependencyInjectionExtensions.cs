@@ -7,7 +7,7 @@ namespace MDA.StateBackend.MySql
 {
     public static class DependencyInjectionExtensions
     {
-        public static IServiceCollection AddMySql(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddStateBackendMySql(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<IRelationalDbStorageFactory, MySqlRelationalDbStorageFactory>();
             services.AddSingleton<IDomainEventStateBackend, MySqlDomainEventStateBackend>();

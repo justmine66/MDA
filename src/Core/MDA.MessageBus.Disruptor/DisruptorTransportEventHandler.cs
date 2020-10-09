@@ -31,7 +31,7 @@ namespace MDA.MessageBus.Disruptor
                     logger.LogError($"No message handler found for {messageType.FullName}.");
                     continue;
                 }
-
+                
                 messageHandlerType.GetMethod("Handle")?.Invoke(handler, new object[] { data.Message });
             }
         }

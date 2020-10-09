@@ -1,24 +1,47 @@
 ﻿using MDA.MessageBus;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MDA.Application.Commands
 {
-    public class ApplicationCommandProcessor<TApplicationCommand> : IMessageHandler<TApplicationCommand>
+    public class ApplicationCommandProcessor<TApplicationCommand> :
+        IMessageHandler<TApplicationCommand>,
+        IAsyncMessageHandler<TApplicationCommand>
         where TApplicationCommand : IApplicationCommand
     {
         private readonly IApplicationCommandContext _context;
-        private readonly IApplicationCommandHandler<TApplicationCommand> _handler;
 
-        public ApplicationCommandProcessor(
-            IApplicationCommandContext context,
-            IApplicationCommandHandler<TApplicationCommand> handler)
-        {
-            _context = context;
-            _handler = handler;
-        }
+        public ApplicationCommandProcessor(IApplicationCommandContext context) 
+            => _context = context;
 
         public void Handle(TApplicationCommand message)
         {
-            _handler.OnApplicationCommand(_context, message);
+            var handler = _context
+                .ServiceProvider
+                .GetService<IApplicationCommandHandler<TApplicationCommand>>();
+
+            if (handler == null)
+            {
+                throw new ArgumentNullException(nameof(handler));
+            }
+
+            handler.OnApplicationCommand(_context, message);
         }
-    } 
+
+        public async Task HandleAsync(TApplicationCommand message, CancellationToken token = default)
+        {
+            var handler = _context
+                .ServiceProvider
+                .GetService<IAsyncApplicationCommandHandler<TApplicationCommand>>();
+
+            if (handler == null)
+            {
+                throw new ArgumentNullException(nameof(handler));
+            }
+
+            await handler.OnApplicationCommandAsync(_context, message, token);
+        }
+    }
 }

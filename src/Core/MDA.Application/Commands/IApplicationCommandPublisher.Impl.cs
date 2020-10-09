@@ -1,5 +1,7 @@
 ﻿using MDA.MessageBus;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MDA.Application.Commands
 {
@@ -18,6 +20,16 @@ namespace MDA.Application.Commands
             }
 
             _messagePublisher.Publish(command);
+        }
+
+        public async Task PublishAsync(IApplicationCommand command, CancellationToken token = default)
+        {
+            if (command == null)
+            {
+                throw new ArgumentNullException(nameof(command));
+            }
+
+            await _messagePublisher.PublishAsync(command, token);
         }
     }
 }

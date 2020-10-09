@@ -45,7 +45,7 @@ namespace MDA.XUnitTest
             services.AddDomainModels();
             services.AddDomainEvents();
 
-            services.AddMySql(context.Configuration);
+            services.AddStateBackendMySql(context.Configuration);
 
             services.AddScoped<IMessageHandler<FakeMessage>, FakeMessageHandler>();
             services.AddScoped<IMessageHandler<FakeMessageWithPartitionKey>, FakeMessageWithPartitionKeyHandler>();
