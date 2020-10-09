@@ -12,7 +12,7 @@
         {
             public string DomainEvents { get; set; } = "domain_event_indices";
 
-            public string DomainEventContents { get; set; } = "domain_event_payloads";
+            public string DomainEventPayloads { get; set; } = "domain_event_payloads";
         }
     }
 }

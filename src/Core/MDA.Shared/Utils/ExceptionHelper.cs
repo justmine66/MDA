@@ -2,7 +2,7 @@
 
 namespace MDA.Shared.Utils
 {
-    public static class Helper
+    public static class ExceptionHelper
     {
         public static void EatException(Action action)
         {
@@ -16,7 +16,7 @@ namespace MDA.Shared.Utils
             }
         }
 
-        public static T EatException<T>(Func<T> action, T defaultValue = default(T))
+        public static T EatExceptionOrDefault<T>(Func<T> action, T defaultValue = default(T))
         {
             try
             {

@@ -4,14 +4,11 @@ using MDA.Application.Commands;
 
 namespace EBank.Application
 {
-    public class BankApplicationService : IBankApplicationService
+    public class EBankApplicationService : IEBankApplicationService
     {
         private readonly IApplicationCommandService _commandService;
 
-        public BankApplicationService(IApplicationCommandService commandService)
-        {
-            _commandService = commandService;
-        }
+        public EBankApplicationService(IApplicationCommandService commandService) => _commandService = commandService;
 
         /// <summary>
         /// 开户

@@ -6,7 +6,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.0.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\Core\MDA.MessageBus.Disruptor\MDA.MessageBus.Disruptor.csproj" />
+    <ProjectReference Include="..\..\..\..\src\StateBackends\MDA.StateBackend.MySql\MDA.StateBackend.MySql.csproj" />
     <ProjectReference Include="..\..\Application\EBank.Application\EBank.Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
