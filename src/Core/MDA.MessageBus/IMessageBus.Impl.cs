@@ -8,9 +8,9 @@ namespace MDA.MessageBus
     public class MessageBus : IMessageBus
     {
         private readonly IMessagePublisher _publisher;
-        private readonly IMessageSubscriber _subscriber;
+        private readonly IMessageSubscriberManager _subscriber;
 
-        public MessageBus(IMessagePublisher publisher, IMessageSubscriber subscriber)
+        public MessageBus(IMessagePublisher publisher, IMessageSubscriberManager subscriber)
         {
             _publisher = publisher;
             _subscriber = subscriber;
@@ -40,7 +40,7 @@ namespace MDA.MessageBus
             where TMessageHandler : IMessageHandler<TMessage>
             => _subscriber.Unsubscribe<TMessage, TMessageHandler>();
 
-        public IEnumerable<MessageSubscriberInfo> GetSubscribers(Type messageType)
+        public IEnumerable<MessageSubscriber> GetSubscribers(Type messageType)
             => _subscriber.GetSubscribers(messageType);
     }
 }

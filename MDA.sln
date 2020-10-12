@@ -53,7 +53,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA.StateBackend.RDBMS.Shar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA.MessageBus.Kafka", "src\Core\MDA.MessageBus.Kafka\MDA.MessageBus.Kafka.csproj", "{A9B041CF-B616-4295-A05C-1CEFB6876875}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBank.Domain.MySql", "samples\EBank\Domain\EBank.Domain.MySql\EBank.Domain.MySql.csproj", "{A982AB52-75D3-42FD-842A-1BD0D9D2D14C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBank.Domain.MySql", "samples\EBank\Domain\EBank.Domain.MySql\EBank.Domain.MySql.csproj", "{A982AB52-75D3-42FD-842A-1BD0D9D2D14C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace MDA.MessageBus
 {
-    public interface IMessageSubscriber
+    public interface IMessageSubscriberManager
     {
         void Subscribe(Type messageType, Type messageHandlerType);
 
@@ -20,20 +20,23 @@ namespace MDA.MessageBus
             where TMessage : IMessage
             where TMessageHandler : IMessageHandler<TMessage>;
 
-        IEnumerable<MessageSubscriberInfo> GetSubscribers(Type messageType);
+        IEnumerable<MessageSubscriber> GetSubscribers(Type messageType);
     }
 
-    public class MessageSubscriberInfo
+    public class MessageSubscriber
     {
-        public MessageSubscriberInfo() { }
-        public MessageSubscriberInfo(Type messageType, Type messageHandlerType)
+        public MessageSubscriber() { }
+        public MessageSubscriber(Type messageType, Type messageHandlerType)
         {
             MessageType = messageType;
             MessageHandlerType = messageHandlerType;
+            IsAsynchronousMessageHandler = typeof(IAsyncMessageHandler<>).IsAssignableFrom(messageHandlerType);
         }
 
         public Type MessageType { get; set; }
 
         public Type MessageHandlerType { get; set; }
+
+        public bool IsAsynchronousMessageHandler { get; set; }
     }
 }

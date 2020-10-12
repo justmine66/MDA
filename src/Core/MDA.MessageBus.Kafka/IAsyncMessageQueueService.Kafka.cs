@@ -23,10 +23,8 @@ namespace MDA.MessageBus.Kafka
             _serializer = serializer;
         }
 
-        public async Task StartAsync(CancellationToken token = default)
-        {
-            await Task.CompletedTask;
-        }
+        public async Task StartAsync(CancellationToken token = default) 
+            => await Task.CompletedTask;
 
         public async Task EnqueueAsync(IMessage message, CancellationToken token = default)
         {
@@ -67,9 +65,7 @@ namespace MDA.MessageBus.Kafka
             }
         }
 
-        public async Task StopAsync(CancellationToken token = default)
-        {
-            await Task.CompletedTask;
-        }
+        public async Task StopAsync(CancellationToken token = default) 
+            => await Task.CompletedTask;
     }
 }

@@ -1,5 +1,7 @@
 ﻿using MDA.MessageBus;
 using Microsoft.Extensions.Logging;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MDA.XUnitTest.MessageBus
 {
@@ -15,6 +17,23 @@ namespace MDA.XUnitTest.MessageBus
         public void Handle(FakeMessage message)
         {
             _logger.LogInformation($"The message: {nameof(FakeMessage)}[Payload: {message.Payload}] handled.");
+        }
+    }
+
+    public class AsyncFakeMessageHandler : IAsyncMessageHandler<FakeMessage>
+    {
+        private readonly ILogger<AsyncFakeMessageHandler> _logger;
+
+        public AsyncFakeMessageHandler(ILogger<AsyncFakeMessageHandler> logger)
+        {
+            _logger = logger;
+        }
+
+        public async Task HandleAsync(FakeMessage message, CancellationToken token = default)
+        {
+            _logger.LogInformation($"The message: {nameof(FakeMessage)}[Payload: {message.Payload}] handled.");
+
+            await Task.CompletedTask;
         }
     }
 }

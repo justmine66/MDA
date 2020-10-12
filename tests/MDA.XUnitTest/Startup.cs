@@ -48,6 +48,7 @@ namespace MDA.XUnitTest
             services.AddStateBackendMySql(context.Configuration);
 
             services.AddScoped<IMessageHandler<FakeMessage>, FakeMessageHandler>();
+            services.AddScoped<IAsyncMessageHandler<FakeMessage>, AsyncFakeMessageHandler>();
             services.AddScoped<IMessageHandler<FakeMessageWithPartitionKey>, FakeMessageWithPartitionKeyHandler>();
         }
 
@@ -60,9 +61,10 @@ namespace MDA.XUnitTest
 
         private void ConfigureMessageBus(IServiceProvider provider)
         {
-            var subscriber = provider.GetService<IMessageSubscriber>();
+            var subscriber = provider.GetService<IMessageSubscriberManager>();
 
             subscriber.Subscribe<FakeMessage, IMessageHandler<FakeMessage>>();
+            subscriber.SubscribeAsync<FakeMessage, IAsyncMessageHandler<FakeMessage>>();
             subscriber.Subscribe<FakeMessageWithPartitionKey, IMessageHandler<FakeMessageWithPartitionKey>>();
             subscriber.Subscribe<FakeApplicationNotification, IApplicationNotificationHandler<FakeApplicationNotification>>();
             subscriber.Subscribe<CreateApplicationCommand, IMessageHandler<CreateApplicationCommand>>();

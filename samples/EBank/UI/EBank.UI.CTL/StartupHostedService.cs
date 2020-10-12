@@ -9,11 +9,11 @@ namespace EBank.UI.CTL
     public class StartupHostedService : IHostedService
     {
         private readonly IMessageQueueService _messageQueueService;
-        private readonly IMessageSubscriber _subscriber;
+        private readonly IMessageSubscriberManager _subscriber;
 
         public StartupHostedService(
             IMessageQueueService messageQueueService,
-            IMessageSubscriber subscriber)
+            IMessageSubscriberManager subscriber)
         {
             _messageQueueService = messageQueueService;
             _subscriber = subscriber;
