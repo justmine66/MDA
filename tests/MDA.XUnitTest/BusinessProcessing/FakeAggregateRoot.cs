@@ -16,7 +16,7 @@ namespace MDA.XUnitTest.BusinessProcessing
     {
         #region [ Inbound Domain Commands ]
 
-        public void HandleDomainCommand(CreateDomainCommand command)
+        public void OnDomainCommand(CreateDomainCommand command)
         {
             // 1. 参数预检
             // todo
@@ -25,7 +25,7 @@ namespace MDA.XUnitTest.BusinessProcessing
             ApplyDomainEvent(new FakeAggregateRootCreatedDomainEvent(command.Payload));
         }
 
-        public void HandleDomainCommand(ChangePayloadDomainCommand command)
+        public void OnDomainCommand(ChangePayloadDomainCommand command)
         {
             // 1. 参数预检
             // todo
@@ -41,12 +41,12 @@ namespace MDA.XUnitTest.BusinessProcessing
 
         #region [ Outbound Domain Events ]
 
-        public void HandleDomainEvent(FakeAggregateRootCreatedDomainEvent @event)
+        public void OnDomainEvent(FakeAggregateRootCreatedDomainEvent @event)
         {
            new FakeAggregateRoot(@event.Payload);
         }
 
-        public void HandleDomainEvent(FakePayloadChangedDomainEvent @event)
+        public void OnDomainEvent(FakePayloadChangedDomainEvent @event)
         {
             Payload = @event.Payload;
         }

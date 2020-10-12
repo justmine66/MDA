@@ -3,17 +3,17 @@ using MDA.Domain.Events;
 using MDA.Domain.Notifications;
 using MDA.Domain.Shared;
 using MDA.MessageBus;
-using MDA.Shared.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace MDA.Domain.Models
 {
     public abstract class EventSourcedAggregateRoot : IEventSourcedAggregateRoot, IEquatable<IEventSourcedAggregateRoot>
     {
-        private Type ThisType => GetType();
+        private Type AggregateRootType => GetType();
         private IList<IDomainEvent> _mutatingDomainEvents;
 
         protected EventSourcedAggregateRoot() => _mutatingDomainEvents = new List<IDomainEvent>();
@@ -34,7 +34,7 @@ namespace MDA.Domain.Models
             // 1. 填充事件信息到模型
             if (@event == null) return;
 
-            OnDomainEvent(@event);
+            HandleDomainEvent(@event);
 
             // 2. 添加到变更事件流
             if (_mutatingDomainEvents == null)
@@ -46,21 +46,21 @@ namespace MDA.Domain.Models
             _mutatingDomainEvents.Add(@event);
         }
 
-        public virtual void OnDomainCommand(IDomainCommand command)
+        public virtual void HandleDomainCommand(IDomainCommand command)
         {
             Version++;
             Id = command.AggregateRootId;
 
-            ExecuteDomainMessage(DomainMessageType.Command, "HandleDomainCommand", command);
+            ExecuteDomainMessage(DomainMessageType.Command, command);
         }
 
-        public virtual void OnDomainEvent(IDomainEvent @event)
+        public virtual void HandleDomainEvent(IDomainEvent @event)
         {
             @event.AggregateRootId = Id;
-            @event.AggregateRootType = ThisType;
+            @event.AggregateRootType = AggregateRootType;
             @event.Version = Version;
 
-            ExecuteDomainMessage(DomainMessageType.Event, "HandleDomainEvent", @event);
+            ExecuteDomainMessage(DomainMessageType.Event, @event);
         }
 
         public virtual void PublishDomainNotification(IDomainNotification notification)
@@ -74,47 +74,62 @@ namespace MDA.Domain.Models
 
             foreach (var @event in events)
             {
-                OnDomainEvent(@event);
+                HandleDomainEvent(@event);
             }
         }
 
-        private void ExecuteDomainMessage(DomainMessageType messageType, string methodName, IMessage message)
+        private void ExecuteDomainMessage(DomainMessageType messageType, IMessage message)
         {
-            var methods = ThisType.GetRuntimeMethods();
-            if (methods.IsEmpty())
+            var messageParameterType = message.GetType();
+            var messageParameterTypeFullName = message.GetType();
+            var aggregateTypeFullName = AggregateRootType.FullName;
+
+            string methodName;
+            switch (messageType)
             {
-                return;
+                case DomainMessageType.Command:
+                     methodName = "OnDomainCommand";
+
+                    var domainCommandType = typeof(IDomainCommand);
+
+                    if (!domainCommandType.IsAssignableFrom(messageParameterType))
+                    {
+                        throw new MethodNotFoundException($"The method: {methodName}({messageParameterTypeFullName}) in {aggregateTypeFullName} is wrong, reason: {messageParameterTypeFullName} cannot assign to interface: {domainCommandType.FullName}.");
+                    }
+
+                    break;
+                case DomainMessageType.Event:
+                    methodName = "OnDomainEvent";
+
+                    var domainEventType = typeof(IDomainEvent);
+
+                    if (!domainEventType.IsAssignableFrom(messageParameterType))
+                    {
+                        throw new MethodNotFoundException($"The method: {methodName}({messageParameterTypeFullName}) in {aggregateTypeFullName} is wrong, reason: {messageParameterTypeFullName} cannot assign to interface: {domainEventType.FullName}.");
+                    }
+
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(messageType), messageType, null);
             }
 
-            foreach (var method in methods)
+            var method = AggregateRootType
+                .GetMethod(methodName,
+                    BindingFlags.Instance | BindingFlags.Public,
+                    null,
+                    new[] { messageParameterType },
+                    null);
+            if (method == null)
             {
-                if (method.Name != methodName) continue;
-
-                var parameters = method.GetParameters();
-                var parameterType = parameters[0].ParameterType;
-
-                switch (messageType)
-                {
-                    case DomainMessageType.Command:
-                        if (typeof(IDomainCommand).IsAssignableFrom(parameterType) &&
-                            parameterType == message.GetType())
-                        {
-                            method.Invoke(this, new object[] { message });
-
-                            return;
-                        }
-                        break;
-                    case DomainMessageType.Event:
-                        if (typeof(IDomainEvent).IsAssignableFrom(parameterType) &&
-                            parameterType == message.GetType())
-                        {
-                            method.Invoke(this, new object[] { message });
-
-                            return;
-                        }
-                        break;
-                }
+                throw new MethodNotFoundException($"No {methodName}({messageParameterTypeFullName}) found in {aggregateTypeFullName}.");
             }
+
+            var parameter = Expression.Parameter(messageParameterType, methodName);
+            var call = Expression.Call(Expression.Constant(this), method, parameter);
+            var lambda = Expression.Lambda(call, parameter);
+            var methodDelegate = lambda.Compile();
+
+            methodDelegate.DynamicInvoke(message);
         }
 
         public bool Equals(IEventSourcedAggregateRoot other)
@@ -128,7 +143,7 @@ namespace MDA.Domain.Models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != ThisType) return false;
+            if (obj.GetType() != AggregateRootType) return false;
 
             return obj is IEventSourcedAggregateRoot other && Equals(other);
         }

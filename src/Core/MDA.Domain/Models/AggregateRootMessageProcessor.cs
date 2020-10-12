@@ -53,7 +53,7 @@ namespace MDA.Domain.Models
 
             try
             {
-                aggregate.OnDomainCommand(command);
+                aggregate.HandleDomainCommand(command);
             }
             catch (Exception e)
             {

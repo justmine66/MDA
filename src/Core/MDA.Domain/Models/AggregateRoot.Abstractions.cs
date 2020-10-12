@@ -79,13 +79,13 @@ namespace MDA.Domain.Models
         /// 执行领域命令
         /// </summary>
         /// <param name="command">领域命令</param>
-        void OnDomainCommand(IDomainCommand command);
+        void HandleDomainCommand(IDomainCommand command);
 
         /// <summary>
         /// 填充事件信息到领域模型。
         /// </summary>
         /// <param name="@event">领域事件</param>
-        void OnDomainEvent(IDomainEvent @event);
+        void HandleDomainEvent(IDomainEvent @event);
     }
 
     /// <summary>
