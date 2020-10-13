@@ -8,16 +8,16 @@ namespace MDA.MessageBus
 {
     public class MessageSubscriberManager : IMessageSubscriberManager
     {
-        private readonly ConcurrentDictionary<Type, List<MessageSubscriber>> _messageHandlerMap;
+        private readonly ConcurrentDictionary<Type, List<MessageSubscriber>> _subscribers;
 
         public MessageSubscriberManager()
-            => _messageHandlerMap = new ConcurrentDictionary<Type, List<MessageSubscriber>>();
+            => _subscribers = new ConcurrentDictionary<Type, List<MessageSubscriber>>();
 
         public void Subscribe(Type messageType, Type messageHandlerType)
         {
             var subscriber = new MessageSubscriber(messageType, messageHandlerType);
 
-            _messageHandlerMap.AddOrUpdate(messageType,
+            _subscribers.AddOrUpdate(messageType,
                 key => new List<MessageSubscriber>(),
                 (key, oldValue) =>
                 {
@@ -34,7 +34,7 @@ namespace MDA.MessageBus
             var messageType = typeof(TMessage);
             var subscriber = new MessageSubscriber(messageType, typeof(TMessageHandler));
 
-            _messageHandlerMap.AddOrUpdate(messageType,
+            _subscribers.AddOrUpdate(messageType,
                 key => new List<MessageSubscriber>() { subscriber },
                 (key, oldValue) =>
                 {
@@ -51,7 +51,7 @@ namespace MDA.MessageBus
             var messageType = typeof(TMessage);
             var subscriber = new MessageSubscriber(messageType, typeof(TMessageHandler));
 
-            _messageHandlerMap.AddOrUpdate(messageType,
+            _subscribers.AddOrUpdate(messageType,
                 key => new List<MessageSubscriber>() { subscriber },
                 (key, oldValue) =>
                 {
@@ -70,13 +70,24 @@ namespace MDA.MessageBus
             var messageType = typeof(TMessage);
             var subscriber = new MessageSubscriber(messageType, typeof(TMessageHandler));
 
-            if (_messageHandlerMap.TryGetValue(messageType, out var subscribers))
+            if (_subscribers.TryGetValue(messageType, out var subscribers))
             {
                 subscribers.Remove(subscriber);
             }
         }
 
         public IEnumerable<MessageSubscriber> GetSubscribers(Type messageType)
-            => _messageHandlerMap.TryGetValue(messageType, out var handlers) ? handlers : Enumerable.Empty<MessageSubscriber>();
+            => _subscribers.TryGetValue(messageType, out var handlers) ? handlers : Enumerable.Empty<MessageSubscriber>();
+
+        public IEnumerable<MessageSubscriber> GetAllSubscribers()
+        {
+            foreach (var entry in _subscribers)
+            {
+                foreach (var subscriber in entry.Value)
+                {
+                    yield return subscriber;
+                }
+            }
+        }
     }
 }

@@ -21,6 +21,8 @@ namespace MDA.MessageBus
             where TMessageHandler : IMessageHandler<TMessage>;
 
         IEnumerable<MessageSubscriber> GetSubscribers(Type messageType);
+
+        IEnumerable<MessageSubscriber> GetAllSubscribers();
     }
 
     public class MessageSubscriber
@@ -30,7 +32,7 @@ namespace MDA.MessageBus
         {
             MessageType = messageType;
             MessageHandlerType = messageHandlerType;
-            IsAsynchronousMessageHandler = typeof(IAsyncMessageHandler<>).IsAssignableFrom(messageHandlerType);
+            IsAsynchronousMessageHandler = messageHandlerType.Name.StartsWith("IAsyncMessageHandler");
         }
 
         public Type MessageType { get; set; }

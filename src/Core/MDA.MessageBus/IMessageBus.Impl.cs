@@ -42,5 +42,8 @@ namespace MDA.MessageBus
 
         public IEnumerable<MessageSubscriber> GetSubscribers(Type messageType)
             => _subscriber.GetSubscribers(messageType);
+
+        public IEnumerable<MessageSubscriber> GetAllSubscribers()
+            => _subscriber.GetAllSubscribers();
     }
 }

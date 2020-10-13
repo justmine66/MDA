@@ -71,6 +71,10 @@ namespace MDA.XUnitTest
 
             subscriber.SubscribeDomainCommands();
 
+            var proxyManager = provider.GetService<IMessageHandlerProxyManager>();
+
+            proxyManager.InitializeMessageHandlerProxies();
+
             var queueService = provider.GetService<IMessageQueueService>();
 
             queueService.Start();

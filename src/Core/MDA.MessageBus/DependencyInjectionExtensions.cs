@@ -10,6 +10,7 @@ namespace MDA.MessageBus
         public static IServiceCollection AddMessageBusCore(this IServiceCollection services, params Assembly[] assemblies)
         {
             services.AddSingleton<IMessageSubscriberManager, MessageSubscriberManager>();
+            services.AddSingleton<IMessageHandlerProxyManager, MessageHandlerProxyManager>();
             services.AddSingleton<IAsyncMessageQueueService, NoOpAsyncMessageQueueService>();
             services.AddSingleton<IMessagePublisher, MessagePublisher>();
             services.AddSingleton<IMessageBus, MessageBus>();
@@ -33,7 +34,7 @@ namespace MDA.MessageBus
             {
                 var concreteServiceType = serviceType.MakeGenericType(implementationType.GenericTypeArguments);
 
-                services.AddTransient(concreteServiceType, implementationType);
+                services.AddScoped(concreteServiceType, implementationType);
             }
 
             return services;
