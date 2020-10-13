@@ -1,4 +1,5 @@
-﻿using MDA.Domain.Commands;
+﻿using EBank.Application.Commands.Accounts;
+using MDA.Domain.Commands;
 using MDA.MessageBus;
 using Microsoft.Extensions.Hosting;
 using System.Threading;
@@ -9,19 +10,25 @@ namespace EBank.UI.CTL
     public class StartupHostedService : IHostedService
     {
         private readonly IMessageQueueService _messageQueueService;
-        private readonly IMessageSubscriberManager _subscriber;
+        private readonly IMessageSubscriberManager _subscriberManager;
+        private readonly IMessageHandlerProxyFinder _handlerProxyManager;
 
         public StartupHostedService(
             IMessageQueueService messageQueueService,
-            IMessageSubscriberManager subscriber)
+            IMessageSubscriberManager subscriber, 
+            IMessageHandlerProxyFinder handlerProxyManager)
         {
             _messageQueueService = messageQueueService;
-            _subscriber = subscriber;
+            _subscriberManager = subscriber;
+            _handlerProxyManager = handlerProxyManager;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _subscriber.SubscribeDomainCommands();
+            _subscriberManager.Subscribe<OpenBankAccountApplicationCommand, IMessageHandler<OpenBankAccountApplicationCommand>>();
+            _subscriberManager.SubscribeDomainCommands();
+
+            _handlerProxyManager.InitializeMessageHandlerProxies();
 
             _messageQueueService.Start();
 

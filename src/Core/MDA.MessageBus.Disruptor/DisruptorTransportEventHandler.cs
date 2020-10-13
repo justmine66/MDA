@@ -1,7 +1,5 @@
 ﻿using Disruptor;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System.Linq;
 using System.Threading;
 
 namespace MDA.MessageBus.Disruptor
@@ -10,36 +8,26 @@ namespace MDA.MessageBus.Disruptor
     {
         public void OnEvent(DisruptorTransportEvent data, long sequence, bool endOfBatch)
         {
-            var messageType = data.Message.GetType();
-            var serviceProvider = data.ServiceProvider;
-            var subscriberManager = serviceProvider.GetService<IMessageSubscriberManager>();
-            var logger = serviceProvider.GetService<ILogger<DisruptorTransportEventHandler>>();
-            var subscribers = subscriberManager.GetSubscribers(messageType);
-
-            if (!subscribers.Any())
+            using (var scope = data.ServiceProvider.CreateScope())
             {
-                logger.LogError($"No message subscriber found for {messageType.FullName}.");
+                var serviceProvider = scope.ServiceProvider;
 
-                return;
-            }
-
-            var handlerProxyManager = serviceProvider.GetService<IMessageHandlerProxyManager>();
-
-            foreach (var subscriber in subscribers)
-            {
-                var messageHandlerType = subscriber.MessageHandlerType;
-
-                if (subscriber.IsAsynchronousMessageHandler)
+                var proxies = serviceProvider.GetServices<IMessageHandlerProxy>();
+                if (proxies != null)
                 {
-                    var handlerProxy = handlerProxyManager.GetAsyncMessageHandlerProxy(messageHandlerType);
-
-                    handlerProxy.HandleAsync(data.Message, CancellationToken.None).GetAwaiter().GetResult();
+                    foreach (var proxy in proxies)
+                    {
+                        proxy?.Handle(data.Message);
+                    }
                 }
-                else
-                {
-                    var handlerProxy = handlerProxyManager.GetMessageHandlerProxy(messageHandlerType);
 
-                    handlerProxy.Handle(data.Message);
+                var asyncProxies = serviceProvider.GetServices<IAsyncMessageHandlerProxy>();
+                if (asyncProxies != null)
+                {
+                    foreach (var proxy in asyncProxies)
+                    {
+                        proxy?.HandleAsync(data.Message, CancellationToken.None).GetAwaiter().GetResult();
+                    }
                 }
             }
         }

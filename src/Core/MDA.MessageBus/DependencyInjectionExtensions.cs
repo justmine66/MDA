@@ -10,11 +10,11 @@ namespace MDA.MessageBus
         public static IServiceCollection AddMessageBusCore(this IServiceCollection services, params Assembly[] assemblies)
         {
             services.AddSingleton<IMessageSubscriberManager, MessageSubscriberManager>();
-            services.AddSingleton<IMessageHandlerProxyManager, MessageHandlerProxyManager>();
+            services.AddSingleton<IMessageHandlerProxyFinder, MessageHandlerProxyFinder>();
             services.AddSingleton<IAsyncMessageQueueService, NoOpAsyncMessageQueueService>();
             services.AddSingleton<IMessagePublisher, MessagePublisher>();
             services.AddSingleton<IMessageBus, MessageBus>();
-            //services.AddMessageHandlers(assemblies);
+            services.AddMessageHandlers(assemblies);
 
             return services;
         }
@@ -24,17 +24,40 @@ namespace MDA.MessageBus
             var assemblyList = new List<Assembly>();
             assemblyList.AddRange(assemblies);
 
-            var serviceType = typeof(IMessageHandler<>);
-            var implementationTypes = assemblyList
-                .SelectMany(assembly => assembly.GetTypes().Where(it => !it.IsInterface && !it.IsAbstract))
-                .SelectMany(instance => instance.GetInterfaces())
-                .Where(type => type.IsGenericType && type.GetGenericTypeDefinition() == serviceType);
+            var types = assemblyList
+                .SelectMany(assembly => assembly.GetTypes()
+                    .Where(it => !it.IsInterface && !it.IsAbstract));
 
-            foreach (var implementationType in implementationTypes)
+            var messageHandlerType = typeof(IMessageHandler<>);
+            var asyncMessageHandlerType = typeof(IAsyncMessageHandler<>);
+
+            foreach (var type in types)
             {
-                var concreteServiceType = serviceType.MakeGenericType(implementationType.GenericTypeArguments);
+                foreach (var interfaceType in type.GetInterfaces())
+                {
+                    if (!interfaceType.IsGenericType)
+                    {
+                        continue;
+                    }
 
-                services.AddScoped(concreteServiceType, implementationType);
+                    var genericType = interfaceType.GetGenericTypeDefinition();
+
+                    if (genericType == messageHandlerType)
+                    {
+                        var proxyType = typeof(MessageHandlerProxy<>).MakeGenericType(interfaceType.GetGenericArguments());
+
+                        services.AddScoped(interfaceType, type);
+                        services.AddScoped(typeof(IMessageHandlerProxy), proxyType);
+                    }
+
+                    if (genericType == asyncMessageHandlerType)
+                    {
+                        var proxyType = typeof(AsyncMessageHandlerProxy<>).MakeGenericType(interfaceType.GetGenericArguments());
+
+                        services.AddScoped(interfaceType, type);
+                        services.AddScoped(typeof(IAsyncMessageHandlerProxy), proxyType);
+                    }
+                }
             }
 
             return services;

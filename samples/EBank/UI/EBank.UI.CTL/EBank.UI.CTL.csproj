@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\src\Core\MDA.MessageBus.Disruptor\MDA.MessageBus.Disruptor.csproj" />
     <ProjectReference Include="..\..\..\..\src\StateBackends\MDA.StateBackend.MySql\MDA.StateBackend.MySql.csproj" />
+    <ProjectReference Include="..\..\Application\EBank.Application.BusinessServer\EBank.Application.BusinessServer.csproj" />
     <ProjectReference Include="..\..\Application\EBank.Application.Querying\EBank.Application.Querying.csproj" />
     <ProjectReference Include="..\..\Application\EBank.Application\EBank.Application.csproj" />
     <ProjectReference Include="..\..\Domain\EBank.Domain.MySql\EBank.Domain.MySql.csproj" />

@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using EBank.Application;
+using EBank.Application.BusinessServer.CommandHandlers.Accounts;
 using EBank.Application.Commands.Accounts;
 using EBank.Application.Querying;
 using EBank.Domain.Models.Accounts;
@@ -45,6 +46,8 @@ namespace EBank.UI.CTL
             services.AddEBankAppServices();
             services.AddSingleton<IBankAccountRepository, MySqlBankAccountRepository>();
             services.AddSingleton<IBankAccountQueryService, BankAccountQueryService>();
+            services.AddApplicationCommand<OpenBankAccountApplicationCommand>();
+            services.AddScoped<IAsyncApplicationCommandHandler<OpenBankAccountApplicationCommand>, BankAccountApplicationCommandHandlers>();
 
             // 5. 本地服务
             services.AddHostedService<StartupHostedService>();
