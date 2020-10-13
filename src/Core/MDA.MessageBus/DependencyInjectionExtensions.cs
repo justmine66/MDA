@@ -10,7 +10,6 @@ namespace MDA.MessageBus
         public static IServiceCollection AddMessageBusCore(this IServiceCollection services, params Assembly[] assemblies)
         {
             services.AddSingleton<IMessageSubscriberManager, MessageSubscriberManager>();
-            services.AddSingleton<IMessageHandlerProxyFinder, MessageHandlerProxyFinder>();
             services.AddSingleton<IAsyncMessageQueueService, NoOpAsyncMessageQueueService>();
             services.AddSingleton<IMessagePublisher, MessagePublisher>();
             services.AddSingleton<IMessageBus, MessageBus>();

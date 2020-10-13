@@ -11,24 +11,19 @@ namespace EBank.UI.CTL
     {
         private readonly IMessageQueueService _messageQueueService;
         private readonly IMessageSubscriberManager _subscriberManager;
-        private readonly IMessageHandlerProxyFinder _handlerProxyManager;
 
         public StartupHostedService(
             IMessageQueueService messageQueueService,
-            IMessageSubscriberManager subscriber, 
-            IMessageHandlerProxyFinder handlerProxyManager)
+            IMessageSubscriberManager subscriber)
         {
             _messageQueueService = messageQueueService;
             _subscriberManager = subscriber;
-            _handlerProxyManager = handlerProxyManager;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             _subscriberManager.Subscribe<OpenBankAccountApplicationCommand, IMessageHandler<OpenBankAccountApplicationCommand>>();
             _subscriberManager.SubscribeDomainCommands();
-
-            _handlerProxyManager.InitializeMessageHandlerProxies();
 
             _messageQueueService.Start();
 
