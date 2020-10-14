@@ -1,36 +1,44 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MDA.MessageBus
 {
-    public class MessageHandlerProxy<TMessage> : IMessageHandlerProxy where TMessage : class, IMessage
+    public class MessageHandlerProxy<TMessage> : IMessageHandlerProxy<TMessage> 
+        where TMessage : class, IMessage
     {
-        private readonly IMessageHandler<TMessage> _handler;
+        private readonly IEnumerable<IMessageHandler<TMessage>> _handlers;
 
-        public MessageHandlerProxy(IMessageHandler<TMessage> handler)
+        public MessageHandlerProxy(IEnumerable<IMessageHandler<TMessage>> handlers)
         {
-            _handler = handler;
+            _handlers = handlers;
         }
 
         public void Handle(IMessage message)
         {
-            _handler.Handle(message as TMessage);
+            foreach (var handler in _handlers)
+            {
+                handler.Handle(message as TMessage);
+            }
         }
     }
 
-    public class AsyncMessageHandlerProxy<TMessage> : IAsyncMessageHandlerProxy where TMessage : class, IMessage
+    public class AsyncMessageHandlerProxy<TMessage> : IAsyncMessageHandlerProxy<TMessage> 
+        where TMessage : class, IMessage
     {
-        private readonly IAsyncMessageHandler<TMessage> _handler;
+        private readonly IEnumerable<IAsyncMessageHandler<TMessage>> _handlers;
 
-        public AsyncMessageHandlerProxy(IAsyncMessageHandler<TMessage> handler)
+        public AsyncMessageHandlerProxy(IEnumerable<IAsyncMessageHandler<TMessage>> handlers)
         {
-            _handler = handler;
+            _handlers = handlers;
         }
-
 
         public async Task HandleAsync(IMessage message, CancellationToken token = default)
         {
-            await _handler.HandleAsync(message as TMessage, token);
+            foreach (var handler in _handlers)
+            {
+                await handler.HandleAsync(message as TMessage, token);
+            }
         }
     }
 }

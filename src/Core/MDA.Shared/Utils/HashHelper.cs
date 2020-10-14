@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MDA.Domain.Shared
+namespace MDA.Shared.Utils
 {
     public static class HashHelper
     {

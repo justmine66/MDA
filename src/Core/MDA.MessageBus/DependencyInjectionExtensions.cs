@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -7,6 +8,9 @@ namespace MDA.MessageBus
 {
     public static class DependencyInjectionExtensions
     {
+        private static readonly List<Type[]> AddedProxies = new List<Type[]>();
+        private static readonly List<Type[]> AddedAsyncProxies = new List<Type[]>();
+
         public static IServiceCollection AddMessageBusCore(this IServiceCollection services, params Assembly[] assemblies)
         {
             services.AddSingleton<IMessageSubscriberManager, MessageSubscriberManager>();
@@ -32,34 +36,78 @@ namespace MDA.MessageBus
 
             foreach (var type in types)
             {
-                foreach (var interfaceType in type.GetInterfaces())
+                foreach (var serviceType in type.GetInterfaces())
                 {
-                    if (!interfaceType.IsGenericType)
+                    if (!serviceType.IsGenericType)
                     {
                         continue;
                     }
 
-                    var genericType = interfaceType.GetGenericTypeDefinition();
+                    var genericTypeDefinition = serviceType.GetGenericTypeDefinition();
+                    var genericArguments = serviceType.GetGenericArguments();
 
-                    if (genericType == messageHandlerType)
+                    if (genericTypeDefinition != messageHandlerType &&
+                        genericTypeDefinition != asyncMessageHandlerType)
                     {
-                        var proxyType = typeof(MessageHandlerProxy<>).MakeGenericType(interfaceType.GetGenericArguments());
-
-                        services.AddScoped(interfaceType, type);
-                        services.AddScoped(typeof(IMessageHandlerProxy), proxyType);
+                        continue;
                     }
 
-                    if (genericType == asyncMessageHandlerType)
-                    {
-                        var proxyType = typeof(AsyncMessageHandlerProxy<>).MakeGenericType(interfaceType.GetGenericArguments());
+                    services.AddScoped(serviceType, type);
 
-                        services.AddScoped(interfaceType, type);
-                        services.AddScoped(typeof(IAsyncMessageHandlerProxy), proxyType);
+                    if (TryAddProxy(genericArguments,
+                        genericTypeDefinition == asyncMessageHandlerType,
+                        out var proxyServiceType,
+                        out var proxyImplType))
+                    {
+                        services.AddScoped(proxyServiceType, proxyImplType);
                     }
                 }
             }
 
             return services;
+        }
+
+        private static bool TryAddProxy(
+            Type[] genericArguments,
+            bool isAsync,
+            out Type proxyServiceType,
+            out Type proxyImplType)
+        {
+            proxyServiceType = default;
+            proxyImplType = default;
+
+            if (isAsync)
+            {
+                foreach (var proxyGenericArguments in AddedAsyncProxies)
+                {
+                    if (genericArguments.SequenceEqual(proxyGenericArguments))
+                    {
+                        return false;
+                    }
+                }
+
+                proxyImplType = typeof(AsyncMessageHandlerProxy<>).MakeGenericType(genericArguments);
+                proxyServiceType = typeof(IAsyncMessageHandlerProxy<>).MakeGenericType(genericArguments);
+
+                AddedAsyncProxies.Add(genericArguments);
+            }
+            else
+            {
+                foreach (var proxyGenericArguments in AddedProxies)
+                {
+                    if (genericArguments.SequenceEqual(proxyGenericArguments))
+                    {
+                        return false;
+                    }
+                }
+
+                proxyImplType = typeof(MessageHandlerProxy<>).MakeGenericType(genericArguments);
+                proxyServiceType = typeof(IMessageHandlerProxy<>).MakeGenericType(genericArguments);
+
+                AddedProxies.Add(genericArguments);
+            }
+
+            return true;
         }
     }
 }
