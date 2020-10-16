@@ -13,13 +13,20 @@ namespace MDA.Domain.Models
             _logger = logger;
         }
 
-        public IEventSourcedAggregateRoot CreateAggregateRoot(Type aggregateRootType)
+        public IEventSourcedAggregateRoot CreateAggregateRoot(string aggregateRootId, Type aggregateRootType)
         {
             try
             {
                 var instance = FormatterServices.GetUninitializedObject(aggregateRootType);
 
-                return instance is IEventSourcedAggregateRoot aggregateRoot ? aggregateRoot : null;
+                if (instance is IEventSourcedAggregateRoot aggregateRoot)
+                {
+                    aggregateRoot.Id = aggregateRootId;
+
+                    return aggregateRoot;
+                }
+
+                return null;
             }
             catch (Exception e)
             {

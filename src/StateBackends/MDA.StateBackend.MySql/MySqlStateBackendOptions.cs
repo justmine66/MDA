@@ -8,9 +8,11 @@
 
     public class DomainEventOptions
     {
-        public class Tables
+        public DomainEventTables Tables { get; set; }
+
+        public class DomainEventTables
         {
-            public string DomainEvents { get; set; } = "domain_event_indices";
+            public string DomainEventsIndices { get; set; } = "domain_event_indices";
 
             public string DomainEventPayloads { get; set; } = "domain_event_payloads";
         }

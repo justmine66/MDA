@@ -5,7 +5,7 @@ namespace MDA.Application.Notifications
 {
     public static class DependencyInjectionExtensions
     {
-        public static IServiceCollection AddApplicationNotifications(this IServiceCollection services, params Assembly[] assemblies)
+        public static IServiceCollection AddApplicationNotificationServices(this IServiceCollection services)
         {
             services.AddSingleton<IApplicationNotificationPublisher, ApplicationNotificationPublisher>();
 

@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 
 namespace MDA.Application.Commands
 {
+    [IgnoreMessageHandlerForDependencyInjection]
     public class ApplicationCommandProcessor<TApplicationCommand> :
         IMessageHandler<TApplicationCommand>,
         IAsyncMessageHandler<TApplicationCommand>
-        where TApplicationCommand : IApplicationCommand
+        where TApplicationCommand : class, IApplicationCommand
     {
         private readonly IApplicationCommandContext _context;
 
-        public ApplicationCommandProcessor(IApplicationCommandContext context) 
+        public ApplicationCommandProcessor(IApplicationCommandContext context)
             => _context = context;
 
         public void Handle(TApplicationCommand message)

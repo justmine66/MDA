@@ -22,7 +22,7 @@ namespace MDA.Shared.DataStructures
 
         public byte[] Build()
         {
-            var buffer = Size <= 128
+            var buffer = Size <= 1024
                 ? stackalloc byte[Size]
                 : new byte[Size];
 
@@ -45,10 +45,7 @@ namespace MDA.Shared.DataStructures
     {
         public static ByteBufferBuilder AppendString(this ByteBufferBuilder builder, string value)
         {
-            BinaryConverter.EncodeString(value, out var lengthBytes, out var stringBytes);
-
-            builder.Append(lengthBytes.ToArray());
-            builder.Append(stringBytes.ToArray());
+            builder.Append(BinarySerializationHelper.SerializeString(value));
 
             return builder;
         }
@@ -56,7 +53,7 @@ namespace MDA.Shared.DataStructures
         public static ByteBufferBuilder AppendDatetime(this ByteBufferBuilder builder, DateTime value)
         {
 
-            builder.Append(BinaryConverter.EncodeDateTime(value).ToArray());
+            builder.Append(BinarySerializationHelper.SerializeDateTime(value).ToArray());
 
             return builder;
         }
@@ -64,7 +61,7 @@ namespace MDA.Shared.DataStructures
         public static ByteBufferBuilder AppendInt(this ByteBufferBuilder builder, int value)
         {
 
-            builder.Append(BinaryConverter.EncodeInt(value).ToArray());
+            builder.Append(BinarySerializationHelper.SerializeInt(value).ToArray());
 
             return builder;
         }
@@ -72,7 +69,7 @@ namespace MDA.Shared.DataStructures
         public static ByteBufferBuilder AppendLong(this ByteBufferBuilder builder, long value)
         {
 
-            builder.Append(BinaryConverter.EncodeLong(value).ToArray());
+            builder.Append(BinarySerializationHelper.SerializeLong(value).ToArray());
 
             return builder;
         }
@@ -80,7 +77,7 @@ namespace MDA.Shared.DataStructures
         public static ByteBufferBuilder AppendShort(this ByteBufferBuilder builder, short value)
         {
 
-            builder.Append(BinaryConverter.EncodeShort(value).ToArray());
+            builder.Append(BinarySerializationHelper.SerializeShort(value).ToArray());
 
             return builder;
         }

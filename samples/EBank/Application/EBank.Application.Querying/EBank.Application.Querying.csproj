@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\StateBackends\MDA.StateBackend.RDBMS.Shared\MDA.StateBackend.RDBMS.Shared.csproj" />
     <ProjectReference Include="..\EBank.Application\EBank.Application.csproj" />
   </ItemGroup>
 

@@ -6,7 +6,9 @@ namespace MDA.StateBackend.MySql
 {
     public static class DomainEventRecordPortAdapter
     {
-        public static DomainEventRecord ToDomainEventRecord(IDomainEvent @event, IBinarySerializer serializer)
+        public static DomainEventRecord ToDomainEventRecord(
+            IDomainEvent @event, 
+            IBinarySerializer serializer)
             => new DomainEventRecord()
             {
                 DomainCommandId = @event.DomainCommandId,
@@ -15,18 +17,19 @@ namespace MDA.StateBackend.MySql
                 AggregateRootVersion = @event.AggregateRootVersion,
                 AggregateRootId = @event.AggregateRootId,
                 AggregateRootTypeFullName = @event.AggregateRootType.FullName,
-                Id = @event.Id,
-                TypeFullName = @event.GetType().FullName,
-                Version = @event.Version,
+                CreatedTimestamp = @event.Timestamp,
+                DomainEventId = @event.Id,
+                DomainEventTypeFullName = @event.GetType().FullName,
+                DomainEventVersion = @event.Version,
                 Payload = serializer.Serialize(@event)
             };
 
         public static IDomainEvent ToDomainEvent(
             DomainEventRecord record,
             ITypeResolver resolver,
-            IBinarySerializer serializer)
+            IBinarySerializer binarySerializer)
         {
-            if (!resolver.TryResolveType(record.TypeFullName, out var domainEventType))
+            if (!resolver.TryResolveType(record.DomainEventTypeFullName, out var domainEventType))
             {
                 return null;
             }
@@ -36,7 +39,9 @@ namespace MDA.StateBackend.MySql
                 return null;
             }
 
-            return serializer.DeSerialize<IDomainEvent>(record.Payload);
+            var obj = binarySerializer.Deserialize(record.Payload, domainEventType);
+
+            return obj is IDomainEvent domainEvent ? domainEvent : null;
         }
     }
 }

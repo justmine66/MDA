@@ -63,7 +63,7 @@ namespace MDA.Shared.Types
             if (TryResolveFromAllAssemblies(fullName, out type, assemblies)) 
                 return true;
 
-            type = Type.GetType(fullName, throwOnError: false) ?? Type.GetType(
+            type = Type.GetType(fullName, false) ?? Type.GetType(
                        fullName,
                        ResolveAssembly,
                        ResolveType,

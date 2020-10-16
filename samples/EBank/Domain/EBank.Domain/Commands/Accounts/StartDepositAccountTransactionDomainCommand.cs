@@ -6,7 +6,7 @@ namespace EBank.Domain.Commands.Accounts
     /// <summary>
     /// 发起存款账户交易的领域命令
     /// </summary>
-    public class StartDepositAccountTransactionDomainCommand : DomainCommand<long>
+    public class StartDepositAccountTransactionDomainCommand : DomainCommand<BankAccount, long>
     {
         /// <summary>
         /// 交易标识

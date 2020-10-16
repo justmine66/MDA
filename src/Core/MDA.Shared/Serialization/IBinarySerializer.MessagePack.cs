@@ -1,4 +1,5 @@
-﻿using MessagePack;
+﻿using System;
+using MessagePack;
 
 namespace MDA.Shared.Serialization
 {
@@ -7,7 +8,12 @@ namespace MDA.Shared.Serialization
         public byte[] Serialize<T>(T obj) 
             => MessagePackSerializer.Serialize(obj);
 
-        public T DeSerialize<T>(byte[] bytes)
+        public T Deserialize<T>(byte[] bytes)
             => MessagePackSerializer.Deserialize<T>(bytes);
+
+        public object Deserialize(byte[] bytes, Type type)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

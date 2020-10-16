@@ -55,6 +55,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA.MessageBus.Kafka", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBank.Domain.MySql", "samples\EBank\Domain\EBank.Domain.MySql\EBank.Domain.MySql.csproj", "{A982AB52-75D3-42FD-842A-1BD0D9D2D14C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{F1090A90-CC30-4FD8-84C5-71D8B0B0E7AD}"
+	ProjectSection(SolutionItems) = preProject
+		samples\EBank\docs\EBank-ReadDb.sql = samples\EBank\docs\EBank-ReadDb.sql
+		samples\EBank\docs\EBank-StateDb.sql = samples\EBank\docs\EBank-StateDb.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -157,6 +163,7 @@ Global
 		{2D05BD52-2B33-440E-A898-141B96C86632} = {48819596-519F-4840-8A96-785B6B0B17FB}
 		{A9B041CF-B616-4295-A05C-1CEFB6876875} = {3B3AF354-42CD-4709-8D1D-35883A33F752}
 		{A982AB52-75D3-42FD-842A-1BD0D9D2D14C} = {9275BA93-9268-4BF0-830C-BB768C34A866}
+		{F1090A90-CC30-4FD8-84C5-71D8B0B0E7AD} = {F1D06836-8942-4D9C-AD27-DF10D4A10C22}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DC9D9D4F-2190-4530-B529-2F3497D51EA0}

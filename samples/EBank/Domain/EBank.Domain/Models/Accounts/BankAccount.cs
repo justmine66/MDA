@@ -1,5 +1,4 @@
-﻿using System;
-using EBank.Domain.Commands.Accounts;
+﻿using EBank.Domain.Commands.Accounts;
 using EBank.Domain.Events.Accounts;
 using EBank.Domain.Notifications;
 using MDA.Domain.Events;
@@ -13,7 +12,7 @@ namespace EBank.Domain.Models.Accounts
     /// <summary>
     /// 表示一个银行账户聚合根，封装状态。
     /// </summary>
-    public partial class BankAccount : EventSourcedAggregateRoot<long>
+    public partial class BankAccount
     {
         /// <summary>
         /// 在途账户交易记录
@@ -136,7 +135,8 @@ namespace EBank.Domain.Models.Accounts
 
             PreConditions.NotNullOrWhiteSpace<OpenAccountDomainCommand>(nameof(command.AccountName), command.AccountName);
             PreConditions.GreaterThanOrEqual<OpenAccountDomainCommand>($"{nameof(command.AccountName)} length", command.AccountName.Length, DomainRules.PreConditions.Account.Name.Length.Minimum);
-            PreConditions.LessThanOrEqual<OpenAccountDomainCommand>($"{nameof(command.AccountName)} length", command.AccountName.Length, DomainRules.PreConditions.Account.Name.Length.Minimum);
+            PreConditions.LessThanOrEqual<OpenAccountDomainCommand>($"{nameof(command.AccountName)} length", command.AccountName.Length, 
+                DomainRules.PreConditions.Account.Name.Length.Maximum);
 
             PreConditions.GreaterThanZero<OpenAccountDomainCommand>(nameof(command.InitialBalance), command.InitialBalance);
             PreConditions.NotNullOrWhiteSpace<OpenAccountDomainCommand>(nameof(command.Bank), command.Bank);
@@ -155,7 +155,7 @@ namespace EBank.Domain.Models.Accounts
             // 1. 参数预检
             PreConditions.NotNullOrWhiteSpace<StartDepositAccountTransactionDomainCommand>(nameof(command.AccountName), command.AccountName);
             PreConditions.GreaterThanOrEqual<StartDepositAccountTransactionDomainCommand>($"{nameof(command.AccountName)} length", command.AccountName.Length, DomainRules.PreConditions.Account.Name.Length.Minimum);
-            PreConditions.LessThanOrEqual<StartDepositAccountTransactionDomainCommand>($"{nameof(command.AccountName)} length", command.AccountName.Length, DomainRules.PreConditions.Account.Name.Length.Minimum);
+            PreConditions.LessThanOrEqual<StartDepositAccountTransactionDomainCommand>($"{nameof(command.AccountName)} length", command.AccountName.Length, DomainRules.PreConditions.Account.Name.Length.Maximum);
             PreConditions.NotNullOrWhiteSpace<StartDepositAccountTransactionDomainCommand>(nameof(command.Bank), command.Bank);
             PreConditions.GreaterThanZero<StartDepositAccountTransactionDomainCommand>(nameof(command.Amount), command.Amount);
 

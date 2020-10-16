@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "EBank.UI.CTL": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

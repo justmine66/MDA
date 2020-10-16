@@ -8,9 +8,6 @@ using MDA.MessageBus.Disruptor;
 using MDA.Shared.Serialization;
 using MDA.Shared.Types;
 using MDA.StateBackend.MySql;
-using MDA.XUnitTest.ApplicationCommands;
-using MDA.XUnitTest.ApplicationNotifications;
-using MDA.XUnitTest.MessageBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -29,32 +26,27 @@ namespace MDA.XUnitTest
 
         public void ConfigureServices(IServiceCollection services, HostBuilderContext context)
         {
-            var assemblies = new[] { Assembly.GetExecutingAssembly() };
+            var assemblies = new[]
+            {
+                Assembly.GetExecutingAssembly(),
+                Assembly.Load("MDA.Application")
+            };
 
-            services.AddLogging();
-            services.AddMessageBusDisruptor(assemblies);
             services.AddSerialization();
             services.AddTypes();
 
-            services.AddApplicationNotifications();
-            services.AddScoped<IApplicationNotificationHandler<FakeApplicationNotification>, FakeApplicationNotificationHandler>();
+            services.AddLogging();
+            services.AddMessageBusDisruptor(assemblies);
 
-            services.AddApplicationCommandCore();
-            services.AddApplicationCommand<CreateApplicationCommand>();
-            services.AddScoped<IApplicationCommandHandler<CreateApplicationCommand>, CreateApplicationCommandHandler>();
-            services.AddScoped<IAsyncApplicationCommandHandler<CreateApplicationCommand>, CreateApplicationCommandHandler>();
+            services.AddApplicationNotificationServices();
 
-            services.AddDomainCommands();
-            services.AddDomainModels();
-            services.AddDomainEvents();
+            services.AddApplicationCommandServices(assemblies);
+
+            services.AddDomainCommandServices();
+            services.AddDomainModelServices();
+            services.AddDomainEventServices();
 
             services.AddStateBackendMySql(context.Configuration);
-
-            //services.AddScoped<IMessageHandler<FakeMessage>, FakeMessageHandler>();
-            //services.AddScoped<IAsyncMessageHandler<FakeMessage>, AsyncFakeMessageHandler>();
-            //services.AddScoped<IMessageHandler<FakeMessageWithPartitionKey>, FakeMessageWithPartitionKeyHandler>();
-            //services.AddScoped<IMessageHandler<FakeMessage>, MultiMessageHandler>();
-            //services.AddScoped<IAsyncMessageHandler<FakeMessage>, MultiMessageHandler>();
         }
 
         public void Configure(IServiceProvider provider, ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor)
@@ -66,18 +58,6 @@ namespace MDA.XUnitTest
 
         private void ConfigureMessageBus(IServiceProvider provider)
         {
-            //var subscriber = provider.GetService<IMessageSubscriberManager>();
-
-            //subscriber.Subscribe<FakeMessage, IMessageHandler<FakeMessage>>();
-            //subscriber.Subscribe<FakeMessage, IMessageHandler<FakeMessage>>();
-            //subscriber.Subscribe<FakeMessage, IMessageHandler<FakeMessage>>();
-            //subscriber.SubscribeAsync<FakeMessage, IAsyncMessageHandler<FakeMessage>>();
-            //subscriber.Subscribe<FakeMessageWithPartitionKey, IMessageHandler<FakeMessageWithPartitionKey>>();
-            //subscriber.Subscribe<FakeApplicationNotification, IApplicationNotificationHandler<FakeApplicationNotification>>();
-            //subscriber.Subscribe<CreateApplicationCommand, IMessageHandler<CreateApplicationCommand>>();
-
-            //subscriber.SubscribeDomainCommands();
-
             var queueService = provider.GetService<IMessageQueueService>();
 
             queueService.Start();

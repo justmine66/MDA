@@ -1,14 +1,13 @@
 ﻿using MDA.Domain.Commands;
 using MDA.Domain.Events;
 using MDA.Domain.Notifications;
-using MDA.Domain.Shared;
 using MDA.MessageBus;
+using MDA.Shared.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using MDA.Shared.Utils;
 
 namespace MDA.Domain.Models
 {

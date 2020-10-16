@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <None Update="MySql-Persistence-Template.sql">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

@@ -1,21 +1,23 @@
-﻿namespace MDA.StateBackend.MySql
+﻿using System;
+
+namespace MDA.StateBackend.MySql
 {
     public class DomainEventRecord
     {
         /// <summary>
         /// 领域事件标识
         /// </summary>
-        public string Id { get; set; }
+        public string DomainEventId { get; set; }
 
         /// <summary>
         /// 领域事件版本
         /// </summary>
-        public int Version { get; set; }
+        public int DomainEventVersion { get; set; }
 
         /// <summary>
         /// 领域事件类型完全限定名
         /// </summary>
-        public string TypeFullName { get; set; }
+        public string DomainEventTypeFullName { get; set; }
 
         /// <summary>
         /// 领域命令标识
@@ -46,6 +48,11 @@
         /// 聚合根版本
         /// </summary>
         public int AggregateRootVersion { get; set; }
+
+        /// <summary>
+        /// 创建时间，时间戳，单位：毫秒。
+        /// </summary>
+        public long CreatedTimestamp { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
         /// <summary>
         /// 有效载荷

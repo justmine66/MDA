@@ -4,6 +4,6 @@ namespace MDA.Domain.Models
 {
     public interface IAggregateRootFactory
     {
-        IEventSourcedAggregateRoot CreateAggregateRoot(Type aggregateRootType);
+        IEventSourcedAggregateRoot CreateAggregateRoot(string aggregateRootId, Type aggregateRootType);
     }
 }

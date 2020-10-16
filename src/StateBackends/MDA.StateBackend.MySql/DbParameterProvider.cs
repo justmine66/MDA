@@ -1,8 +1,8 @@
-﻿using System;
+﻿using MDA.StateBackend.RDBMS.Shared;
+using MySqlConnector;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using MDA.StateBackend.RDBMS.Shared;
-using MySqlConnector;
 
 namespace MDA.StateBackend.MySql
 {
@@ -14,12 +14,12 @@ namespace MDA.StateBackend.MySql
         {
             var cacheKey = typeof(T).FullName ?? string.Empty;
 
-            if (!Cache.TryGetValue(cacheKey, out var parameters))
-            {
-                Cache[cacheKey] = ReflectionParameters(it, nameMap);
-            }
+            if (Cache.TryGetValue(cacheKey, out var parameters)) 
+                return parameters;
 
-            return parameters;
+            Cache[cacheKey] = ReflectionParameters(it, nameMap);
+
+            return Cache[cacheKey];
         }
 
         private static List<IDbDataParameter> ReflectionParameters<T>(T it, IReadOnlyDictionary<string, string> nameMap = null)

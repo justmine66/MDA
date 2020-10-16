@@ -24,7 +24,7 @@ namespace MDA.XUnitTest.ApplicationCommands
 
         public void OnApplicationCommand(IApplicationCommandContext context, CreateApplicationCommand command)
         {
-            _logger.LogInformation($"The application notification: {nameof(command)}[Payload: {command.Payload}] handled.");
+            _logger.LogInformation($"The application command: {nameof(command)}[Payload: {command.Payload}] handled.");
 
             var create = new CreateDomainCommand(command.Payload);
 
@@ -36,7 +36,7 @@ namespace MDA.XUnitTest.ApplicationCommands
             CreateApplicationCommand command,
             CancellationToken token = default)
         {
-            _logger.LogInformation($"The application notification: {nameof(command)}[Payload: {command.Payload}] handled.");
+            _logger.LogInformation($"The application command: {nameof(command)}[Payload: {command.Payload}] handled.");
 
             var create = new CreateDomainCommand(command.Payload);
 

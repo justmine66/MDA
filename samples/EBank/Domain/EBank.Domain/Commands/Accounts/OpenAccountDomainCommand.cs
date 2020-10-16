@@ -1,17 +1,20 @@
-﻿using MDA.Domain.Commands;
+﻿using EBank.Domain.Models.Accounts;
+using MDA.Domain.Commands;
 
 namespace EBank.Domain.Commands.Accounts
 {
     /// <summary>
     /// 开户命令
     /// </summary>
-    public class OpenAccountDomainCommand : DomainCommand<long>
+    public class OpenAccountDomainCommand : DomainCommand<BankAccount, long>
     {
         public OpenAccountDomainCommand(
+            long accountId,
             string accountName,
             string bank,
             decimal initialBalance)
         {
+            AggregateRootId = accountId;
             AccountName = accountName;
             Bank = bank;
             InitialBalance = initialBalance;

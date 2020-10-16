@@ -74,7 +74,7 @@ namespace MDA.Domain.Models
                 return savePoint;
             }
 
-            var aggregateRoot = _aggregateRootFactory.CreateAggregateRoot(aggregateRootType);
+            var aggregateRoot = _aggregateRootFactory.CreateAggregateRoot(aggregateRootId, aggregateRootType);
             if (aggregateRoot == null)
             {
                 return null;

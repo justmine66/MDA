@@ -5,7 +5,7 @@ namespace MDA.Domain.Models
 {
     public static class DependencyInjectionExtensions
     {
-        public static IServiceCollection AddDomainModels(this IServiceCollection services, IConfiguration configuration = null)
+        public static IServiceCollection AddDomainModelServices(this IServiceCollection services, IConfiguration configuration = null)
         {
             services.AddSingleton<IAggregateRootFactory, AggregateRootFactory>();
             services.AddSingleton<IAggregateRootMemoryCache, LruAggregateRootMemoryCache>();

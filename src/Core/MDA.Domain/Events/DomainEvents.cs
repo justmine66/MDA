@@ -142,7 +142,17 @@ namespace MDA.Domain.Events
             AggregateRootId = aggregateRootId;
         }
 
-        public new TAggregateRootId AggregateRootId { get; set; }
+        private TAggregateRootId _aggregateRootId;
+        public new TAggregateRootId AggregateRootId
+        {
+            get => _aggregateRootId;
+            set
+            {
+                _aggregateRootId = value;
+
+                base.AggregateRootId = _aggregateRootId.ToString();
+            }
+        }
     }
 
     /// <summary>

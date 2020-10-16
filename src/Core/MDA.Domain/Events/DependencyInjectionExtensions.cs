@@ -4,7 +4,7 @@ namespace MDA.Domain.Events
 {
     public static class DependencyInjectionExtensions
     {
-        public static IServiceCollection AddDomainEvents(this IServiceCollection services)
+        public static IServiceCollection AddDomainEventServices(this IServiceCollection services)
         {
             services.AddSingleton<IDomainEventStateBackend, MemoryDomainEventStateBackend>();
 

@@ -1,7 +1,5 @@
 ﻿using Autofac;
 using EBank.Application;
-using EBank.Application.BusinessServer.CommandHandlers.Accounts;
-using EBank.Application.Commands.Accounts;
 using EBank.Application.Querying;
 using EBank.Domain.Models.Accounts;
 using EBank.Domain.MySql;
@@ -16,6 +14,7 @@ using MDA.Shared.Types;
 using MDA.StateBackend.MySql;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Reflection;
 
 namespace EBank.UI.CTL
 {
@@ -23,31 +22,34 @@ namespace EBank.UI.CTL
     {
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
-            // 1. 基础服务
-            services.AddMessageBusDisruptor();
+            var assemblies = new[]
+            {
+                Assembly.GetExecutingAssembly(),
+                Assembly.Load("EBank.Application.BusinessServer")
+            };
 
+            // 1. 基础服务
             services.AddSerialization();
             services.AddTypes();
 
-            services.AddStateBackendMySql(context.Configuration);
+            services.AddMessageBusDisruptor(assemblies);
 
             // 2. 应用层服务
-            services.AddApplicationNotifications();
+            services.AddApplicationNotificationServices();
 
-            services.AddApplicationCommandCore();
-            services.AddApplicationCommand<OpenBankAccountApplicationCommand>();
+            services.AddApplicationCommandServices(assemblies);
 
             // 3. 领域层服务
-            services.AddDomainCommands();
-            services.AddDomainModels();
-            services.AddDomainEvents();
+            services.AddDomainCommandServices();
+            services.AddDomainModelServices();
+            services.AddDomainEventServices();
+
+            services.AddStateBackendMySql(context.Configuration);
 
             // 4. 电子银行应用服务
             services.AddEBankAppServices();
             services.AddSingleton<IBankAccountRepository, MySqlBankAccountRepository>();
-            services.AddSingleton<IBankAccountQueryService, BankAccountQueryService>();
-            services.AddApplicationCommand<OpenBankAccountApplicationCommand>();
-            services.AddScoped<IAsyncApplicationCommandHandler<OpenBankAccountApplicationCommand>, BankAccountApplicationCommandHandlers>();
+            services.AddSingleton<IBankAccountQueryService, MySqlBankAccountQueryService>();
 
             // 5. 本地服务
             services.AddHostedService<StartupHostedService>();

@@ -14,7 +14,7 @@ CREATE TABLE `domain_event_indices`
   `DomainEventId` varchar(36) DEFAULT '' NOT NULL COMMENT '领域事件标识',
   `DomainEventTypeFullName` varchar(256) DEFAULT '' NOT NULL COMMENT '领域事件类型完全限定名',
   `DomainEventVersion` int(11) DEFAULT 0 NOT NULL COMMENT '领域事件版本号',
-  `CreatedTime` bigint(20) NOT NULL COMMENT '创建时间，时间戳，单位：毫秒',
+  `CreatedTimestamp` bigint(20) DEFAULT 0 NOT NULL COMMENT '创建时间，时间戳，单位：毫秒',
   PRIMARY KEY (`pkId`),
   UNIQUE KEY `IX_Command_AggregateRoot_Event` (`DomainCommandId`,`AggregateRootId`,`DomainEventId`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='领域事件索引表';

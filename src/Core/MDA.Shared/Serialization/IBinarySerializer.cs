@@ -1,9 +1,13 @@
-﻿namespace MDA.Shared.Serialization
+﻿using System;
+
+namespace MDA.Shared.Serialization
 {
     public interface IBinarySerializer
     {
         byte[] Serialize<T>(T obj);
 
-        T DeSerialize<T>(byte[] bytes);
+        T Deserialize<T>(byte[] bytes);
+
+        object Deserialize(byte[] bytes, Type type);
     }
 }

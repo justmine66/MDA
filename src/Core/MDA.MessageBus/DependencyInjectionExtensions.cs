@@ -36,6 +36,11 @@ namespace MDA.MessageBus
 
             foreach (var type in types)
             {
+                if (type.IgnoreMessageHandler())
+                {
+                    continue;
+                }
+
                 foreach (var serviceType in type.GetInterfaces())
                 {
                     if (!serviceType.IsGenericType)
@@ -76,6 +81,11 @@ namespace MDA.MessageBus
             proxyServiceType = default;
             proxyImplType = default;
 
+            if (!IsMdaMessageType(genericArguments))
+            {
+                return false;
+            }
+
             if (isAsync)
             {
                 foreach (var proxyGenericArguments in AddedAsyncProxies)
@@ -109,5 +119,11 @@ namespace MDA.MessageBus
 
             return true;
         }
+
+        private static bool IsMdaMessageType(IEnumerable<Type> arguments)
+            => arguments.All(argument => typeof(IMessage).IsAssignableFrom(argument));
+
+        private static bool IgnoreMessageHandler(this Type serviceType)
+            => serviceType.GetCustomAttributes(typeof(IgnoreMessageHandlerForDependencyInjection)).Any();
     }
 }

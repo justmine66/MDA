@@ -140,7 +140,17 @@ namespace MDA.Domain.Commands
                 aggregateRootType,
                 version) => AggregateRootId = aggregateRootId;
 
-        public new TAggregateRootId AggregateRootId { get; set; }
+        private TAggregateRootId _aggregateRootId;
+        public new TAggregateRootId AggregateRootId
+        {
+            get => _aggregateRootId;
+            set
+            {
+                _aggregateRootId = value;
+
+                base.AggregateRootId = _aggregateRootId.ToString();
+            }
+        }
     }
 
     /// <summary>
@@ -148,9 +158,7 @@ namespace MDA.Domain.Commands
     /// </summary>
     /// <typeparam name="TAggregateRoot">聚合根类型</typeparam>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
-    public abstract class DomainCommand<TAggregateRoot, TAggregateRootId>
-        : DomainCommand<TAggregateRootId>,
-            IDomainCommand<TAggregateRootId>
+    public abstract class DomainCommand<TAggregateRoot, TAggregateRootId> : DomainCommand<TAggregateRootId>
     {
         protected DomainCommand()
         {
@@ -174,8 +182,6 @@ namespace MDA.Domain.Commands
                 aggregateRootId,
                 typeof(TAggregateRoot),
                 version) => AggregateRootId = aggregateRootId;
-
-        public new TAggregateRootId AggregateRootId { get; set; }
     }
 
     /// <summary>
