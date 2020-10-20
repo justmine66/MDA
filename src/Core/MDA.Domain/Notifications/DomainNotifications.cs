@@ -93,7 +93,7 @@ namespace MDA.Domain.Notifications
             string domainCommandTypeFullName,
             string aggregateRootId,
             string aggregateRootTypeFullName,
-            int version = 1)
+            int version = 0)
         {
             Id = Guid.NewGuid().ToString("N");
             Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -127,7 +127,7 @@ namespace MDA.Domain.Notifications
             string domainCommandTypeFullName,
             TAggregateRootId aggregateRootId,
             string aggregateRootTypeFullName,
-            int version = 1)
+            int version = 0)
             : base(domainCommandId,
             domainCommandTypeFullName,
             string.Empty,
@@ -156,7 +156,7 @@ namespace MDA.Domain.Notifications
             string domainCommandTypeFullName,
             TAggregateRootId aggregateRootId,
             string aggregateRootTypeFullName,
-            int version = 1)
+            int version = 0)
             : base(domainCommandId,
                 domainCommandTypeFullName,
                 aggregateRootId,
@@ -184,7 +184,7 @@ namespace MDA.Domain.Notifications
             string domainCommandTypeFullName,
             TAggregateRootId aggregateRootId,
             string aggregateRootTypeFullName,
-            int version = 1)
+            int version = 0)
             : base(id,
                 string.Empty,
                 domainCommandTypeFullName,

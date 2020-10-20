@@ -84,6 +84,6 @@ namespace MDA.Domain.Models
         public void Clear() => _cache.Clear();
 
         private string GetCacheKey(string aggregateRootId, Type aggregateRootType)
-            => string.Format(CacheKeyMask, aggregateRootType.Name, aggregateRootId);
+            => string.Format(CacheKeyMask, aggregateRootType.FullName, aggregateRootId);
     }
 }

@@ -9,9 +9,10 @@ namespace MDA.Domain.Events
     public interface IDomainEvent : IMessage
     {
         /// <summary>
-        /// 版本
+        /// 版本号
+        /// 每一个聚合根的领域事件版本号彼此隔离，且单调线性递增。
         /// </summary>
-        int Version { get; set; }
+        long Version { get; set; }
 
         /// <summary>
         /// 领域命令标识
@@ -26,7 +27,7 @@ namespace MDA.Domain.Events
         /// <summary>
         /// 领域命令版本
         /// </summary>
-        int DomainCommandVersion { get; set; }
+        long DomainCommandVersion { get; set; }
 
         /// <summary>
         /// 聚合根标识
@@ -41,14 +42,19 @@ namespace MDA.Domain.Events
         /// <summary>
         /// 聚合根版本
         /// </summary>
-        int AggregateRootVersion { get; set; }
+        long AggregateRootVersion { get; set; }
+
+        /// <summary>
+        /// 第几代聚合根,随着检查点(Checkpoint)快照而递增.
+        /// </summary>
+        int AggregateRootGeneration { get; set; }
     }
 
     /// <summary>
     /// 表示一个领域事件
     /// </summary>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
-    public interface IDomainEvent<TAggregateRootId> 
+    public interface IDomainEvent<TAggregateRootId>
         : IDomainEvent
     {
         /// <summary>
@@ -62,8 +68,9 @@ namespace MDA.Domain.Events
     /// </summary>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
     /// <typeparam name="TId">事件标识类型</typeparam>
-    public interface IDomainEvent<TAggregateRootId, TId> 
-        : IDomainEvent<TAggregateRootId>, IMessage<TId> { }
+    public interface IDomainEvent<TAggregateRootId, TId>
+        : IDomainEvent<TAggregateRootId>, IMessage<TId>
+    { }
 
     /// <summary>
     /// 表示一个领域事件
@@ -91,7 +98,8 @@ namespace MDA.Domain.Events
             string aggregateRootId,
             Type aggregateRootType,
             int aggregateRootVersion,
-            int version = 1)
+            int aggregateRootGeneration,
+            int version = 0)
         {
             Id = Guid.NewGuid().ToString("N");
             Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -101,17 +109,19 @@ namespace MDA.Domain.Events
             AggregateRootId = aggregateRootId;
             AggregateRootType = aggregateRootType;
             AggregateRootVersion = aggregateRootVersion;
+            AggregateRootGeneration = aggregateRootGeneration;
         }
 
         public string DomainCommandId { get; set; } = string.Empty;
         public Type DomainCommandType { get; set; }
-        public int DomainCommandVersion { get; set; }
+        public long DomainCommandVersion { get; set; }
 
         public string AggregateRootId { get; set; } = string.Empty;
         public Type AggregateRootType { get; set; }
-        public int AggregateRootVersion { get; set; }
+        public long AggregateRootVersion { get; set; }
+        public int AggregateRootGeneration { get; set; }
 
-        public int Version { get; set; }
+        public long Version { get; set; }
     }
 
     /// <summary>
@@ -131,7 +141,7 @@ namespace MDA.Domain.Events
             TAggregateRootId aggregateRootId,
             Type aggregateRootType,
             int aggregateRootVersion,
-            int version = 1)
+            int version = 0)
             : base(domainCommandId,
             domainCommandType,
             aggregateRootId?.ToString(),
@@ -175,7 +185,7 @@ namespace MDA.Domain.Events
             TAggregateRootId aggregateRootId,
             Type aggregateRootType,
             int aggregateRootVersion,
-            int version = 1)
+            int version = 0)
             : base(domainCommandId,
                 domainCommandType,
                 aggregateRootId,
@@ -186,7 +196,17 @@ namespace MDA.Domain.Events
             Id = id;
         }
 
-        public new TId Id { get; set; }
+        private TId _id;
+        public new TId Id
+        {
+            get => _id;
+            set
+            {
+                _id = value;
+
+                base.Id = _id.ToString();
+            }
+        }
     }
 
     /// <summary>
@@ -210,7 +230,7 @@ namespace MDA.Domain.Events
             TAggregateRootId aggregateRootId,
             Type aggregateRootType,
             int aggregateRootVersion,
-            int version = 1)
+            int version = 0)
             : base(id,
                 domainCommandId?.ToString(),
                 domainCommandType,
@@ -222,6 +242,16 @@ namespace MDA.Domain.Events
             DomainCommandId = domainCommandId;
         }
 
-        public new TDomainCommandId DomainCommandId { get; set; }
+        private TDomainCommandId _domainCommandId;
+        public new TDomainCommandId DomainCommandId
+        {
+            get => _domainCommandId;
+            set
+            {
+                _domainCommandId = value;
+
+                base.DomainCommandId = _domainCommandId.ToString();
+            }
+        }
     }
 }

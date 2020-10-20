@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MDA.MessageBus.Kafka
 {
-    public class KafkaAsyncMessageQueueService : IAsyncMessageQueueService
+    public class KafkaAsyncMessageQueueService : IMessageQueueService
     {
         private readonly IProducerConnectionPool _connectionPool;
         private readonly IBinarySerializer _serializer;
@@ -25,6 +25,11 @@ namespace MDA.MessageBus.Kafka
 
         public async Task StartAsync(CancellationToken token = default) 
             => await Task.CompletedTask;
+
+        public void Enqueue(IMessage message)
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task EnqueueAsync(IMessage message, CancellationToken token = default)
         {

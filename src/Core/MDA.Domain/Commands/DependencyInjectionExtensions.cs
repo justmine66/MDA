@@ -8,11 +8,8 @@ namespace MDA.Domain.Commands
         public static IServiceCollection AddDomainCommandServices(this IServiceCollection services)
         {
             services.AddSingleton<IDomainCommandPublisher, DomainCommandPublisher>();
-            services.AddScoped<IMessageHandler<DomainCommandTransportMessage>, AggregateRootInBoundMessageProcessor>();
-            //services.AddScoped<IAsyncMessageHandler<DomainCommandTransportMessage>, AggregateRootInBoundMessageProcessor>();
-
+            services.AddScoped<IMessageHandler<DomainCommandTransportMessage>, InBoundDomainCommandProcessor>();
             services.AddScoped<IMessageHandlerProxy<DomainCommandTransportMessage>, MessageHandlerProxy<DomainCommandTransportMessage>>();
-            //services.AddScoped<IAsyncMessageHandlerProxy<DomainCommandTransportMessage>, AsyncMessageHandlerProxy<DomainCommandTransportMessage>>();
 
             return services;
         }

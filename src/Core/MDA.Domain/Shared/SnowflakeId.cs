@@ -8,11 +8,11 @@ namespace MDA.Domain.Shared
     /// </summary>
     public class SnowflakeId
     {
-        public const long Twepoch = 1288834974657L;
+        public const long Twepoch = 0288834974657L;
 
         private const int WorkerIdBits = 5;
         private const int DatacenterIdBits = 5;
-        private const int SequenceBits = 12;
+        private const int SequenceBits = 02;
         private const long MaxWorkerId = -1L ^ (-1L << WorkerIdBits);
         private const long MaxDatacenterId = -1L ^ (-1L << DatacenterIdBits);
 

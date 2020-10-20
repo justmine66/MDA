@@ -18,25 +18,26 @@ namespace EBank.UI.CTL
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            //var accountId = SnowflakeId.Default().NextId();
+            var accountId = SnowflakeId.Default().NextId();
+            var name = "justmine";
+            var bank = "招商";
 
-            //// 开户
-            //var openAccountAppCommand = new OpenBankAccountApplicationCommand(accountId, "justmine", "招商", 1000);
+            // 开户
+            var openAccountAppCommand = new OpenBankAccountApplicationCommand(name, bank, 1000);
 
-            //_eBank.OpenAccount(openAccountAppCommand);
+            await _eBank.OpenAccountAsync(openAccountAppCommand, cancellationToken);
 
             // 存款
             var startDeposit = new StartDepositAccountTransactionApplicationCommand()
             {
-                TransactionId = SnowflakeId.Default().NextId(),
-                AccountId = 1317025891102437376,
-                AccountName = "justmine",
-                Bank = "招商",
+                TransactionId = accountId,
+                AccountId = accountId,
+                AccountName = name,
+                Bank = bank,
                 Amount = 100
-
             };
 
-            _eBank.DepositedFunds(startDeposit);
+            await _eBank.DepositedFundsAsync(startDeposit, cancellationToken);
 
             await Task.CompletedTask;
         }

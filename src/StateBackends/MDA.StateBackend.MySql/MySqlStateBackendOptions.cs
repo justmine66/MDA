@@ -2,8 +2,15 @@
 {
     public class MySqlStateBackendOptions
     {
-        public string ConnectionString { get; set; }
+        public ConnectionStrings ConnectionStrings { get; set; }
         public DomainEventOptions DomainEventOptions { get; set; }
+    }
+
+    public class ConnectionStrings
+    {
+        public string ReadDb { get; set; }
+
+        public string StateDb { get; set; }
     }
 
     public class DomainEventOptions

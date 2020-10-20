@@ -1,4 +1,5 @@
 ﻿using Disruptor;
+using MDA.Shared.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -24,7 +25,7 @@ namespace MDA.MessageBus.Disruptor
                 var asyncHandlerProxyTypeDefinition = typeof(IAsyncMessageHandlerProxy<>);
 
                 var handlerProxies = scopeServiceProvider.GetServices(handlerProxyTypeDefinition.MakeGenericType(messageType));
-                if (handlerProxies != null)
+                if (handlerProxies.IsNotEmpty())
                 {
                     var proxyMessageType = typeof(IMessage);
                     var messageParameter = Expression.Parameter(proxyMessageType, "message");
@@ -53,7 +54,7 @@ namespace MDA.MessageBus.Disruptor
                 }
 
                 var asyncHandlerProxies = scopeServiceProvider.GetServices(asyncHandlerProxyTypeDefinition.MakeGenericType(messageType));
-                if (asyncHandlerProxies != null)
+                if (asyncHandlerProxies.IsNotEmpty())
                 {
                     var proxyMessageType = typeof(IMessage);
                     var tokenType = typeof(CancellationToken);

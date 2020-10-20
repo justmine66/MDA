@@ -1,5 +1,7 @@
 ﻿using EBank.Application.Commands.Accounts;
 using EBank.Application.Commands.Transferring;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EBank.Application
 {
@@ -12,24 +14,28 @@ namespace EBank.Application
         /// 开户
         /// </summary>
         /// <param name="command">命令</param>
-        void OpenAccount(OpenBankAccountApplicationCommand command);
+        /// <param name="token">取消令牌</param>
+        Task OpenAccountAsync(OpenBankAccountApplicationCommand command, CancellationToken token = default);
 
         /// <summary>
         /// 存款
         /// </summary>
         /// <param name="command">命令</param>
-        void DepositedFunds(StartDepositAccountTransactionApplicationCommand command);
+        /// <param name="token">取消令牌</param>
+        Task DepositedFundsAsync(StartDepositAccountTransactionApplicationCommand command, CancellationToken token = default);
 
         /// <summary>
         /// 取款
         /// </summary>
         /// <param name="command"></param>
-        void WithdrawFunds(StartWithdrawAccountTransactionApplicationCommand command);
+        /// <param name="token">取消令牌</param>
+        Task WithdrawFundsAsync(StartWithdrawAccountTransactionApplicationCommand command, CancellationToken token = default);
 
         /// <summary>
         /// 转账
         /// </summary>
         /// <param name="command">命令</param>
-        void TransferFunds(TransferFundsApplicationCommand command);
+        /// <param name="token">取消令牌</param>
+        Task TransferFundsAsync(TransferFundsApplicationCommand command, CancellationToken token = default);
     }
 }

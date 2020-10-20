@@ -19,30 +19,32 @@ namespace MDA.Application.Commands
 
         public void Handle(TApplicationCommand message)
         {
-            var handler = _context
-                .ServiceProvider
-                .GetService<IApplicationCommandHandler<TApplicationCommand>>();
-
-            if (handler == null)
+            using (var scope = _context.ServiceProvider.CreateScope())
             {
-                throw new ArgumentNullException(nameof(handler));
-            }
+                var handler = scope.ServiceProvider.GetService<IApplicationCommandHandler<TApplicationCommand>>();
 
-            handler.OnApplicationCommand(_context, message);
+                if (handler == null)
+                {
+                    throw new ArgumentNullException(nameof(handler));
+                }
+
+                handler.OnApplicationCommand(_context, message);
+            }
         }
 
         public async Task HandleAsync(TApplicationCommand message, CancellationToken token = default)
         {
-            var handler = _context
-                .ServiceProvider
-                .GetService<IAsyncApplicationCommandHandler<TApplicationCommand>>();
-
-            if (handler == null)
+            using (var scope = _context.ServiceProvider.CreateScope())
             {
-                throw new ArgumentNullException(nameof(handler));
-            }
+                var handler = scope.ServiceProvider.GetService<IAsyncApplicationCommandHandler<TApplicationCommand>>();
 
-            await handler.OnApplicationCommandAsync(_context, message, token);
+                if (handler == null)
+                {
+                    throw new ArgumentNullException(nameof(handler));
+                }
+
+                await handler.OnApplicationCommandAsync(_context, message, token);
+            }
         }
     }
 }

@@ -12,12 +12,12 @@ namespace MDA.StateBackend.MySql
         /// <summary>
         /// 领域事件版本
         /// </summary>
-        public int DomainEventVersion { get; set; }
+        public long DomainEventVersion { get; set; }
 
         /// <summary>
         /// 领域事件类型完全限定名
         /// </summary>
-        public string DomainEventTypeFullName { get; set; }
+        public string DomainEventType { get; set; }
 
         /// <summary>
         /// 领域命令标识
@@ -27,12 +27,12 @@ namespace MDA.StateBackend.MySql
         /// <summary>
         /// 领域命令类型完全限定名
         /// </summary>
-        public string DomainCommandTypeFullName { get; set; }
+        public string DomainCommandType { get; set; }
 
         /// <summary>
         /// 领域命令版本
         /// </summary>
-        public int DomainCommandVersion { get; set; }
+        public long DomainCommandVersion { get; set; }
 
         /// <summary>
         /// 聚合根标识
@@ -42,12 +42,17 @@ namespace MDA.StateBackend.MySql
         /// <summary>
         /// 聚合根类型完全限定名
         /// </summary>
-        public string AggregateRootTypeFullName { get; set; }
+        public string AggregateRootType { get; set; }
+
+        /// <summary>
+        /// 第几代聚合根,随着检查点(Checkpoint)快照而递增.
+        /// </summary>
+        public int AggregateRootGeneration { get; set; }
 
         /// <summary>
         /// 聚合根版本
         /// </summary>
-        public int AggregateRootVersion { get; set; }
+        public long AggregateRootVersion { get; set; }
 
         /// <summary>
         /// 创建时间，时间戳，单位：毫秒。

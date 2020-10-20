@@ -12,7 +12,7 @@ namespace MDA.Domain.Commands
         /// <summary>
         /// 版本
         /// </summary>
-        int Version { get; set; }
+        long Version { get; set; }
 
         /// <summary>
         /// 应用层命令标识
@@ -83,7 +83,7 @@ namespace MDA.Domain.Commands
         protected DomainCommand(
             string aggregateRootId,
             Type aggregateRootType,
-            int version = 1)
+            int version = 0)
         {
             Version = version;
             AggregateRootId = aggregateRootId;
@@ -97,13 +97,13 @@ namespace MDA.Domain.Commands
             Type applicationCommandType,
             string aggregateRootId,
             Type aggregateRootType,
-            int version = 1) : this(aggregateRootId, aggregateRootType, version)
+            int version = 0) : this(aggregateRootId, aggregateRootType, version)
         {
             ApplicationCommandId = applicationCommandId;
             ApplicationCommandType = applicationCommandType;
         }
 
-        public int Version { get; set; }
+        public long Version { get; set; }
         public string ApplicationCommandId { get; set; } = string.Empty;
         public Type ApplicationCommandType { get; set; }
         public string AggregateRootId { get; set; }
@@ -124,7 +124,7 @@ namespace MDA.Domain.Commands
         protected DomainCommand(
             TAggregateRootId aggregateRootId,
             Type aggregateRootType,
-            int version = 1)
+            int version = 0)
             : base(aggregateRootId?.ToString(),
                 aggregateRootType,
                 version) => AggregateRootId = aggregateRootId;
@@ -133,7 +133,7 @@ namespace MDA.Domain.Commands
             Type applicationCommandType,
             TAggregateRootId aggregateRootId,
             Type aggregateRootType,
-            int version = 1)
+            int version = 0)
             : base(applicationCommandId,
                 applicationCommandType,
                 aggregateRootId?.ToString(),
@@ -167,7 +167,7 @@ namespace MDA.Domain.Commands
 
         protected DomainCommand(
             TAggregateRootId aggregateRootId,
-            int version = 1)
+            int version = 0)
             : base(aggregateRootId,
                 typeof(TAggregateRoot),
                 version) => AggregateRootId = aggregateRootId;
@@ -176,7 +176,7 @@ namespace MDA.Domain.Commands
             string applicationCommandId,
             Type applicationCommandType,
             TAggregateRootId aggregateRootId,
-            int version = 1)
+            int version = 0)
             : base(applicationCommandId,
                 applicationCommandType,
                 aggregateRootId,
@@ -200,7 +200,7 @@ namespace MDA.Domain.Commands
             string applicationCommandId,
             Type applicationCommandType,
             TAggregateRootId aggregateRootId,
-            int version = 1)
+            int version = 0)
             : base(applicationCommandId,
                 applicationCommandType,
                 aggregateRootId,
@@ -226,13 +226,23 @@ namespace MDA.Domain.Commands
             TApplicationCommandId applicationCommandId,
             Type applicationCommandType,
             TAggregateRootId aggregateRootId,
-            int version = 1)
+            int version = 0)
             : base(id,
                 applicationCommandId.ToString(),
                 applicationCommandType,
                 aggregateRootId,
                 version) => ApplicationCommandId = applicationCommandId;
 
-        public new TApplicationCommandId ApplicationCommandId { get; set; }
+        private TApplicationCommandId _applicationCommandId;
+        public new TApplicationCommandId ApplicationCommandId
+        {
+            get => _applicationCommandId;
+            set
+            {
+                _applicationCommandId = value;
+
+                base.ApplicationCommandId = _applicationCommandId.ToString();
+            }
+        }
     }
 }

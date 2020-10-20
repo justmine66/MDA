@@ -17,16 +17,16 @@ namespace EBank.Application.Querying
 
         public MySqlBankAccountReadDbStorage(
             ILogger<MySqlBankAccountReadDbStorage> logger,
-            IRelationalDbStorage db)
+            IRelationalDbStorageFactory db)
         {
             _logger = logger;
-            _db = db;
+            _db = db.CreateRelationalDbStorage(DatabaseScheme.ReadDb);
         }
 
         public async Task HandleAsync(AccountOpenedDomainEvent @event, CancellationToken token = default)
         {
             var sql =
-                $"INSERT INTO `{Tables.BankAccounts}` (`Id`, `Name`, `Bank`, `Balance`, `Creator`, `CreatedTime`) VALUES (@Id, @Name, @Bank, @Balance, @Creator, @CreatedTime);";
+                $"INSERT INTO `{Tables.BankAccounts}` (`Id`, `Name`, `Bank`, `Balance`, `Creator`, `CreatedTimestamp`) VALUES (@Id, @Name, @Bank, @Balance, @Creator, @CreatedTimestamp);";
 
             var parameter = new
             {
@@ -35,7 +35,7 @@ namespace EBank.Application.Querying
                 Bank = @event.Bank,
                 Balance = @event.InitialBalance,
                 Creator = "justmine",
-                CreatedTime = @event.Timestamp
+                CreatedTimestamp = @event.Timestamp
             };
 
             await _db.ExecuteAsync(sql, parameter, token);

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MDA.Domain.Commands
 {
-    public class AggregateRootInBoundMessageProcessor :
+    public class InBoundDomainCommandProcessor :
         IMessageHandler<DomainCommandTransportMessage>,
         IAsyncMessageHandler<DomainCommandTransportMessage>
     {
@@ -18,10 +18,10 @@ namespace MDA.Domain.Commands
         private readonly IAggregateRootStateBackend _stateBackend;
         private readonly ILogger _logger;
 
-        public AggregateRootInBoundMessageProcessor(
+        public InBoundDomainCommandProcessor(
             IAggregateRootMemoryCache cache,
             IAggregateRootStateBackend stateBackend,
-            ILogger<AggregateRootInBoundMessageProcessor> logger)
+            ILogger<InBoundDomainCommandProcessor> logger)
         {
             _cache = cache;
             _stateBackend = stateBackend;
@@ -53,7 +53,13 @@ namespace MDA.Domain.Commands
 
             try
             {
-                aggregate.HandleDomainCommand(command);
+                var result = aggregate.HandleDomainCommand(command);
+                if (!result.Succeed())
+                {
+                    _logger.LogError($"Handler domain command: [Id: {commandId}, Type: {commandType.FullName}] has a error: {result.Message}.");
+
+                    return;
+                }
             }
             catch (Exception e)
             {

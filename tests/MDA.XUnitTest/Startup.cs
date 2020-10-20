@@ -60,7 +60,7 @@ namespace MDA.XUnitTest
         {
             var queueService = provider.GetService<IMessageQueueService>();
 
-            queueService.Start();
+            queueService.StartAsync().GetAwaiter().GetResult();
         }
     }
 }

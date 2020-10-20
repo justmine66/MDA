@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 
 namespace MDA.Domain.Models
 {
-    public interface IAggregateRootSavePointManager
+    public interface IAggregateRootCheckpointManager
     {
-        Task SnapshotSavePointAsync(
+        Task SnapshotCheckpointAsync(
             IEventSourcedAggregateRoot aggregateRoot,
             CancellationToken token = default);
 
-        Task<AggregateRootSavePoint<IEventSourcedAggregateRoot>> RestoreSavePointAsync(
+        Task<AggregateRootCheckpoint<IEventSourcedAggregateRoot>> RestoreCheckpointAsync(
             string aggregateRootId,
             Type aggregateRootType,
             CancellationToken token = default);

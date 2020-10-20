@@ -13,16 +13,19 @@ namespace MDA.StateBackend.MySql
             _options = options.Value;
         }
 
-        public IRelationalDbStorage CreateRelationalDbStorage()
+        public IRelationalDbStorage CreateRelationalDbStorage(DatabaseScheme scheme)
         {
-            var connectionString = _options.ConnectionString;
+            var connectionStrings = _options.ConnectionStrings;
 
-            if (string.IsNullOrWhiteSpace(connectionString))
+            switch (scheme)
             {
-                throw new ArgumentException("Connection string must contain characters", nameof(connectionString));
+                case DatabaseScheme.ReadDb:
+                    return new RelationalDbStorage(AdoNetInvariants.InvariantNameMySqlConnector, connectionStrings.ReadDb);
+                case DatabaseScheme.StateDb:
+                    return new RelationalDbStorage(AdoNetInvariants.InvariantNameMySqlConnector, connectionStrings.StateDb);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(scheme), scheme, null);
             }
-
-            return new RelationalDbStorage(AdoNetInvariants.InvariantNameMySqlConnector, connectionString);
         }
     }
 }

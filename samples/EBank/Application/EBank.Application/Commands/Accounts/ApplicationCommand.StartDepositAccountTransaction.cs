@@ -1,5 +1,6 @@
 ﻿using EBank.Domain.Models.Accounts;
 using MDA.Application.Commands;
+using MDA.Domain.Shared;
 
 namespace EBank.Application.Commands.Accounts
 {
@@ -16,7 +17,7 @@ namespace EBank.Application.Commands.Accounts
         /// <summary>
         /// 账户号
         /// </summary>
-        public long AccountId { get; set; }
+        public long AccountId { get; set; } = SnowflakeId.Default().NextId();
 
         /// <summary>
         /// 账户名

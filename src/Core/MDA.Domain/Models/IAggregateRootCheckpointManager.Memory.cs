@@ -6,33 +6,33 @@ using System.Threading.Tasks;
 
 namespace MDA.Domain.Models
 {
-    public class MemoryAggregateRootSavePointManager : IAggregateRootSavePointManager
+    public class MemoryAggregateRootCheckpointManager : IAggregateRootCheckpointManager
     {
         private readonly ILogger _logger;
         private readonly IAggregateRootFactory _aggregateRootFactory;
-        private readonly ConcurrentDictionary<string, AggregateRootSavePoint<IEventSourcedAggregateRoot>> _savePoints;
+        private readonly ConcurrentDictionary<string, AggregateRootCheckpoint<IEventSourcedAggregateRoot>> _savePoints;
 
-        public MemoryAggregateRootSavePointManager(
-            ILogger<MemoryAggregateRootSavePointManager> logger,
+        public MemoryAggregateRootCheckpointManager(
+            ILogger<MemoryAggregateRootCheckpointManager> logger,
             IAggregateRootFactory aggregateRootFactory)
         {
             _logger = logger;
             _aggregateRootFactory = aggregateRootFactory;
-            _savePoints = new ConcurrentDictionary<string, AggregateRootSavePoint<IEventSourcedAggregateRoot>>();
+            _savePoints = new ConcurrentDictionary<string, AggregateRootCheckpoint<IEventSourcedAggregateRoot>>();
         }
 
-        public async Task SnapshotSavePointAsync(
+        public async Task SnapshotCheckpointAsync(
             IEventSourcedAggregateRoot aggregateRoot,
             CancellationToken token = default)
         {
-            var newSavepoint = new AggregateRootSavePoint<IEventSourcedAggregateRoot>(aggregateRoot);
+            var newSavepoint = new AggregateRootCheckpoint<IEventSourcedAggregateRoot>(aggregateRoot);
 
             _savePoints.AddOrUpdate(aggregateRoot.Id, newSavepoint, (key, old) => old.Refresh(aggregateRoot));
 
             await Task.CompletedTask;
         }
 
-        public async Task<AggregateRootSavePoint<IEventSourcedAggregateRoot>> RestoreSavePointAsync(
+        public async Task<AggregateRootCheckpoint<IEventSourcedAggregateRoot>> RestoreCheckpointAsync(
             string aggregateRootId,
             Type aggregateRootType,
             CancellationToken token = default)
@@ -80,7 +80,7 @@ namespace MDA.Domain.Models
                 return null;
             }
 
-            var savepoint = new AggregateRootSavePoint<IEventSourcedAggregateRoot>(aggregateRoot);
+            var savepoint = new AggregateRootCheckpoint<IEventSourcedAggregateRoot>(aggregateRoot);
 
             return await Task.FromResult(savepoint);
         }
@@ -92,7 +92,7 @@ namespace MDA.Domain.Models
                 return null;
             }
 
-            var savepoint = await RestoreSavePointAsync(aggregateRootId, aggregateRootType, token);
+            var savepoint = await RestoreCheckpointAsync(aggregateRootId, aggregateRootType, token);
 
             return savepoint?.AggregateRoot;
         }

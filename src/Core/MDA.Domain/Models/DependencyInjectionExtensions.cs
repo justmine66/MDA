@@ -10,7 +10,7 @@ namespace MDA.Domain.Models
             services.AddSingleton<IAggregateRootFactory, AggregateRootFactory>();
             services.AddSingleton<IAggregateRootMemoryCache, LruAggregateRootMemoryCache>();
             services.AddSingleton<IAggregateRootStateBackend, DefaultAggregateRootStateBackend>();
-            services.AddSingleton<IAggregateRootSavePointManager, MemoryAggregateRootSavePointManager>();
+            services.AddSingleton<IAggregateRootCheckpointManager, MemoryAggregateRootCheckpointManager>();
 
             services.Configure<AggregateRootCacheOptions>(_ => { });
             if (configuration != null)

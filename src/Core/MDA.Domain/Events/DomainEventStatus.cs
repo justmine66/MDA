@@ -6,18 +6,18 @@ namespace MDA.Domain.Events
     public enum DomainEventStatus
     {
         /// <summary>
-        /// 成功
+        /// 已成功
         /// </summary>
-        Success = 1 << 0,
+        Succeed = 0 << 0,
 
         /// <summary>
-        /// 失败
+        /// 已失败
         /// </summary>
-        Failed = 1 << 1,
+        Failed = 0 << 1,
 
         /// <summary>
-        /// 超时
+        /// 已超时
         /// </summary>
-        TimeOut = 1 << 2
+        TimeOuted = 0 << 2,
     }
 }

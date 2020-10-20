@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using MySqlConnector;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,6 +18,7 @@ namespace MDA.StateBackend.MySql
     {
         private readonly ILogger _logger;
         private readonly IRelationalDbStorage _db;
+        private readonly IDomainEventPublisher _eventPublisher;
         private readonly IBinarySerializer _binarySerializer;
         private readonly ITypeResolver _typeResolver;
         private readonly MySqlStateBackendOptions _options;
@@ -26,72 +28,88 @@ namespace MDA.StateBackend.MySql
             ILogger<MySqlDomainEventStateBackend> logger,
             ITypeResolver typeResolver,
             IOptions<MySqlStateBackendOptions> options,
-            IBinarySerializer binarySerializer)
+            IBinarySerializer binarySerializer,
+            IDomainEventPublisher eventPublisher)
         {
             _logger = logger;
-            _db = factory.CreateRelationalDbStorage();
+            _db = factory.CreateRelationalDbStorage(DatabaseScheme.StateDb);
             _typeResolver = typeResolver;
             _binarySerializer = binarySerializer;
+            _eventPublisher = eventPublisher;
             _options = options.Value;
         }
 
-        public async Task AppendAsync(
+        public async Task<DomainEventResult> AppendAsync(
             IDomainEvent @event,
             CancellationToken token = default)
         {
             if (!@event.IsValid())
             {
-                _logger.LogError($"The domain event: [{@event.Print()}] cannot be stored mysql state backend.");
-
-                return;
+                return DomainEventResult.StorageFailed(@event.Id, $"The domain event: [{@event.Print()}] cannot be stored mysql state backend.");
             }
 
             var domainEventRecord = DomainEventRecordPortAdapter.ToDomainEventRecord(@event, _binarySerializer);
             var parameters = DbParameterProvider.GetDbParameters(domainEventRecord);
 
             var tables = _options.DomainEventOptions.Tables;
-            var insertDomainEventSql = $"INSERT INTO `{tables.DomainEventsIndices}`(`DomainCommandId`,`DomainCommandTypeFullName`,`DomainCommandVersion`,`AggregateRootId`,`AggregateRootTypeFullName`,`AggregateRootVersion`,`DomainEventId`,`DomainEventTypeFullName`,`DomainEventVersion`) VALUES(@DomainCommandId,@DomainCommandTypeFullName,@DomainCommandVersion,@AggregateRootId,@AggregateRootTypeFullName,@AggregateRootVersion,@DomainEventId,@DomainEventTypeFullName,@DomainEventVersion)";
-            var insertDomainEventPayloadSql = $"INSERT INTO `{tables.DomainEventPayloads}`(`DomainEventId`,`Payload`) VALUES (@DomainEventId,@Payload)";
+            var insertDomainEventSql = $"INSERT INTO `{tables.DomainEventsIndices}`(`DomainCommandId`,`DomainCommandType`,`DomainCommandVersion`,`AggregateRootId`,`AggregateRootType`,`AggregateRootVersion`,`AggregateRootGeneration`,`DomainEventId`,`DomainEventType`,`DomainEventVersion`,CreatedTimestamp) VALUES(@DomainCommandId,@DomainCommandType,@DomainCommandVersion,@AggregateRootId,@AggregateRootType,@AggregateRootVersion,@AggregateRootGeneration,@DomainEventId,@DomainEventType,@DomainEventVersion,@CreatedTimestamp)";
+            var insertDomainEventPayloadSql = $"INSERT INTO `{tables.DomainEventPayloads}`(`DomainEventId`,`DomainEventVersion`,`Payload`) VALUES (@DomainEventId,@DomainEventVersion,@Payload)";
 
             try
             {
-                await _db.ExecuteAsync($"{insertDomainEventSql};{insertDomainEventPayloadSql};", command => command.Parameters.AddRange(parameters), token);
+                var expectedRows = 2;
+                var affectedRows = await _db.ExecuteAsync($"{insertDomainEventSql};{insertDomainEventPayloadSql};", command => command.Parameters.AddRange(parameters), token);
+                if (affectedRows != expectedRows)
+                    return DomainEventResult.StorageFailed(@event.Id,
+                        $"The affected rows returned MySql state backend is incorrect, expected: {expectedRows}, actual: {affectedRows}.");
+
+                await _eventPublisher.PublishAsync(@event, token);
+
+                return DomainEventResult.StorageSucceed(@event.Id);
             }
             catch (Exception ex)
             {
-                if (TryCheckDuplicateEntryException(domainEventRecord.AggregateRootTypeFullName, ex)) return;
+                if (TryCheckDuplicateEntryException(domainEventRecord.AggregateRootType, ex, out var message))
+                    return DomainEventResult.StorageSucceed(@event.Id, message);
 
-                _logger.LogError($"Append domain event has unknown exception: {ex}");
+                return DomainEventResult.StorageFailed(@event.Id, $"Append domain event has unknown exception: {ex}.");
             }
         }
 
-        public async Task AppendAsync(
+        public async Task<IEnumerable<DomainEventResult>> AppendAsync(
             IEnumerable<IDomainEvent> events,
             CancellationToken token = default)
         {
-            if (@events == null)
-            {
-                return;
-            }
+            if (events.IsEmpty())
+                return Enumerable.Empty<DomainEventResult>();
+
+            var results = new List<DomainEventResult>();
 
             foreach (var @event in events)
             {
-                await AppendAsync(@event, token);
+                var result = await AppendAsync(@event, token);
+
+                results.Add(result);
             }
+
+            return await Task.FromResult(results);
         }
 
         public async Task<IEnumerable<IDomainEvent>> GetEventStreamAsync(
             string aggregateRootId,
+            int generation = 0,
             long startOffset = 0,
             CancellationToken token = default)
             => await GetEventStreamAsync(
                 aggregateRootId,
+                generation,
                 startOffset,
                 long.MaxValue,
                 token);
 
         public async Task<IEnumerable<IDomainEvent>> GetEventStreamAsync(
             string aggregateRootId,
+            int generation,
             long startOffset = 0,
             long endOffset = long.MaxValue,
             CancellationToken token = default)
@@ -104,11 +122,12 @@ namespace MDA.StateBackend.MySql
 
             var tables = _options.DomainEventOptions.Tables;
 
-            var sql = $"SELECT d.`DomainCommandId`,d.`DomainCommandTypeFullName`,d.`DomainCommandVersion`,d.`AggregateRootId`,d.`AggregateRootTypeFullName`,d.`AggregateRootVersion`,d.`DomainEventId`,d.`DomainEventTypeFullName`,d.`DomainEventVersion`,d.`CreatedTimestamp`, p.`Payload` FROM `{tables.DomainEventsIndices}` d LEFT JOIN `{tables.DomainEventPayloads}` p ON d.`DomainEventId`=p.`DomainEventId` WHERE d.`AggregateRootId`=@AggregateRootId AND d.AggregateRootVersion>=@StartOffset AND d.AggregateRootVersion<@EndOffset";
+            var sql = $"SELECT d.`DomainCommandId`,d.`DomainCommandType`,d.`DomainCommandVersion`,d.`AggregateRootId`,d.`AggregateRootType`,d.`AggregateRootVersion`,d.`AggregateRootGeneration`,d.`DomainEventId`,d.`DomainEventType`,d.`DomainEventVersion`,d.`CreatedTimestamp`, p.`Payload` FROM `{tables.DomainEventsIndices}` d LEFT JOIN `{tables.DomainEventPayloads}` p ON d.`DomainEventId`=p.`DomainEventId` WHERE d.`AggregateRootId`=@AggregateRootId AND d.AggregateRootGeneration>=@Generation AND d.AggregateRootVersion>=@StartOffset AND d.AggregateRootVersion<@EndOffset";
 
             var records = await _db.ReadAsync<DomainEventRecord>(sql, new
             {
                 AggregateRootId = aggregateRootId,
+                Generation = generation,
                 StartOffset = startOffset,
                 EndOffset = endOffset
             }, token);
@@ -135,15 +154,17 @@ namespace MDA.StateBackend.MySql
             return domainEvents;
         }
 
-        protected bool TryCheckDuplicateEntryException(string name, Exception ex)
+        protected bool TryCheckDuplicateEntryException(string name, Exception ex, out string message)
         {
             if (ex is MySqlException inner && inner.HasDuplicateEntry())
             {
                 // 事件已被处理
-                _logger.LogWarning($"{name}: [已忽略]发现领域事件被重复处理：{inner.Message}");
+                message = $"{name}: [Ignored]find duplicated domain event from mysql state backend：{inner.Message}.";
 
                 return true;
             }
+
+            message = string.Empty;
 
             return false;
         }

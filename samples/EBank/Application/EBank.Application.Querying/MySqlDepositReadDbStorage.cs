@@ -16,10 +16,10 @@ namespace EBank.Application.Querying
 
         public MySqlDepositReadDbStorage(
             ILogger<MySqlDepositReadDbStorage> logger,
-            IRelationalDbStorage db)
+            IRelationalDbStorageFactory db)
         {
             _logger = logger;
-            _db = db;
+            _db = db.CreateRelationalDbStorage(DatabaseScheme.ReadDb);
         }
 
         public async Task HandleAsync(DepositTransactionStartedDomainEvent @event, CancellationToken token = default)

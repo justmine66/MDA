@@ -5,17 +5,9 @@ namespace MDA.MessageBus
 {
     public interface IMessageQueueService
     {
-        void Start();
-
-        void Enqueue(IMessage message);
-
-        void Stop();
-    }
-
-    public interface IAsyncMessageQueueService
-    {
         Task StartAsync(CancellationToken token = default);
 
+        void Enqueue(IMessage message);
         Task EnqueueAsync(IMessage message, CancellationToken token = default);
 
         Task StopAsync(CancellationToken token = default);

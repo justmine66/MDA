@@ -17,20 +17,7 @@ namespace EBank.Domain.Models.Accounts
         /// <summary>
         /// 在途账户交易记录
         /// </summary>
-        private readonly IDictionary<long, AccountTransaction> _transactions;
-
-        public BankAccount(
-            long id,
-            string name,
-            decimal balance,
-            string bank) : base(id)
-        {
-            Name = name;
-            Balance = balance;
-            Bank = bank;
-            Status = BankAccountStatus.Activated;
-            _transactions = new Dictionary<long, AccountTransaction>();
-        }
+        private IDictionary<long, AccountTransaction> _accountTransactionsInFlight;
 
         /// <summary>
         /// 账户名
@@ -53,18 +40,26 @@ namespace EBank.Domain.Models.Accounts
         public BankAccountStatus Status { get; private set; }
 
         /// <summary>
-        /// 添加一笔账户交易
+        /// 添加一笔在途账户交易
         /// </summary>
-        /// <param name="transaction"></param>
-        public void AddAccountTransaction(AccountTransaction transaction) => _transactions[transaction.Id] = transaction;
+        /// <param name="transaction">账户交易信息</param>
+        public void AddAccountTransaction(AccountTransaction transaction)
+        {
+            if (_accountTransactionsInFlight == null)
+            {
+                _accountTransactionsInFlight = new Dictionary<long, AccountTransaction>();
+            }
+
+            _accountTransactionsInFlight[transaction.Id] = transaction;
+        }
 
         /// <summary>
-        /// 添加一笔账户交易
+        /// 提交一笔在途账户交易
         /// </summary>
-        /// <param name="transactionId"></param>
+        /// <param name="transactionId">交易号</param>
         public void CommitAccountTransaction(long transactionId)
         {
-            var transaction = _transactions[transactionId];
+            var transaction = _accountTransactionsInFlight[transactionId];
             if (transaction == null)
             {
                 throw new BankAccountDomainException($"在账户: {Id}中，没有找到交易: {transactionId}.");
@@ -88,12 +83,12 @@ namespace EBank.Domain.Models.Accounts
         }
 
         /// <summary>
-        /// 移除一笔账户交易
+        /// 移除一笔在途账户交易
         /// </summary>
-        /// <param name="transactionId"></param>
+        /// <param name="transactionId">交易号</param>
         public void RemoveAccountTransaction(long transactionId)
         {
-            var removed = _transactions.Remove(transactionId);
+            var removed = _accountTransactionsInFlight.Remove(transactionId);
             if (!removed)
             {
                 throw new BankAccountDomainException($"移除账户: {Id} 中交易: {transactionId}失败。");
@@ -109,10 +104,11 @@ namespace EBank.Domain.Models.Accounts
             get
             {
                 // 在途收入金额
-                var inFlightInAmount = _transactions.Values.Where(it => it.Type == AccountTransactionType.Deposit).Sum(it => it.Amount);
+                var inFlightInAmount = _accountTransactionsInFlight.Values.Where(it => it.Type == AccountTransactionType.Deposit).Sum(it => it.Amount);
                 // 在途支出金额
-                var inFlightOutAmount = _transactions.Values.Where(it => it.Type == AccountTransactionType.Withdraw).Sum(it => it.Amount);
+                var inFlightOutAmount = _accountTransactionsInFlight.Values.Where(it => it.Type == AccountTransactionType.Withdraw).Sum(it => it.Amount);
 
+                // 余额 - 在途占用
                 return Balance + inFlightInAmount - inFlightOutAmount;
             }
         }
@@ -135,13 +131,13 @@ namespace EBank.Domain.Models.Accounts
 
             PreConditions.NotNullOrWhiteSpace<OpenAccountDomainCommand>(nameof(command.AccountName), command.AccountName);
             PreConditions.GreaterThanOrEqual<OpenAccountDomainCommand>($"{nameof(command.AccountName)} length", command.AccountName.Length, DomainRules.PreConditions.Account.Name.Length.Minimum);
-            PreConditions.LessThanOrEqual<OpenAccountDomainCommand>($"{nameof(command.AccountName)} length", command.AccountName.Length, 
+            PreConditions.LessThanOrEqual<OpenAccountDomainCommand>($"{nameof(command.AccountName)} length", command.AccountName.Length,
                 DomainRules.PreConditions.Account.Name.Length.Maximum);
 
             PreConditions.GreaterThanZero<OpenAccountDomainCommand>(nameof(command.InitialBalance), command.InitialBalance);
             PreConditions.NotNullOrWhiteSpace<OpenAccountDomainCommand>(nameof(command.Bank), command.Bank);
 
-            var @event = new AccountOpenedDomainEvent(command.AggregateRootId, command.AccountName, command.Bank, command.InitialBalance);
+            var @event = new AccountOpenedDomainEvent(command.AccountName, command.Bank, command.InitialBalance);
 
             ApplyDomainEvent(@event);
         }
@@ -250,7 +246,11 @@ namespace EBank.Domain.Models.Accounts
 
         public void OnDomainEvent(AccountOpenedDomainEvent @event)
         {
-            var account = new BankAccount(@event.AggregateRootId, @event.AccountName, @event.InitialBalance, @event.Bank);
+            Id = @event.AggregateRootId;
+            Name = @event.AccountName;
+            Balance = @event.InitialBalance;
+            Bank = @event.Bank;
+            Status = BankAccountStatus.Activated;
         }
 
         public void OnDomainEvent(DepositAccountTransactionReadiedDomainEvent @event)

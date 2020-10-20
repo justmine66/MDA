@@ -3,12 +3,12 @@
 namespace MDA.Domain.Models
 {
     /// <summary>
-    /// 表示聚合根一次完整的快照保存点
+    /// 表示聚合根一次完整的快照检查点
     /// </summary>
-    public class AggregateRootSavePoint<TAggregateRoot>
+    public class AggregateRootCheckpoint<TAggregateRoot>
         where TAggregateRoot : IEventSourcedAggregateRoot
     {
-        public AggregateRootSavePoint(TAggregateRoot aggregateRoot, int generation = 1)
+        public AggregateRootCheckpoint(TAggregateRoot aggregateRoot, int generation = 0)
         {
             AggregateRoot = aggregateRoot;
             LastModified = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -30,7 +30,7 @@ namespace MDA.Domain.Models
         /// </summary>
         public int Generation { get; set; }
 
-        public AggregateRootSavePoint<TAggregateRoot> Refresh(TAggregateRoot aggregateRoot)
+        public AggregateRootCheckpoint<TAggregateRoot> Refresh(TAggregateRoot aggregateRoot)
         {
             AggregateRoot = aggregateRoot;
             LastModified = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();

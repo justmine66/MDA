@@ -1,6 +1,8 @@
 ﻿using Disruptor.Dsl;
 using System;
 using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MDA.MessageBus.Disruptor
 {
@@ -12,16 +14,29 @@ namespace MDA.MessageBus.Disruptor
 
         public DisruptorMessageQueueService(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
 
-        public void Start() => _queues[MessagePartitionKeys.GlobalPartitionKey] = CreateAndStartDisruptor();
+        public async Task StartAsync(CancellationToken token = default)
+        {
+            _queues[MessagePartitionKeys.GlobalPartitionKey] = CreateAndStartDisruptor();
+
+            await Task.CompletedTask;
+        }
 
         public void Enqueue(IMessage message) => DoEnqueue(message);
+        public async Task EnqueueAsync(IMessage message, CancellationToken token = default)
+        {
+            DoEnqueue(message);
 
-        public void Stop()
+            await Task.CompletedTask;
+        }
+
+        public async Task StopAsync(CancellationToken token = default)
         {
             foreach (var queue in _queues)
             {
                 queue.Value.Shutdown(TimeSpan.Zero);
             }
+
+            await Task.CompletedTask;
         }
 
         public void DoEnqueue(IMessage message)

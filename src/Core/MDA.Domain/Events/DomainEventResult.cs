@@ -1,52 +1,78 @@
-﻿namespace MDA.Domain.Events
+﻿using System;
+
+namespace MDA.Domain.Events
 {
     public class DomainEventResult
     {
-        public DomainEventResult(string eventId, DomainEventStatus status, object result = null)
+        public DomainEventResult(
+            string eventId,
+            DomainEventLifetime lifetime,
+            DomainEventStatus status,
+            string message = null,
+            Exception exception = null)
         {
             EventId = eventId;
             Status = status;
-            Result = result;
+            Lifetime = lifetime;
+            Message = message;
+            Exception = exception;
         }
 
-        public string EventId { get; private set; }
+        public string EventId { get; }
 
-        public DomainEventStatus Status { get; private set; }
+        public DomainEventLifetime Lifetime { get; }
 
-        public object Result { get; private set; }
+        public DomainEventStatus Status { get; }
 
-        public static DomainEventResult Success(string eventId, object result = null) => new DomainEventResult(eventId, DomainEventStatus.Success, result);
+        public string Message { get; set; }
 
-        public static DomainEventResult Failed(string eventId, object result = null) => new DomainEventResult(eventId, DomainEventStatus.Failed, result);
+        public Exception Exception { get; set; }
 
-        public static DomainEventResult TimeOut(string eventId, object result = null) => new DomainEventResult(eventId, DomainEventStatus.TimeOut, result);
+        public static DomainEventResult StorageSucceed(string eventId, string message = null, Exception exception = null)
+            => new DomainEventResult(eventId, DomainEventLifetime.Stored, DomainEventStatus.Succeed, message, exception);
+
+        public static DomainEventResult StorageFailed(string eventId, string message = null, Exception exception = null)
+            => new DomainEventResult(eventId, DomainEventLifetime.Storing, DomainEventStatus.Failed, message, exception);
+
+        public static DomainEventResult StorageTimeOuted(string eventId, string message = null, Exception exception = null)
+            => new DomainEventResult(eventId, DomainEventLifetime.Storing, DomainEventStatus.TimeOuted, message, exception);
+
+        public static DomainEventResult HandleSucceed(string eventId, string message = null, Exception exception = null)
+            => new DomainEventResult(eventId, DomainEventLifetime.Handled, DomainEventStatus.Succeed, message, exception);
     }
 
-    public class DomainEventResult<TResult> : DomainEventResult
+    public class DomainEventResult<TEventId> : DomainEventResult
     {
-        public DomainEventResult(string eventId, DomainEventStatus status, TResult result = default)
-            : base(eventId, status, result)
-        {
-            Result = result;
-        }
-
-        public new TResult Result { get; private set; }
-
-        public static DomainEventResult Success(string eventId, TResult result = default) => new DomainEventResult(eventId, DomainEventStatus.Success, result);
-
-        public static DomainEventResult Failed(string eventId, TResult result = default) => new DomainEventResult(eventId, DomainEventStatus.Failed, result);
-
-        public static DomainEventResult TimeOut(string eventId, TResult result = default) => new DomainEventResult(eventId, DomainEventStatus.TimeOut, result);
-    }
-
-    public class DomainEventResult<TResult, TEventId> : DomainEventResult<TResult>
-    {
-        public DomainEventResult(TEventId eventId, DomainEventStatus status, TResult result = default)
-            : base(eventId.ToString(), status, result)
+        public DomainEventResult(
+            TEventId eventId,
+            DomainEventLifetime lifetime,
+            DomainEventStatus status,
+            string message = null,
+            Exception exception = null)
+            : base(eventId.ToString(), lifetime, status, message, exception)
         {
             EventId = eventId;
         }
 
         public new TEventId EventId { get; private set; }
+    }
+
+    public static class DomainEventResultExtensions
+    {
+        public static bool StorageSucceed(this DomainEventResult result)
+            => result.Lifetime == DomainEventLifetime.Stored && 
+               result.Status == DomainEventStatus.Succeed;
+
+        public static bool StorageFailed(this DomainEventResult result)
+            => result.Lifetime == DomainEventLifetime.Storing && 
+               result.Status == DomainEventStatus.Failed;
+
+        public static bool StorageTimeOuted(this DomainEventResult result)
+            => result.Lifetime == DomainEventLifetime.Storing && 
+               result.Status == DomainEventStatus.TimeOuted;
+
+        public static bool HandleSucceed(this DomainEventResult result)
+            => result.Lifetime == DomainEventLifetime.Handled && 
+               result.Status == DomainEventStatus.Succeed;
     }
 }

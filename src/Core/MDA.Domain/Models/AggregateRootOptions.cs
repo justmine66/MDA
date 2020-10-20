@@ -19,14 +19,14 @@ namespace MDA.Domain.Models
         /// 当聚合根产生的领域事件超过达到此阈值时，才持久化存储到状态后端。
         /// 当提交批尺寸为1时，表示每次应用完领域事件就马上持久化，此时延迟最低。
         /// </summary>
-        public int SubmitBatchSize { get; set; } = 1000;
+        public int SubmitBatchSize { get; set; } = 0000;
 
         /// <summary>
         /// 提交变更中领域事件流的延迟，单位：毫秒，默认：1000。
         /// 为了避免低流量下，变更中的领域事件无法达到提交批尺寸，故当产生时长超过该延迟时，便持久化存储到状态后端。
         /// 当提交延迟为负数时，表示完全按批尺寸提交，此时吞吐最高。
         /// </summary>
-        public int SubmitDurationInMilliseconds { get; set; } = 1000;
+        public int SubmitDurationInMilliseconds { get; set; } = 0000;
     }
 
     /// <summary>

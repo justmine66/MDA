@@ -11,14 +11,16 @@ using System.Reflection;
 
 namespace MDA.Domain.Models
 {
-    public abstract class EventSourcedAggregateRoot : IEventSourcedAggregateRoot, IEquatable<IEventSourcedAggregateRoot>
+    public abstract class EventSourcedAggregateRoot :
+        IEventSourcedAggregateRoot,
+        IEquatable<IEventSourcedAggregateRoot>
     {
         private Type AggregateRootType => GetType();
         private IList<IDomainEvent> _mutatingDomainEvents;
 
         protected EventSourcedAggregateRoot() => _mutatingDomainEvents = new List<IDomainEvent>();
 
-        protected EventSourcedAggregateRoot(string id, int version = 1)
+        protected EventSourcedAggregateRoot(string id, int version = 0)
         {
             Id = id;
             _mutatingDomainEvents = new List<IDomainEvent>();
@@ -27,39 +29,54 @@ namespace MDA.Domain.Models
 
         public IEnumerable<IDomainEvent> MutatingDomainEvents => _mutatingDomainEvents;
         public string Id { get; set; } = string.Empty;
-        public int Version { get; set; } = 1;
+        public int Generation { get; set; }
+        public long Version { get; set; }
 
         public virtual void ApplyDomainEvent(IDomainEvent @event)
         {
             // 1. 填充事件信息到模型
             if (@event == null) return;
 
+            @event.AggregateRootId = Id;
+            @event.AggregateRootType = AggregateRootType;
+            @event.AggregateRootGeneration = Generation;
+            @event.AggregateRootVersion = ++Version;
+            @event.Version++;
+
             HandleDomainEvent(@event);
 
             // 2. 添加到变更事件流
             if (_mutatingDomainEvents == null)
             {
-                Version = 1;
+                Version = 0;
                 _mutatingDomainEvents = new List<IDomainEvent>();
             }
 
             _mutatingDomainEvents.Add(@event);
         }
 
-        public virtual void HandleDomainCommand(IDomainCommand command)
+        public virtual DomainCommandResult HandleDomainCommand(IDomainCommand command)
         {
-            Version++;
-            Id = command.AggregateRootId;
+            var aggregateRootId = command.AggregateRootId;
+            var domainCommandAggregateType = command.AggregateRootType;
+
+            if (AggregateRootType != domainCommandAggregateType)
+            {
+                return DomainCommandResult.Failed(command.Id, $"Incorrect the aggregate root type, expected: {AggregateRootType.FullName}, actual: {domainCommandAggregateType.FullName}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(Id) && Id != aggregateRootId)
+            {
+                return DomainCommandResult.Failed(command.Id, $"Incorrect the aggregate root id, expected: {Id}, actual: {aggregateRootId}");
+            }
 
             ExecuteDomainMessage(DomainMessageType.Command, command);
+
+            return DomainCommandResult.Succeed(command.Id);
         }
 
         public virtual void HandleDomainEvent(IDomainEvent @event)
         {
-            @event.AggregateRootId = Id;
-            @event.AggregateRootType = AggregateRootType;
-            @event.Version = Version;
-
             ExecuteDomainMessage(DomainMessageType.Event, @event);
         }
 
@@ -70,10 +87,20 @@ namespace MDA.Domain.Models
 
         public virtual void ReplayDomainEvents(IEnumerable<IDomainEvent> events)
         {
-            if (events == null) return;
+            if (events.IsEmpty()) return;
 
             foreach (var @event in events)
             {
+                var eventAggregateType = @event.AggregateRootType;
+                if (AggregateRootType != eventAggregateType)
+                {
+                    throw new NotSupportedException($"Incorrect the aggregate root type, expected: {AggregateRootType.FullName}, actual: {eventAggregateType.FullName}");
+                }
+
+                Id = @event.AggregateRootId;
+                Version = @event.AggregateRootVersion;
+                Generation = @event.AggregateRootGeneration;
+
                 HandleDomainEvent(@event);
             }
         }
@@ -88,7 +115,7 @@ namespace MDA.Domain.Models
             switch (messageType)
             {
                 case DomainMessageType.Command:
-                     methodName = "OnDomainCommand";
+                    methodName = "OnDomainCommand";
 
                     var domainCommandType = typeof(IDomainCommand);
 
@@ -124,8 +151,9 @@ namespace MDA.Domain.Models
                 throw new MethodNotFoundException($"No {methodName}({messageParameterTypeFullName}) found in {aggregateTypeFullName}.");
             }
 
+            var instance = Expression.Constant(this);
             var parameter = Expression.Parameter(messageParameterType, methodName);
-            var call = Expression.Call(Expression.Constant(this), method, parameter);
+            var call = Expression.Call(instance, method, parameter);
             var lambda = Expression.Lambda(call, parameter);
             var methodDelegate = lambda.Compile();
 
@@ -159,7 +187,7 @@ namespace MDA.Domain.Models
 
         protected EventSourcedAggregateRoot()
             => base.Id = Id?.ToString();
-        protected EventSourcedAggregateRoot(TId id, int version = 1)
+        protected EventSourcedAggregateRoot(TId id, int version = 0)
             : base(id?.ToString(), version)
         {
             Id = id;
@@ -167,7 +195,17 @@ namespace MDA.Domain.Models
             _version = version;
         }
 
-        public new TId Id { get; set; }
+        private TId _id;
+        public new TId Id
+        {
+            get => _id;
+            set
+            {
+                _id = value;
+
+                base.Id = _id.ToString();
+            }
+        }
 
         protected virtual bool Equals(IEventSourcedAggregateRoot<TId> other)
         {
@@ -201,11 +239,7 @@ namespace MDA.Domain.Models
         IAggregateRootWithCompositeId<TId>
     {
         protected EventSourcedAggregateRootWithCompositeId() { }
-        protected EventSourcedAggregateRootWithCompositeId(TId id)
-            : this(id, 1)
-        { }
-
-        protected EventSourcedAggregateRootWithCompositeId(TId id, int version)
+        protected EventSourcedAggregateRootWithCompositeId(TId id, int version = 0)
             : base(id, version)
         { }
 
