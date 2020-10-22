@@ -67,23 +67,23 @@ namespace EBank.Domain.Models.Withdrawing
             ApplyDomainEvent(@event);
         }
 
-        public void OnDomainCommand(ConfirmWithdrawTransactionValidatePassedDomainCommand command)
+        public void OnDomainCommand(ConfirmWithdrawTransactionValidatedDomainCommand command)
         {
-            var @event = new WithdrawTransactionValidateCompletedDomainEvent(AccountId, AccountName, Bank, Amount);
+            var @event = new WithdrawTransactionReadiedDomainEvent(AccountId, WithdrawTransactionStatus.Validated);
 
             ApplyDomainEvent(@event);
         }
 
-        public void OnDomainCommand(ConfirmWithdrawTransactionCompletedDomainCommand command)
+        public void OnDomainCommand(ConfirmWithdrawTransactionSubmittedDomainCommand command)
         {
-            var @event = new WithdrawTransactionCompletedDomainEvent();
+            var @event = new WithdrawTransactionCompletedDomainEvent(WithdrawTransactionStatus.Completed);
 
             ApplyDomainEvent(@event);
         }
 
         public void OnDomainCommand(CancelWithdrawTransactionDomainCommand command)
         {
-            var @event = new WithdrawTransactionCancelledDomainEvent();
+            var @event = new WithdrawTransactionCancelledDomainEvent(WithdrawTransactionStatus.Canceled);
 
             ApplyDomainEvent(@event);
         }
@@ -94,22 +94,25 @@ namespace EBank.Domain.Models.Withdrawing
 
         public void OnDomainEvent(WithdrawTransactionStartedDomainEvent @event)
         {
-            var account = new WithdrawTransaction(@event.AggregateRootId, @event.AccountId, @event.AccountName, @event.Bank, @event.Amount);
+            AccountId = @event.AccountId;
+            AccountName = @event.AccountName;
+            Bank = @event.Bank;
+            Amount = @event.Amount;
         }
 
-        public void OnDomainEvent(WithdrawTransactionValidateCompletedDomainEvent @event)
+        public void OnDomainEvent(WithdrawTransactionReadiedDomainEvent @event)
         {
-            Status = WithdrawTransactionStatus.Validated;
+            Status = @event.Status;
         }
 
         public void OnDomainEvent(WithdrawTransactionCompletedDomainEvent @event)
         {
-            Status = WithdrawTransactionStatus.Completed;
+            Status = @event.Status;
         }
 
         public void OnDomainEvent(WithdrawTransactionCancelledDomainEvent @event)
         {
-            Status = WithdrawTransactionStatus.Canceled;
+            Status = @event.Status;
         }
 
         #endregion

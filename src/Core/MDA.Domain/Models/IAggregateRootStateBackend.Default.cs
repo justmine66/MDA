@@ -1,7 +1,6 @@
 ﻿using MDA.Domain.Events;
 using MDA.Shared.Utils;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -12,37 +11,39 @@ namespace MDA.Domain.Models
     public class DefaultAggregateRootStateBackend : IAggregateRootStateBackend
     {
         private readonly ILogger _logger;
-        
+
         private readonly IAggregateRootMemoryCache _memoryCache;
         private readonly IDomainEventStateBackend _eventStateBackend;
         private readonly IAggregateRootCheckpointManager _checkpointManager;
-        private readonly AggregateRootStateBackendOptions _options;
+        private readonly IAggregateRootFactory _aggregateRootFactory;
 
         public DefaultAggregateRootStateBackend(
             IDomainEventStateBackend stateBackend,
             IAggregateRootCheckpointManager checkpointManager,
             ILogger<DefaultAggregateRootStateBackend> logger,
-            IOptions<AggregateRootStateBackendOptions> options,
-            IAggregateRootMemoryCache memoryCache)
+            IAggregateRootMemoryCache memoryCache,
+            IAggregateRootFactory aggregateRootFactory)
         {
             _eventStateBackend = stateBackend;
             _checkpointManager = checkpointManager;
             _logger = logger;
             _memoryCache = memoryCache;
-            _options = options.Value;
+            _aggregateRootFactory = aggregateRootFactory;
         }
 
-        public async Task<IEventSourcedAggregateRoot> GetAsync(string aggregateRootId, Type aggregateRootType, CancellationToken token = default)
+        public async Task<IEventSourcedAggregateRoot> GetAsync<TAggregateRootId>(
+            TAggregateRootId aggregateRootId,
+            Type aggregateRootType,
+            CancellationToken token = default)
         {
             // 1. 获取检查点
-            var checkPoint = await _checkpointManager.RestoreCheckpointAsync(aggregateRootId, aggregateRootType, token);
-            var aggregateRoot = checkPoint?.AggregateRoot;
-            if (aggregateRoot == null)
-            {
-                return null;
-            }
+            var checkPoint = await _checkpointManager.RestoreCheckpointAsync(aggregateRootId.ToString(), aggregateRootType, token);
 
             // 2. 获取从检查点开始产生的事件流
+            var aggregateRoot = checkPoint == null
+                ? _aggregateRootFactory.CreateAggregateRoot(aggregateRootId, aggregateRootType)
+                : checkPoint.AggregateRoot;
+
             var eventStream = await _eventStateBackend.GetEventStreamAsync(
                 aggregateRoot.Id,
                 aggregateRoot.Generation,
@@ -73,13 +74,7 @@ namespace MDA.Domain.Models
             return aggregateRoot;
         }
 
-        public async Task AppendMutatingDomainEventsAsync(IEnumerable<IDomainEvent> events, CancellationToken token = default)
-        {
-            var batchSize = _options.SubmitBatchSize;
-            var duration = _options.SubmitDurationInMilliseconds;
-
-            // todo: 实现按批、超时提交。
-            var results = await _eventStateBackend.AppendAsync(events, token);
-        }
+        public async Task<IEnumerable<DomainEventResult>> AppendMutatingDomainEventsAsync(IEnumerable<IDomainEvent> events, CancellationToken token = default)
+            => await _eventStateBackend.AppendAsync(events, token);
     }
 }

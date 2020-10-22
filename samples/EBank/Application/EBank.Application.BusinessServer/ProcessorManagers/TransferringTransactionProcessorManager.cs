@@ -1,15 +1,12 @@
-﻿using System.Threading;
-using EBank.Application.Commands.Accounts;
-using EBank.Application.Commands.Transferring;
-using EBank.Application.Notifications.Transferring;
-using EBank.Domain.Events.Transferring;
-using EBank.Domain.Models.Accounts;
-using EBank.Domain.Models.Transferring;
-using MDA.Application.Commands;
-using MDA.Application.Notifications;
-using MDA.Domain.Events;
-using System.Threading.Tasks;
+﻿using EBank.Domain.Commands.Accounts;
+using EBank.Domain.Commands.Transferring;
 using EBank.Domain.Events.Accounts;
+using EBank.Domain.Events.Transferring;
+using EBank.Domain.Models.Transferring;
+using EBank.Domain.Notifications;
+using MDA.Domain.Commands;
+using MDA.Domain.Events;
+using MDA.Domain.Notifications;
 
 namespace EBank.Application.BusinessServer.ProcessorManagers
 {
@@ -19,126 +16,102 @@ namespace EBank.Application.BusinessServer.ProcessorManagers
     /// </summary>
     public class TransferringTransactionProcessorManager :
         // 1. 从转账交易聚合根，收到交易已发起的领域事件，向银行账户聚合根发起交易信息验证。
-        IAsyncDomainEventHandler<TransferTransactionStartedDomainEvent>,
-        // 2.1 从银行账户聚合根，收到转账交易信息验证通过的通知，通知转账交易聚合根确认。
-        IApplicationNotificationHandler<TransferTransactionAccountValidatePassedApplicationNotification>,
+        IDomainEventHandler<TransferTransactionStartedDomainEvent>,
+        // 2.1 从银行账户聚合根，收到转账交易已验证的领域事件，通知转账交易聚合根确认。
+        IDomainEventHandler<Domain.Events.Accounts.TransferTransactionValidatedDomainEvent>,
         // 2.2 从银行账户聚合根，收到转账交易信息验证失败的通知，通知转账交易聚合根，取消交易。
-        IApplicationNotificationHandler<TransferTransactionAccountValidateFailedApplicationNotification>,
-        // 3.1 从转账交易聚合根，收到交易信息已验证完成的领域事件，向银行账户聚合根，发起源账户扣款账户交易。
-        IDomainEventHandler<TransferTransactionValidateCompletedDomainEvent>,
-        // 3.2 从银行账户聚合根，收到源账户扣款完成的领域事件，通知转账交易聚合根确认。
-        IDomainEventHandler<WithdrawAccountTransactionCompletedDomainEvent>,
-        // 4.1 从转账交易聚合根，收到已确认源账户完成扣款账户交易的领域事件，向银行账户聚合根，发起目标账户存款账户交易。
-        IDomainEventHandler<WithdrawAccountTransactionCompleteConfirmedDomainEvent>,
-        // 4.2 从银行账户聚合根，收到目标账户存款完成的领域事件，通知转账交易聚合根确认。
-        IDomainEventHandler<DepositAccountTransactionCompletedDomainEvent>,
-        // 5. 从转账交易聚合根，收到转账交易已完成的领域事件。
-        IDomainEventHandler<TransferTransactionCompletedDomainEvent>
+        IDomainNotificationHandler<TransferTransactionValidateFailedDomainNotification>,
+        // 3. 从转账交易聚合根，收到交易信息已准备就绪的领域事件，向银行账户聚合根，向银行账户提交转账交易。
+        IDomainEventHandler<TransferTransactionReadiedDomainEvent>,
+        // 4 从银行账户聚合根，收到转账交易已提交的领域事件，通知转账交易聚合根确认。
+        IDomainEventHandler<TransferTransactionSubmittedDomainEvent>
     {
-        private readonly IApplicationCommandService _commandService;
+        private readonly IDomainCommandPublisher _domainCommandPublisher;
 
-        public TransferringTransactionProcessorManager(IApplicationCommandService commandService)
-            => _commandService = commandService;
+        public TransferringTransactionProcessorManager(IDomainCommandPublisher domainCommandPublisher)
+            => _domainCommandPublisher = domainCommandPublisher;
 
-        public async Task HandleAsync(TransferTransactionStartedDomainEvent @event, CancellationToken token = default)
+        /// <summary>
+        /// 1. 从转账交易聚合根，收到交易已发起的领域事件，向银行账户聚合根发起交易信息验证。
+        /// </summary>
+        /// <param name="event"></param>
+        public void Handle(TransferTransactionStartedDomainEvent @event)
         {
             // 1. 验证源账户
-            var validateSource = new ValidateTransferTransactionApplicationCommand()
+            var validateSource = new ValidateTransferTransactionDomainCommand()
             {
                 TransactionId = @event.AggregateRootId,
                 Account = @event.SourceAccount,
                 AccountType = TransferTransactionAccountType.Source
             };
 
-            await _commandService.PublishAsync(validateSource, token);
+            _domainCommandPublisher.Publish(validateSource);
 
             // 2. 验证目标账户
-            var validateSink = new ValidateTransferTransactionApplicationCommand()
+            var validateSink = new ValidateTransferTransactionDomainCommand()
             {
                 TransactionId = @event.AggregateRootId,
                 Account = @event.SinkAccount,
                 AccountType = TransferTransactionAccountType.Sink
             };
 
-            await _commandService.PublishAsync(validateSink, token);
+            _domainCommandPublisher.Publish(validateSink);
         }
 
-        public void Handle(TransferTransactionAccountValidatePassedApplicationNotification notification)
+        /// <summary>
+        /// 2.1 从银行账户聚合根，收到转账交易已验证的领域事件，通知转账交易聚合根确认。
+        /// </summary>
+        /// <param name="event"></param>
+        public void Handle(TransferTransactionValidatedDomainEvent @event)
         {
-            var command = new ConfirmTransferTransactionValidatePassedApplicationCommand()
+            var command = new ConfirmTransferTransactionValidatedDomainCommand(@event.TransactionId, @event.AccountType);
+
+            _domainCommandPublisher.Publish(command);
+        }
+
+        /// <summary>
+        /// 2.2 从银行账户聚合根，收到转账交易信息验证失败的通知，通知转账交易聚合根，取消交易。
+        /// </summary>
+        /// <param name="notification"></param>
+        public void Handle(TransferTransactionValidateFailedDomainNotification notification)
+        {
+            var command = new CancelTransferTransactionDomainCommand()
             {
-                TransactionId = notification.TransactionId,
-                AccountType = notification.AccountType
+                AggregateRootId = notification.TransactionId
             };
 
-            _commandService.Publish(command);
+            _domainCommandPublisher.Publish(command);
         }
 
-        public void Handle(TransferTransactionAccountValidateFailedApplicationNotification notification)
+        /// <summary>
+        /// 3. 从转账交易聚合根，收到交易信息已准备就绪的领域事件，向银行账户聚合根，向银行账户提交转账交易。
+        /// </summary>
+        /// <param name="event"></param>
+        public void Handle(TransferTransactionReadiedDomainEvent @event)
         {
-            var command = new CancelTransferTransactionApplicationCommand()
+            // 1. 从源账户取款
+            var withdraw = new SubmitTransferTransactionDomainCommand(@event.AggregateRootId, @event.SourceAccountId);
+
+            _domainCommandPublisher.Publish(withdraw);
+
+            // 2. 存到目标账户
+            var deposit = new SubmitTransferTransactionDomainCommand(@event.AggregateRootId, @event.SinkAccountId);
+
+            _domainCommandPublisher.Publish(deposit);
+        }
+
+        /// <summary>
+        /// 4 从银行账户聚合根，收到转账交易已提交的领域事件，通知转账交易聚合根确认。
+        /// </summary>
+        /// <param name="event"></param>
+        public void Handle(TransferTransactionSubmittedDomainEvent @event)
+        {
+            var command = new ConfirmTransferTransactionSubmittedDomainCommand()
             {
-                TransactionId = notification.TransactionId
+                AggregateRootId = @event.TransactionId
             };
 
-            _commandService.Publish(command);
-        }
-
-        public void Handle(TransferTransactionValidateCompletedDomainEvent @event)
-        {
-            var sourceAccount = @event.SourceAccount;
-            var appCommand = new StartWithdrawAccountTransactionApplicationCommand()
-            {
-                TransactionId = @event.AggregateRootId,
-                AccountId = sourceAccount.Id,
-                AccountName = sourceAccount.Name,
-                Bank = sourceAccount.Bank,
-                TransactionStage = AccountTransactionStage.Commitment
-            };
-
-            _commandService.Publish(appCommand);
-        }
-
-        public void Handle(WithdrawAccountTransactionCompletedDomainEvent @event)
-        {
-            var appCommand = new ConfirmWithdrawAccountTransactionCompletedApplicationCommand()
-            {
-                TransactionId = @event.TransactionId,
-                AccountId = @event.AggregateRootId
-            };
-
-            _commandService.Publish(appCommand);
-        }
-
-        public void Handle(WithdrawAccountTransactionCompleteConfirmedDomainEvent @event)
-        {
-            var sourceAccount = @event.Sink;
-            var appCommand = new StartDepositAccountTransactionApplicationCommand()
-            {
-                TransactionId = @event.AggregateRootId,
-                AccountId = sourceAccount.Id,
-                AccountName = sourceAccount.Name,
-                Bank = sourceAccount.Bank,
-                TransactionStage = AccountTransactionStage.Commitment
-            };
-
-            _commandService.Publish(appCommand);
-        }
-
-        public void Handle(DepositAccountTransactionCompletedDomainEvent @event)
-        {
-            var appCommand = new ConfirmDepositAccountTransactionCompletedApplicationCommand()
-            {
-                TransactionId = @event.TransactionId,
-                AccountId = @event.AggregateRootId
-            };
-
-            _commandService.Publish(appCommand);
-        }
-
-        public void Handle(TransferTransactionCompletedDomainEvent @event)
-        {
-            throw new System.NotImplementedException();
+            _domainCommandPublisher.Publish(command);
         }
     }
 }

@@ -5,10 +5,9 @@ namespace MDA.Domain.Models
     /// <summary>
     /// 表示聚合根一次完整的快照检查点
     /// </summary>
-    public class AggregateRootCheckpoint<TAggregateRoot>
-        where TAggregateRoot : IEventSourcedAggregateRoot
+    public class AggregateRootCheckpoint
     {
-        public AggregateRootCheckpoint(TAggregateRoot aggregateRoot, int generation = 0)
+        public AggregateRootCheckpoint(IEventSourcedAggregateRoot aggregateRoot, int generation = 0)
         {
             AggregateRoot = aggregateRoot;
             LastModified = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -18,7 +17,7 @@ namespace MDA.Domain.Models
         /// <summary>
         /// 聚合根
         /// </summary>
-        public TAggregateRoot AggregateRoot { get; set; }
+        public IEventSourcedAggregateRoot AggregateRoot { get; set; }
 
         /// <summary>
         /// 最后更新时间戳
@@ -30,7 +29,7 @@ namespace MDA.Domain.Models
         /// </summary>
         public int Generation { get; set; }
 
-        public AggregateRootCheckpoint<TAggregateRoot> Refresh(TAggregateRoot aggregateRoot)
+        public AggregateRootCheckpoint Refresh(IEventSourcedAggregateRoot aggregateRoot)
         {
             AggregateRoot = aggregateRoot;
             LastModified = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -39,7 +38,7 @@ namespace MDA.Domain.Models
             return this;
         }
 
-        public override string ToString() 
+        public override string ToString()
             => $"AggregateRootId: {AggregateRoot.Id},AggregateRootType: {AggregateRoot.GetType()}, Generation: {Generation}, LastModified: {LastModified}";
     }
 }

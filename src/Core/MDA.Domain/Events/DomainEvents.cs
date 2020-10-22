@@ -1,4 +1,5 @@
 ﻿using MDA.MessageBus;
+using MDA.Shared.Hashes;
 using System;
 
 namespace MDA.Domain.Events
@@ -99,7 +100,7 @@ namespace MDA.Domain.Events
             Type aggregateRootType,
             int aggregateRootVersion,
             int aggregateRootGeneration,
-            int version = 0)
+            int version = 0) : this()
         {
             Id = Guid.NewGuid().ToString("N");
             Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -133,7 +134,9 @@ namespace MDA.Domain.Events
         IDomainEvent<TAggregateRootId>
     {
         protected DomainEvent()
-            => base.AggregateRootId = AggregateRootId?.ToString();
+        {
+            base.AggregateRootId = AggregateRootId?.ToString();
+        }
 
         protected DomainEvent(
             string domainCommandId,

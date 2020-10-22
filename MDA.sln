@@ -57,6 +57,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{F1090A90-C
 	ProjectSection(SolutionItems) = preProject
 		samples\EBank\docs\EBank-ReadDb.sql = samples\EBank\docs\EBank-ReadDb.sql
 		samples\EBank\docs\EBank-StateDb.sql = samples\EBank\docs\EBank-StateDb.sql
+		samples\EBank\docs\EBank领域建模.md = samples\EBank\docs\EBank领域建模.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBank.ApiServer", "samples\EBank\Application\EBank.ApiServer\EBank.ApiServer.csproj", "{F913E787-B129-499A-8A75-28A3E2E18E8B}"

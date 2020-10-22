@@ -25,7 +25,7 @@ namespace MDA.Domain.Notifications
         /// <summary>
         /// 领域命令类型完全限定名称。
         /// </summary>
-        string DomainCommandTypeFullName { get; set; }
+        Type DomainCommandType { get; set; }
 
         /// <summary>
         /// 聚合根标识
@@ -35,7 +35,7 @@ namespace MDA.Domain.Notifications
         /// <summary>
         /// 聚合根类型完全限定名称
         /// </summary>
-        string AggregateRootTypeFullName { get; set; }
+        Type AggregateRootType { get; set; }
 
         /// <summary>
         /// 版本
@@ -90,27 +90,27 @@ namespace MDA.Domain.Notifications
         protected DomainNotification() { }
         protected DomainNotification(
             string domainCommandId,
-            string domainCommandTypeFullName,
+            Type domainCommandType,
             string aggregateRootId,
-            string aggregateRootTypeFullName,
+            Type aggregateRootType,
             int version = 0)
         {
             Id = Guid.NewGuid().ToString("N");
             Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             DomainCommandId = domainCommandId;
-            DomainCommandTypeFullName = domainCommandTypeFullName;
+            DomainCommandType = domainCommandType;
             AggregateRootId = aggregateRootId;
-            AggregateRootTypeFullName = aggregateRootTypeFullName;
+            AggregateRootType = aggregateRootType;
             Version = version;
         }
 
         public string Id { get; set; }
         public long Timestamp { get; set; }
         public string DomainCommandId { get; set; }
-        public string DomainCommandTypeFullName { get; set; }
+        public Type DomainCommandType { get; set; }
 
         public string AggregateRootId { get; set; }
-        public string AggregateRootTypeFullName { get; set; }
+        public Type AggregateRootType { get; set; }
 
         public int Version { get; set; }
     }
@@ -124,14 +124,14 @@ namespace MDA.Domain.Notifications
         protected DomainNotification() { }
         protected DomainNotification(
             string domainCommandId,
-            string domainCommandTypeFullName,
+            Type domainCommandType,
             TAggregateRootId aggregateRootId,
-            string aggregateRootTypeFullName,
+            Type aggregateRootType,
             int version = 0)
             : base(domainCommandId,
-            domainCommandTypeFullName,
+            domainCommandType,
             string.Empty,
-            aggregateRootTypeFullName,
+            aggregateRootType,
             version)
         {
             AggregateRootId = aggregateRootId;
@@ -153,14 +153,14 @@ namespace MDA.Domain.Notifications
         protected DomainNotification(
             TId id,
             string domainCommandId,
-            string domainCommandTypeFullName,
+            Type domainCommandType,
             TAggregateRootId aggregateRootId,
-            string aggregateRootTypeFullName,
+            Type aggregateRootType,
             int version = 0)
             : base(domainCommandId,
-                domainCommandTypeFullName,
+                domainCommandType,
                 aggregateRootId,
-                aggregateRootTypeFullName,
+                aggregateRootType,
                 version)
         {
             Id = id;
@@ -181,15 +181,15 @@ namespace MDA.Domain.Notifications
         protected DomainNotification(
             TId id,
             TDomainCommandId domainCommandId,
-            string domainCommandTypeFullName,
+            Type domainCommandType,
             TAggregateRootId aggregateRootId,
-            string aggregateRootTypeFullName,
+            Type aggregateRootType,
             int version = 0)
             : base(id,
                 string.Empty,
-                domainCommandTypeFullName,
+                domainCommandType,
                 aggregateRootId,
-                aggregateRootTypeFullName,
+                aggregateRootType,
                 version)
         {
             DomainCommandId = domainCommandId;

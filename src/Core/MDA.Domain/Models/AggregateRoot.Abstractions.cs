@@ -57,9 +57,14 @@ namespace MDA.Domain.Models
     public interface IEventSourcedAggregateRoot : IAggregateRoot
     {
         /// <summary>
-        /// 获取变更产生的领域事件列表
+        /// 获取当前变更领域事件列表
         /// </summary>
-        IEnumerable<IDomainEvent> MutatingDomainEvents { get; }
+        IList<IDomainEvent> MutatingDomainEvents { get; }
+
+        /// <summary>
+        ///  获取当前变更领域通知列表
+        /// </summary>
+        IList<IDomainNotification> MutatingDomainNotifications { get; }
 
         /// <summary>
         /// 重放变更的领域事件
@@ -100,7 +105,18 @@ namespace MDA.Domain.Models
     /// 聚合根，封装业务对象的不变性。
     /// </summary>
     /// <typeparam name="TId"></typeparam>
-    public interface IEventSourcedAggregateRoot<TId> : IEventSourcedAggregateRoot, IAggregateRoot<TId> { }
+    public interface IEventSourcedAggregateRoot<TId> :
+        IEventSourcedAggregateRoot,
+        IAggregateRoot<TId>
+    {
+        /// <summary>
+        /// 应用领域事件。
+        /// 1. 填充事件信息到领域模型。
+        /// 2. 添加到领域事件列表；
+        /// </summary>
+        /// <param name="@event">领域事件</param>
+        void ApplyDomainEvent(IDomainEvent<TId> @event);
+    }
 
     /// <summary>
     /// 聚合根，封装业务对象的不变性。

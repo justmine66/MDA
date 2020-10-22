@@ -2,7 +2,7 @@
 
 namespace MDA.XUnitTest.BusinessProcessing
 {
-    public class ChangePayloadDomainCommand : DomainCommand<long>
+    public class ChangePayloadDomainCommand : DomainCommand<FakeAggregateRoot,long>
     {
         public ChangePayloadDomainCommand(long payload)
         {

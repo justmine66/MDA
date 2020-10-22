@@ -9,28 +9,22 @@ namespace EBank.Domain.Models.Accounts
     {
         public AccountTransaction(
             long transactionId,
-            decimal transactionAmount,
-            AccountTransactionType transactionType,
-            AccountTransactionStage transactionStage) : base(transactionId)
+            decimal amount,
+            AccountFundDirection fundDirection) 
+            : base(transactionId)
         {
-            Amount = transactionAmount;
-            Type = transactionType;
-            Stage = transactionStage;
+            Amount = amount;
+            FundDirection = fundDirection;
         }
 
         /// <summary>
         /// 交易金额
         /// </summary>
-        public decimal Amount { get; private set; }
+        public decimal Amount { get;  }
 
         /// <summary>
-        /// 交易类型
+        /// 资金流向
         /// </summary>
-        public AccountTransactionType Type { get; private set; }
-
-        /// <summary>
-        /// 交易阶段
-        /// </summary>
-        public AccountTransactionStage Stage { get; private set; }
+        public AccountFundDirection FundDirection { get;  }
     }
 }

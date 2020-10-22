@@ -49,16 +49,19 @@ namespace MDA.StateBackend.MySql
             }
 
             var domainEventRecord = DomainEventRecordPortAdapter.ToDomainEventRecord(@event, _binarySerializer);
-            var parameters = DbParameterProvider.GetDbParameters(domainEventRecord);
+            var parameters = DbParameterProvider.GetDbParameters(domainEventRecord, domainEventRecord.DomainEventId);
 
             var tables = _options.DomainEventOptions.Tables;
-            var insertDomainEventSql = $"INSERT INTO `{tables.DomainEventsIndices}`(`DomainCommandId`,`DomainCommandType`,`DomainCommandVersion`,`AggregateRootId`,`AggregateRootType`,`AggregateRootVersion`,`AggregateRootGeneration`,`DomainEventId`,`DomainEventType`,`DomainEventVersion`,CreatedTimestamp) VALUES(@DomainCommandId,@DomainCommandType,@DomainCommandVersion,@AggregateRootId,@AggregateRootType,@AggregateRootVersion,@AggregateRootGeneration,@DomainEventId,@DomainEventType,@DomainEventVersion,@CreatedTimestamp)";
+            var insertDomainEventSql = $"INSERT INTO `{tables.DomainEventsIndices}`(`DomainCommandId`,`DomainCommandType`,`DomainCommandVersion`,`AggregateRootId`,`AggregateRootType`,`AggregateRootVersion`,`AggregateRootGeneration`,`DomainEventId`,`DomainEventType`,`DomainEventVersion`,`CreatedTimestamp`) VALUES(@DomainCommandId,@DomainCommandType,@DomainCommandVersion,@AggregateRootId,@AggregateRootType,@AggregateRootVersion,@AggregateRootGeneration,@DomainEventId,@DomainEventType,@DomainEventVersion,@CreatedTimestamp)";
             var insertDomainEventPayloadSql = $"INSERT INTO `{tables.DomainEventPayloads}`(`DomainEventId`,`DomainEventVersion`,`Payload`) VALUES (@DomainEventId,@DomainEventVersion,@Payload)";
 
             try
             {
                 var expectedRows = 2;
-                var affectedRows = await _db.ExecuteAsync($"{insertDomainEventSql};{insertDomainEventPayloadSql};", command => command.Parameters.AddRange(parameters), token);
+                var affectedRows = await _db.ExecuteAsync(
+                    $"{insertDomainEventSql};{insertDomainEventPayloadSql};", 
+                    command => command.Parameters.AddRange(parameters), 
+                    token);
                 if (affectedRows != expectedRows)
                     return DomainEventResult.StorageFailed(@event.Id,
                         $"The affected rows returned MySql state backend is incorrect, expected: {expectedRows}, actual: {affectedRows}.");

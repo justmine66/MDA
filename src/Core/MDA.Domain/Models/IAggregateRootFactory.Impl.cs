@@ -13,13 +13,13 @@ namespace MDA.Domain.Models
             _logger = logger;
         }
 
-        public IEventSourcedAggregateRoot CreateAggregateRoot(string aggregateRootId, Type aggregateRootType)
+        public IEventSourcedAggregateRoot<TAggregateRootId> CreateAggregateRoot<TAggregateRootId>(TAggregateRootId aggregateRootId, Type aggregateRootType)
         {
             try
             {
                 var instance = FormatterServices.GetUninitializedObject(aggregateRootType);
 
-                if (instance is IEventSourcedAggregateRoot aggregateRoot)
+                if (instance is IEventSourcedAggregateRoot<TAggregateRootId> aggregateRoot)
                 {
                     aggregateRoot.Id = aggregateRootId;
 

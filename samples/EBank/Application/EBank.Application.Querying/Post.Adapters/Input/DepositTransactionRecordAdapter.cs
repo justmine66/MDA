@@ -9,7 +9,7 @@ namespace EBank.Application.Querying.Post.Adapters.Input
         {
             return new DepositTransactionRecord()
             {
-                TransactionId = @event.Id,
+                TransactionId = @event.AggregateRootId,
                 AccountId = @event.AccountId,
                 AccountName = @event.AccountName,
                 Amount = @event.Amount,

@@ -7,7 +7,7 @@ namespace MDA.Domain.Commands
         public DomainCommandTransportMessage(IDomainCommand domainCommand)
         {
             DomainCommand = domainCommand;
-            Topic = domainCommand.GetTopic();
+            Topic = domainCommand.Topic;
             PartitionKey = domainCommand.PartitionKey;
         }
 

@@ -1,34 +1,81 @@
-﻿using EBank.Application.Querying.Post.Adapters.Input;
-using EBank.Domain.Events.Depositing;
+﻿using EBank.Domain.Events.Depositing;
+using EBank.Domain.Models.Depositing;
 using MDA.Domain.Events;
 using MDA.StateBackend.RDBMS.Shared;
-using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace EBank.Application.Querying
 {
     public class MySqlDepositReadDbStorage :
-        IAsyncDomainEventHandler<DepositTransactionStartedDomainEvent>
+        IAsyncDomainEventHandler<DepositTransactionStartedDomainEvent>,
+        IAsyncDomainEventHandler<DepositTransactionReadiedDomainEvent>,
+        IAsyncDomainEventHandler<DepositTransactionCompletedDomainEvent>,
+        IAsyncDomainEventHandler<DepositTransactionCancelledDomainEvent>
     {
-        private readonly ILogger _logger;
         private readonly IRelationalDbStorage _db;
 
-        public MySqlDepositReadDbStorage(
-            ILogger<MySqlDepositReadDbStorage> logger,
-            IRelationalDbStorageFactory db)
+        public MySqlDepositReadDbStorage(IRelationalDbStorageFactory db)
         {
-            _logger = logger;
             _db = db.CreateRelationalDbStorage(DatabaseScheme.ReadDb);
         }
 
         public async Task HandleAsync(DepositTransactionStartedDomainEvent @event, CancellationToken token = default)
         {
-            var sql = $"INSERT INTO `{Tables.BankAccounts}` (`Id`, `Name`, `Bank`, `Balance`, `Creator`, `CreatedTime`) VALUES (@Id, @Name, @Bank, @Balance, @Creator, @CreatedTime);";
+            var sql = $"INSERT INTO `{Tables.DepositTransactions}` (`Id`, `AccountId`, `AccountName`, `Bank`, `amount`, `Status`, `Creator`, `CreatedTimestamp`) VALUES (@TransactionId, @AccountId, @AccountName, @Bank, @amount, @Status, @Creator, @CreatedTimestamp);";
 
-            var record = DepositTransactionRecordAdapter.ToDepositTransactionRecord(@event);
+            var po = new 
+            {
+                TransactionId = @event.AggregateRootId,
+                AccountId = @event.AccountId,
+                AccountName = @event.AccountName,
+                Amount = @event.Amount,
+                Bank = @event.Bank,
+                Status = DepositTransactionStatus.Started.ToString(),
+                Creator = "justmine",
+                CreatedTimestamp = @event.Timestamp
+            };
 
-            await _db.ExecuteAsync(sql, record, token);
+            await _db.ExecuteAsync(sql, po, token);
+        }
+
+        public async Task HandleAsync(DepositTransactionReadiedDomainEvent @event, CancellationToken token = default)
+        {
+            var sql = $"UPDATE `{Tables.DepositTransactions}` SET `Status`=@Status WHERE `Id`=@TransactionId;";
+
+            var po = new
+            {
+                TransactionId = @event.AggregateRootId,
+                Status = @event.Status.ToString()
+            };
+
+            await _db.ExecuteAsync(sql, po, token);
+        }
+
+        public async Task HandleAsync(DepositTransactionCompletedDomainEvent @event, CancellationToken token = default)
+        {
+            var sql = $"UPDATE `{Tables.DepositTransactions}` SET `Status`=@Status WHERE `Id`=@TransactionId;";
+
+            var po = new
+            {
+                TransactionId = @event.AggregateRootId,
+                Status = @event.Status.ToString()
+            };
+
+            await _db.ExecuteAsync(sql, po, token);
+        }
+
+        public async Task HandleAsync(DepositTransactionCancelledDomainEvent @event, CancellationToken token = default)
+        {
+            var sql = $"UPDATE `{Tables.DepositTransactions}` SET `Status`=@Status WHERE `Id`=@TransactionId;";
+
+            var po = new
+            {
+                TransactionId = @event.AggregateRootId,
+                Status = @event.Status.ToString()
+            };
+
+            await _db.ExecuteAsync(sql, po, token);
         }
     }
 }

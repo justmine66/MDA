@@ -1,4 +1,7 @@
-﻿namespace MDA.Domain.Events
+﻿using MDA.Domain.Commands;
+using System.Collections.Generic;
+
+namespace MDA.Domain.Events
 {
     public static class DomainEventExtensions
     {
@@ -13,6 +16,17 @@
         public static string Print(this IDomainEvent @event)
         {
             return $"DomainCommandId: {@event?.DomainCommandId}, DomainCommandType: {@event?.DomainCommandType.FullName}, AggregateRootId: {@event?.AggregateRootId}, AggregateRootType: {@event?.AggregateRootType.FullName}, AggregateRootVersion: {@event?.AggregateRootVersion}, DomainEventId: {@event?.Id}";
+        }
+
+        public static void FillDomainCommandInfo(this IEnumerable<IDomainEvent> domainEvents, IDomainCommand command)
+        {
+            foreach (var domainEvent in domainEvents)
+            {
+                domainEvent.DomainCommandId = command.Id;
+                domainEvent.DomainCommandType = command.GetType();
+                domainEvent.Topic = command.Topic;
+                domainEvent.PartitionKey = command.PartitionKey;
+            }
         }
     }
 }

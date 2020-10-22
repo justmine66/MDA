@@ -7,21 +7,8 @@ namespace EBank.Domain.Models.Transferring
     /// <summary>
     /// 表示一笔转账交易，聚合根。
     /// </summary>
-    public partial class TransferTransaction : EventSourcedAggregateRoot<long>
+    public partial class TransferTransaction
     {
-        public TransferTransaction(long id,
-            TransferTransactionAccount sourceAccount,
-            TransferTransactionAccount sinkAccountInfo,
-            decimal amount,
-            TransferTransactionStatus status)
-            : base(id)
-        {
-            SourceAccount = sourceAccount;
-            SinkAccount = sinkAccountInfo;
-            Amount = amount;
-            Status = status;
-        }
-
         /// <summary>
         /// 源账户信息
         /// </summary>
@@ -42,8 +29,10 @@ namespace EBank.Domain.Models.Transferring
         /// </summary>
         public TransferTransactionStatus Status { get; private set; }
 
-        public bool IsSourceAndSinkAccountValidatePassed =>
-            SourceAccount.IsValidationPassed && SinkAccount.IsValidationPassed;
+        /// <summary>
+        /// 已验证
+        /// </summary>
+        public bool Validated => SourceAccount.Validated && SinkAccount.Validated;
     }
 
     public partial class TransferTransaction : EventSourcedAggregateRoot<long>
@@ -57,38 +46,41 @@ namespace EBank.Domain.Models.Transferring
             ApplyDomainEvent(@event);
         }
 
-        public void OnDomainCommand(ConfirmTransferTransactionAccountValidatePassedDomainCommand command)
+        public void OnDomainCommand(ConfirmTransferTransactionValidatedDomainCommand command)
         {
             if (Status != TransferTransactionStatus.Started)
             {
-                throw new TransferTransactionDomainException($"收到确认交易账户验证通过的领域命令，但交易状态非法: {Status}。");
+                throw new TransferTransactionDomainException($"收到确认交易账户已验证的领域命令，但交易状态非法: {Status}。");
             }
 
-            if (IsSourceAndSinkAccountValidatePassed)
+            if (Validated)
             {
-                var validateCompleted = new TransferTransactionValidateCompletedDomainEvent(SourceAccount, SinkAccount, Amount);
+                ApplyDomainEvent(new TransferTransactionReadiedDomainEvent(SourceAccount.Id, SinkAccount.Id, TransferTransactionStatus.Validated));
 
-                ApplyDomainEvent(validateCompleted);
+                return;
             }
 
             switch (command.AccountType)
             {
                 case TransferTransactionAccountType.Source:
-                    var sourceAccountValidatePassed = new TransferTransactionSourceAccountValidatePassedDomainEvent();
-
-                    ApplyDomainEvent(sourceAccountValidatePassed);
+                    ApplyDomainEvent(new TransferTransactionSourceAccountValidatedDomainEvent());
                     break;
                 case TransferTransactionAccountType.Sink:
-                    var sinkAccountValidatePassed = new TransferTransactionSinkAccountValidatePassedDomainEvent();
-
-                    ApplyDomainEvent(sinkAccountValidatePassed);
+                    ApplyDomainEvent(new TransferTransactionSinkAccountValidatedDomainEvent());
                     break;
             }
         }
 
+        public void OnDomainCommand(ConfirmTransferTransactionSubmittedDomainCommand command)
+        {
+            var @event = new TransferTransactionCompletedDomainEvent(TransferTransactionStatus.Completed);
+
+            ApplyDomainEvent(@event);
+        }
+
         public void OnDomainCommand(CancelTransferTransactionDomainCommand command)
         {
-            var @event = new TransferTransactionCancelledDomainEvent();
+            var @event = new TransferTransactionCancelledDomainEvent(TransferTransactionStatus.Canceled);
 
             ApplyDomainEvent(@event);
         }
@@ -99,20 +91,24 @@ namespace EBank.Domain.Models.Transferring
 
         public void OnDomainEvent(TransferTransactionStartedDomainEvent @event)
         {
-            var account = new TransferTransaction(@event.AggregateRootId, @event.SourceAccount, @event.SinkAccount, @event.Amount, @event.Status);
+            Id = @event.AggregateRootId;
+            SourceAccount = @event.SourceAccount;
+            SinkAccount = @event.SinkAccount;
+            Amount = @event.Amount;
+            Status = @event.Status;
         }
 
-        public void OnDomainEvent(TransferTransactionSourceAccountValidatePassedDomainEvent @event)
-            => SourceAccount.PassValidation();
+        public void OnDomainEvent(TransferTransactionSourceAccountValidatedDomainEvent @event)
+            => SourceAccount.SetValidated();
 
-        public void OnDomainEvent(TransferTransactionSinkAccountValidatePassedDomainEvent @event)
-            => SinkAccount.PassValidation();
+        public void OnDomainEvent(TransferTransactionSinkAccountValidatedDomainEvent @event)
+            => SinkAccount.SetValidated();
 
-        public void OnDomainEvent(TransferTransactionValidateCompletedDomainEvent @event)
-            => Status = TransferTransactionStatus.Validated;
+        public void OnDomainEvent(TransferTransactionReadiedDomainEvent @event)
+            => Status = @event.Status;
 
         public void OnDomainEvent(TransferTransactionCancelledDomainEvent @event)
-            => Status = TransferTransactionStatus.Canceled;
+            => Status = @event.Status;
 
         #endregion
     }

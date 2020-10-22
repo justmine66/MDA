@@ -9,40 +9,32 @@ namespace MDA.Domain.Models
     public class MemoryAggregateRootCheckpointManager : IAggregateRootCheckpointManager
     {
         private readonly ILogger _logger;
-        private readonly IAggregateRootFactory _aggregateRootFactory;
-        private readonly ConcurrentDictionary<string, AggregateRootCheckpoint<IEventSourcedAggregateRoot>> _savePoints;
+        private readonly ConcurrentDictionary<string, AggregateRootCheckpoint> _savePoints;
 
-        public MemoryAggregateRootCheckpointManager(
-            ILogger<MemoryAggregateRootCheckpointManager> logger,
-            IAggregateRootFactory aggregateRootFactory)
+        public MemoryAggregateRootCheckpointManager(ILogger<MemoryAggregateRootCheckpointManager> logger)
         {
             _logger = logger;
-            _aggregateRootFactory = aggregateRootFactory;
-            _savePoints = new ConcurrentDictionary<string, AggregateRootCheckpoint<IEventSourcedAggregateRoot>>();
+            _savePoints = new ConcurrentDictionary<string, AggregateRootCheckpoint>();
         }
 
-        public async Task SnapshotCheckpointAsync(
-            IEventSourcedAggregateRoot aggregateRoot,
+        public async Task SnapshotCheckpointAsync<TAggregateRootId>(
+            IEventSourcedAggregateRoot<TAggregateRootId> aggregateRoot,
             CancellationToken token = default)
         {
-            var newSavepoint = new AggregateRootCheckpoint<IEventSourcedAggregateRoot>(aggregateRoot);
+            var newSavepoint = new AggregateRootCheckpoint(aggregateRoot);
 
-            _savePoints.AddOrUpdate(aggregateRoot.Id, newSavepoint, (key, old) => old.Refresh(aggregateRoot));
+            _savePoints.AddOrUpdate(aggregateRoot.Id.ToString(), newSavepoint, (key, old) => old.Refresh(aggregateRoot));
 
             await Task.CompletedTask;
         }
 
-        public async Task<AggregateRootCheckpoint<IEventSourcedAggregateRoot>> RestoreCheckpointAsync(
+        public async Task<AggregateRootCheckpoint> RestoreCheckpointAsync(
             string aggregateRootId,
             Type aggregateRootType,
             CancellationToken token = default)
         {
-            if (string.IsNullOrWhiteSpace(aggregateRootId))
-            {
-                return null;
-            }
-
-            if (aggregateRootType == null)
+            if (string.IsNullOrWhiteSpace(aggregateRootId) ||
+                aggregateRootType == null)
             {
                 return null;
             }
@@ -54,47 +46,25 @@ namespace MDA.Domain.Models
                 return null;
             }
 
-            if (_savePoints.TryGetValue(aggregateRootId, out var savePoint))
-            {
-                var targetType = savePoint?.AggregateRoot?.GetType();
-                if (targetType == null)
-                {
-                    return null;
-                }
+            if (!_savePoints.TryGetValue(aggregateRootId.ToString(), out var savePoint))
+                return await Task.FromResult<AggregateRootCheckpoint>(null);
 
-                if (aggregateRootType != targetType)
-                {
-                    _logger.LogError($"Restoring aggregate root from memory save point has a error, reason: The {aggregateRootType.FullName} cannot equal to {targetType.FullName}.");
-
-                    return null;
-                }
-
-                _logger.LogInformation($"Restored aggregate root from memory save point, {savePoint}.");
-
-                return savePoint;
-            }
-
-            var aggregateRoot = _aggregateRootFactory.CreateAggregateRoot(aggregateRootId, aggregateRootType);
-            if (aggregateRoot == null)
+            var targetType = savePoint?.AggregateRoot?.GetType();
+            if (targetType == null)
             {
                 return null;
             }
 
-            var savepoint = new AggregateRootCheckpoint<IEventSourcedAggregateRoot>(aggregateRoot);
-
-            return await Task.FromResult(savepoint);
-        }
-
-        public async Task<IEventSourcedAggregateRoot> RestoreAggregateRootAsync(string aggregateRootId, Type aggregateRootType, CancellationToken token = default)
-        {
-            if (string.IsNullOrWhiteSpace(aggregateRootId))
+            if (aggregateRootType != targetType)
             {
+                _logger.LogError($"Restoring aggregate root from memory save point has a error, reason: The {aggregateRootType.FullName} cannot equal to {targetType.FullName}.");
+
                 return null;
             }
 
-            var savepoint = await RestoreCheckpointAsync(aggregateRootId, aggregateRootType, token);
+            _logger.LogInformation($"Restored aggregate root from memory save point, {savePoint}.");
 
-            return savepoint?.AggregateRoot;
+            return savePoint;
         }
     }
 }

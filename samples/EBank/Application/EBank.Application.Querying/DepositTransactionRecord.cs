@@ -28,5 +28,7 @@
         /// 状态
         /// </summary>
         public string Status { get; set; }
+
+
     }
 }

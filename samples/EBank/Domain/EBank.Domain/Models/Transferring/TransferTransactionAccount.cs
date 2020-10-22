@@ -1,7 +1,7 @@
 ﻿namespace EBank.Domain.Models.Transferring
 {
     /// <summary>
-    /// 转账交易账户信息，值对象
+    /// 转账交易账户，值对象
     /// </summary>
     public class TransferTransactionAccount
     {
@@ -10,32 +10,31 @@
             Id = id;
             Name = name;
             Bank = bank;
-            IsValidationPassed = false;
         }
 
         /// <summary>
         /// 账户号
         /// </summary>
-        public long Id { get; private set; }
+        public long Id { get; }
 
         /// <summary>
         /// 账户名
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; }
 
         /// <summary>
         /// 开户行
         /// </summary>
-        public string Bank { get; private set; }
+        public string Bank { get; }
 
         /// <summary>
-        /// 是否已验证通过
+        /// 已验证
         /// </summary>
-        public bool IsValidationPassed { get; private set; }
+        public bool Validated { get; private set; }
 
         /// <summary>
-        /// 通过验证
+        /// 有效
         /// </summary>
-        public void PassValidation() => IsValidationPassed = true;
+        public void SetValidated() => Validated = true;
     }
 }

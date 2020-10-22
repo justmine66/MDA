@@ -10,11 +10,14 @@ namespace MDA.StateBackend.MySql
     {
         private static readonly Dictionary<string, List<IDbDataParameter>> Cache = new Dictionary<string, List<IDbDataParameter>>();
 
-        public static List<IDbDataParameter> GetDbParameters<T>(T it, IReadOnlyDictionary<string, string> nameMap = null)
+        public static List<IDbDataParameter> GetDbParameters<T>(T it, string cacheKey = null, IReadOnlyDictionary<string, string> nameMap = null)
         {
-            var cacheKey = typeof(T).FullName ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(cacheKey))
+            {
+                return ReflectionParameters(it, nameMap);
+            }
 
-            if (Cache.TryGetValue(cacheKey, out var parameters)) 
+            if (Cache.TryGetValue(cacheKey, out var parameters))
                 return parameters;
 
             Cache[cacheKey] = ReflectionParameters(it, nameMap);

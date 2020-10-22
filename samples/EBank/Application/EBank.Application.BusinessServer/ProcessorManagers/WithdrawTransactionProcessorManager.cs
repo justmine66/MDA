@@ -1,12 +1,9 @@
-﻿using EBank.Application.Commands.Accounts;
-using EBank.Application.Commands.Withdrawing;
-using EBank.Application.Notifications.Withdrawing;
+﻿using EBank.Domain.Commands.Accounts;
+using EBank.Domain.Commands.Withdrawing;
 using EBank.Domain.Events.Accounts;
 using EBank.Domain.Events.Withdrawing;
-using EBank.Domain.Models.Accounts;
 using EBank.Domain.Notifications;
-using MDA.Application.Commands;
-using MDA.Application.Notifications;
+using MDA.Domain.Commands;
 using MDA.Domain.Events;
 using MDA.Domain.Notifications;
 
@@ -14,93 +11,87 @@ namespace EBank.Application.BusinessServer.ProcessorManagers
 {
     /// <summary>
     /// 取款交易处理器
-    /// 协调整个取款交易流程
+    /// 协调整个取款交易事务
     /// </summary>
     public class WithdrawTransactionProcessorManager :
         // 1. 从取款交易聚合根，收到取款交易已发起的领域事件，向银行账户聚合根发起交易信息验证。
         IDomainEventHandler<WithdrawTransactionStartedDomainEvent>,
         // 2.1 从银行账户聚合根，收到取款交易信息验证已通过的通知，通知取款交易聚合根确认。
-        IApplicationNotificationHandler<WithdrawTransactionValidatePassedApplicationNotification>,
+        IDomainEventHandler<WithdrawTransactionValidatedDomainEvent>,
         // 2.2 从银行账户聚合根，收到取款交易信息验证已失败的通知，向取款账交易聚合根发起取消交易。
-        IApplicationNotificationHandler<WithdrawTransactionValidateFailedApplicationNotification>,
-        // 3.1 从取款交易聚合根，收到取款交易信息验证已完成的领域事件，向银行账户聚合更发起取款类型的账户交易。
-        IDomainEventHandler<WithdrawTransactionValidateCompletedDomainEvent>,
-        // 3.2 从银行账户聚合根，收到取款账户交易余额不足的领域通知，向取款账交易聚合根发起取消交易。
-        IDomainNotificationHandler<TransactionAccountInsufficientBalanceDomainNotification>,
-        // 4. 从银行账户聚合根，收到取款账户交易已完成的领域事件，通知取款交易聚合根确认。
-        IDomainEventHandler<WithdrawAccountTransactionCompletedDomainEvent>
+        IDomainNotificationHandler<WithdrawTransactionValidateFailedDomainNotification>,
+        // 3.1 从取款交易聚合根，收到取款交易已准备就绪的领域事件，向银行账户聚合更提交交易。
+        IDomainEventHandler<WithdrawTransactionReadiedDomainEvent>,
+        // 4. 从银行账户聚合根，收到取款账户交易已提交的领域事件，通知取款交易聚合根确认。
+        IDomainEventHandler<WithdrawTransactionSubmittedDomainEvent>
     {
-        private readonly IApplicationCommandService _commandService;
+        private readonly IDomainCommandPublisher _domainCommandPublisher;
 
-        public WithdrawTransactionProcessorManager(IApplicationCommandService commandService)
-            => _commandService = commandService;
+        public WithdrawTransactionProcessorManager(IDomainCommandPublisher domainCommandPublisher)
+            => _domainCommandPublisher = domainCommandPublisher;
 
+        /// <summary>
+        /// 1. 从取款交易聚合根，收到取款交易已发起的领域事件，向银行账户聚合根发起交易信息验证。
+        /// </summary>
+        /// <param name="event">交易已发起的领域事件</param>
         public void Handle(WithdrawTransactionStartedDomainEvent @event)
         {
-            var command = new ValidateWithdrawTransactionApplicationCommand()
-            {
-                TransactionId = @event.AggregateRootId,
-                AccountId = @event.AccountId,
-                AccountName = @event.AccountName,
-                Bank = @event.Bank
-            };
+            var command = new ValidateWithdrawTransactionDomainCommand(@event.AggregateRootId, @event.AccountId, @event.AccountName, @event.Bank, @event.Amount);
 
-            _commandService.Publish(command);
+            _domainCommandPublisher.Publish(command);
         }
 
-        public void Handle(WithdrawTransactionValidatePassedApplicationNotification notification)
+        /// <summary>
+        /// 2.1 从银行账户聚合根，收到取款交易信息验证已通过的领域事件，通知取款交易聚合根确认。
+        /// </summary>
+        /// <param name="event">交易信息验证已通过的领域事件</param>
+        public void Handle(WithdrawTransactionValidatedDomainEvent @event)
         {
-            var command = new ConfirmWithdrawTransactionValidatePassedApplicationCommand()
+            var command = new ConfirmWithdrawTransactionValidatedDomainCommand()
             {
-                TransactionId = notification.TransactionId
+                AggregateRootId = @event.TransactionId
             };
 
-            _commandService.Publish(command);
+            _domainCommandPublisher.Publish(command);
         }
 
-        public void Handle(WithdrawTransactionValidateFailedApplicationNotification notification)
+        /// <summary>
+        /// 2.2 从银行账户聚合根，收到取款交易信息验证已失败的通知，向取款账交易聚合根发起取消交易。
+        /// </summary>
+        /// <param name="notification">取款交易信息验证已失败的通知</param>
+        public void Handle(WithdrawTransactionValidateFailedDomainNotification notification)
         {
-            var command = new CancelWithdrawTransactionApplicationCommand()
+            var command = new CancelWithdrawTransactionDomainCommand()
             {
-                TransactionId = notification.TransactionId
+                AggregateRootId = notification.TransactionId
             };
 
-            _commandService.Publish(command);
+            _domainCommandPublisher.Publish(command);
         }
 
-        public void Handle(WithdrawTransactionValidateCompletedDomainEvent @event)
+        /// <summary>
+        /// 3.1 从取款交易聚合根，收到取款交易已准备就绪的领域事件，向银行账户聚合更提交交易。
+        /// </summary>
+        /// <param name="event"></param>
+        public void Handle(WithdrawTransactionReadiedDomainEvent @event)
         {
-            var command = new StartWithdrawAccountTransactionApplicationCommand()
-            {
-                TransactionId = @event.AggregateRootId,
-                AccountId = @event.AccountId,
-                AccountName = @event.AccountName,
-                Bank = @event.Bank,
-                Amount = @event.Amount,
-                TransactionStage = AccountTransactionStage.Commitment
-            };
+            var command = new SubmitWithdrawTransactionDomainCommand(@event.AggregateRootId,@event.AccountId);
 
-            _commandService.Publish(command);
+            _domainCommandPublisher.Publish(command);
         }
 
-        public void Handle(TransactionAccountInsufficientBalanceDomainNotification notification)
+        /// <summary>
+        /// 4. 从银行账户聚合根，收到取款账户交易已提交的领域事件，通知取款交易聚合根确认。
+        /// </summary>
+        /// <param name="event"></param>
+        public void Handle(WithdrawTransactionSubmittedDomainEvent @event)
         {
-            var command = new CancelWithdrawTransactionApplicationCommand()
+            var command = new ConfirmWithdrawTransactionSubmittedDomainCommand()
             {
-                TransactionId = notification.TransactionId
+                AggregateRootId = @event.TransactionId
             };
 
-            _commandService.Publish(command);
-        }
-
-        public void Handle(WithdrawAccountTransactionCompletedDomainEvent @event)
-        {
-            var command = new ConfirmWithdrawTransactionCompletedApplicationCommand()
-            {
-                TransactionId = @event.TransactionId
-            };
-
-            _commandService.Publish(command);
+            _domainCommandPublisher.Publish(command);
         }
     }
 }

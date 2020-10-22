@@ -11,20 +11,6 @@ namespace EBank.Domain.Models.Depositing
     /// </summary>
     public partial class DepositTransaction : EventSourcedAggregateRoot<long>
     {
-        public DepositTransaction(
-            long id,
-            long accountId,
-            string accountName,
-            string bank,
-            decimal amount) : base(id)
-        {
-            AccountId = accountId;
-            AccountName = accountName;
-            Bank = bank;
-            Amount = amount;
-            Status = DepositTransactionStatus.Started;
-        }
-
         /// <summary>
         /// 账户号
         /// </summary>
@@ -67,23 +53,23 @@ namespace EBank.Domain.Models.Depositing
             ApplyDomainEvent(@event);
         }
 
-        public void OnDomainCommand(ConfirmDepositTransactionValidatePassedDomainCommand command)
+        public void OnDomainCommand(ConfirmDepositTransactionValidatedDomainCommand command)
         {
-            var @event = new DepositTransactionValidateCompletedDomainEvent(AccountId,AccountName,Bank,Amount);
+            var @event = new DepositTransactionReadiedDomainEvent(AccountId, DepositTransactionStatus.Validated);
 
             ApplyDomainEvent(@event);
         }
 
-        public void OnDomainCommand(ConfirmDepositTransactionCompletedDomainCommand command)
+        public void OnDomainCommand(ConfirmDepositTransactionSubmittedDomainCommand command)
         {
-            var @event = new DepositTransactionCompletedDomainEvent();
+            var @event = new DepositTransactionCompletedDomainEvent(DepositTransactionStatus.Completed);
 
             ApplyDomainEvent(@event);
         }
 
         public void OnDomainCommand(CancelDepositTransactionDomainCommand command)
         {
-            var @event = new DepositTransactionCancelledDomainEvent();
+            var @event = new DepositTransactionCancelledDomainEvent(DepositTransactionStatus.Canceled);
 
             ApplyDomainEvent(@event);
         }
@@ -94,22 +80,25 @@ namespace EBank.Domain.Models.Depositing
 
         public void OnDomainEvent(DepositTransactionStartedDomainEvent @event)
         {
-            var account = new DepositTransaction(@event.AggregateRootId, @event.AccountId, @event.AccountName, @event.Bank, @event.Amount);
+            AccountId = @event.AccountId;
+            AccountName = @event.AccountName;
+            Bank = @event.Bank;
+            Amount = @event.Amount;
         }
 
-        public void OnDomainEvent(DepositTransactionValidateCompletedDomainEvent @event)
+        public void OnDomainEvent(DepositTransactionReadiedDomainEvent @event)
         {
-            Status = DepositTransactionStatus.Validated;
+            Status = @event.Status;
         }
 
         public void OnDomainEvent(DepositTransactionCompletedDomainEvent @event)
         {
-            Status = DepositTransactionStatus.Completed;
+            Status = @event.Status;
         }
 
         public void OnDomainEvent(DepositTransactionCancelledDomainEvent @event)
         {
-            Status = DepositTransactionStatus.Canceled;
+            Status = @event.Status;
         }
 
         #endregion

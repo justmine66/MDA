@@ -1,4 +1,5 @@
 ﻿using EBank.Domain.Events.Accounts;
+using EBank.Domain.Events.Depositing;
 using MDA.Domain.Events;
 using MDA.StateBackend.RDBMS.Shared;
 using Microsoft.Extensions.Logging;
@@ -9,8 +10,8 @@ namespace EBank.Application.Querying
 {
     public class MySqlBankAccountReadDbStorage :
         IAsyncDomainEventHandler<AccountOpenedDomainEvent>,
-        IAsyncDomainEventHandler<DepositAccountTransactionCompletedDomainEvent>,
-        IAsyncDomainEventHandler<WithdrawAccountTransactionCompletedDomainEvent>
+        IAsyncDomainEventHandler<DepositTransactionSubmittedDomainEvent>,
+        IAsyncDomainEventHandler<DepositTransactionCompletedDomainEvent>
     {
         private readonly ILogger _logger;
         private readonly IRelationalDbStorage _db;
@@ -41,12 +42,12 @@ namespace EBank.Application.Querying
             await _db.ExecuteAsync(sql, parameter, token);
         }
 
-        public async Task HandleAsync(DepositAccountTransactionCompletedDomainEvent @event, CancellationToken token = default)
+        public async Task HandleAsync(DepositTransactionSubmittedDomainEvent @event, CancellationToken token = default)
         {
             throw new System.NotImplementedException();
         }
 
-        public async Task HandleAsync(WithdrawAccountTransactionCompletedDomainEvent @event, CancellationToken token = default)
+        public async Task HandleAsync(DepositTransactionCompletedDomainEvent @event, CancellationToken token = default)
         {
             throw new System.NotImplementedException();
         }

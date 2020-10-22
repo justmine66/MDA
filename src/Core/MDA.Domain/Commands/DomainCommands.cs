@@ -1,4 +1,5 @@
-﻿using MDA.MessageBus;
+﻿using MDA.Domain.Models;
+using MDA.MessageBus;
 using MDA.Shared.Hashes;
 using System;
 
@@ -76,14 +77,12 @@ namespace MDA.Domain.Commands
     /// </summary>
     public abstract class DomainCommand : Message, IDomainCommand
     {
-        protected DomainCommand()
-        {
-            AggregateRootId = Guid.NewGuid().ToString("N");
-        }
+        private bool _initialized;
+        protected DomainCommand() => Initialize();
         protected DomainCommand(
             string aggregateRootId,
             Type aggregateRootType,
-            int version = 0)
+            int version = 0) : this()
         {
             Version = version;
             AggregateRootId = aggregateRootId;
@@ -108,6 +107,16 @@ namespace MDA.Domain.Commands
         public Type ApplicationCommandType { get; set; }
         public string AggregateRootId { get; set; }
         public Type AggregateRootType { get; set; }
+
+        protected void Initialize()
+        {
+            if (AggregateRootType == null || _initialized) return;
+
+            Topic = AggregateRootType.FullName;
+            PartitionKey = MurMurHash3.Hash(AggregateRootType.FullName);
+
+            _initialized = true;
+        }
     }
 
     /// <summary>
@@ -119,7 +128,10 @@ namespace MDA.Domain.Commands
         IDomainCommand<TAggregateRootId>
     {
         protected DomainCommand()
-            => base.AggregateRootId = AggregateRootId?.ToString();
+        {
+            base.AggregateRootId = AggregateRootId?.ToString();
+            Initialize();
+        }
 
         protected DomainCommand(
             TAggregateRootId aggregateRootId,
@@ -127,7 +139,11 @@ namespace MDA.Domain.Commands
             int version = 0)
             : base(aggregateRootId?.ToString(),
                 aggregateRootType,
-                version) => AggregateRootId = aggregateRootId;
+                version)
+        {
+            AggregateRootId = aggregateRootId;
+            Initialize();
+        }
         protected DomainCommand(
             string applicationCommandId,
             Type applicationCommandType,
@@ -138,7 +154,11 @@ namespace MDA.Domain.Commands
                 applicationCommandType,
                 aggregateRootId?.ToString(),
                 aggregateRootType,
-                version) => AggregateRootId = aggregateRootId;
+                version)
+        {
+            AggregateRootId = aggregateRootId;
+            Initialize();
+        }
 
         private TAggregateRootId _aggregateRootId;
         public new TAggregateRootId AggregateRootId
@@ -151,6 +171,8 @@ namespace MDA.Domain.Commands
                 base.AggregateRootId = _aggregateRootId.ToString();
             }
         }
+
+
     }
 
     /// <summary>
@@ -159,10 +181,12 @@ namespace MDA.Domain.Commands
     /// <typeparam name="TAggregateRoot">聚合根类型</typeparam>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
     public abstract class DomainCommand<TAggregateRoot, TAggregateRootId> : DomainCommand<TAggregateRootId>
+        where TAggregateRoot : IEventSourcedAggregateRoot
     {
         protected DomainCommand()
         {
             AggregateRootType = typeof(TAggregateRoot);
+            Initialize();
         }
 
         protected DomainCommand(
@@ -170,7 +194,11 @@ namespace MDA.Domain.Commands
             int version = 0)
             : base(aggregateRootId,
                 typeof(TAggregateRoot),
-                version) => AggregateRootId = aggregateRootId;
+                version)
+        {
+            AggregateRootId = aggregateRootId;
+            Initialize();
+        }
 
         protected DomainCommand(
             string applicationCommandId,
@@ -181,68 +209,10 @@ namespace MDA.Domain.Commands
                 applicationCommandType,
                 aggregateRootId,
                 typeof(TAggregateRoot),
-                version) => AggregateRootId = aggregateRootId;
-    }
-
-    /// <summary>
-    /// 领域命令基类
-    /// </summary>
-    /// <typeparam name="TId">领域命令标识类型</typeparam>
-    /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
-    /// <typeparam name="TAggregateRoot">聚合根类型</typeparam>
-    public abstract class DomainCommand<TAggregateRoot, TId, TAggregateRootId> :
-        DomainCommand<TAggregateRoot, TAggregateRootId>,
-        IDomainCommand<TId, TAggregateRootId>
-    {
-        protected DomainCommand() { }
-        protected DomainCommand(
-            TId id,
-            string applicationCommandId,
-            Type applicationCommandType,
-            TAggregateRootId aggregateRootId,
-            int version = 0)
-            : base(applicationCommandId,
-                applicationCommandType,
-                aggregateRootId,
-                version) => Id = id;
-
-        public new TId Id { get; set; }
-    }
-
-    /// <summary>
-    /// 领域命令基类
-    /// </summary>
-    /// <typeparam name="TApplicationCommandId">应用层命令标识类型</typeparam>
-    /// <typeparam name="TId">领域命令标识类型</typeparam>
-    /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
-    /// <typeparam name="TAggregateRoot">聚合根类型</typeparam>
-    public abstract class DomainCommand<TAggregateRoot, TApplicationCommandId, TId, TAggregateRootId> :
-        DomainCommand<TAggregateRoot, TId, TAggregateRootId>,
-        IDomainCommand<TApplicationCommandId, TId, TAggregateRootId>
-    {
-        protected DomainCommand() { }
-        protected DomainCommand(
-            TId id,
-            TApplicationCommandId applicationCommandId,
-            Type applicationCommandType,
-            TAggregateRootId aggregateRootId,
-            int version = 0)
-            : base(id,
-                applicationCommandId.ToString(),
-                applicationCommandType,
-                aggregateRootId,
-                version) => ApplicationCommandId = applicationCommandId;
-
-        private TApplicationCommandId _applicationCommandId;
-        public new TApplicationCommandId ApplicationCommandId
+                version)
         {
-            get => _applicationCommandId;
-            set
-            {
-                _applicationCommandId = value;
-
-                base.ApplicationCommandId = _applicationCommandId.ToString();
-            }
+            AggregateRootId = aggregateRootId;
+            Initialize();
         }
     }
 }

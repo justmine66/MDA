@@ -1,5 +1,7 @@
 ﻿using EBank.Application;
 using EBank.Application.Commands.Accounts;
+using EBank.Application.Commands.Depositing;
+using EBank.Application.Commands.Withdrawing;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -26,7 +28,7 @@ namespace EBank.ApiServer.Controllers
 
         [Route("Deposit")]
         [HttpPost]
-        public async Task<IActionResult> Deposit(StartDepositAccountTransactionApplicationCommand command)
+        public async Task<IActionResult> Deposit(StartDepositApplicationCommand command)
         {
             await _eBank.DepositedFundsAsync(command);
 
@@ -35,7 +37,7 @@ namespace EBank.ApiServer.Controllers
 
         [Route("Withdraw")]
         [HttpPost]
-        public async Task<IActionResult> Withdraw(StartWithdrawAccountTransactionApplicationCommand command)
+        public async Task<IActionResult> Withdraw(StartWithdrawApplicationCommand command)
         {
             await _eBank.WithdrawFundsAsync(command);
 

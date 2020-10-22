@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using MDA.Shared.Hashes;
 
 namespace MDA.Domain.Models
 {
@@ -15,44 +16,45 @@ namespace MDA.Domain.Models
         IEventSourcedAggregateRoot,
         IEquatable<IEventSourcedAggregateRoot>
     {
-        private Type AggregateRootType => GetType();
-        private IList<IDomainEvent> _mutatingDomainEvents;
+        protected Type AggregateRootType => GetType();
 
-        protected EventSourcedAggregateRoot() => _mutatingDomainEvents = new List<IDomainEvent>();
+        protected EventSourcedAggregateRoot()
+        {
+            MutatingDomainEvents = new List<IDomainEvent>();
+            MutatingDomainNotifications = new List<IDomainNotification>();
+        }
 
         protected EventSourcedAggregateRoot(string id, int version = 0)
         {
             Id = id;
-            _mutatingDomainEvents = new List<IDomainEvent>();
             Version = version;
+            MutatingDomainEvents = new List<IDomainEvent>();
+            MutatingDomainNotifications = new List<IDomainNotification>();
         }
 
-        public IEnumerable<IDomainEvent> MutatingDomainEvents => _mutatingDomainEvents;
+        public IList<IDomainEvent> MutatingDomainEvents { get; protected set; }
+        public IList<IDomainNotification> MutatingDomainNotifications { get; protected set; }
         public string Id { get; set; } = string.Empty;
         public int Generation { get; set; }
         public long Version { get; set; }
 
         public virtual void ApplyDomainEvent(IDomainEvent @event)
         {
-            // 1. 填充事件信息到模型
+            // 1. 填充领域事件信息
             if (@event == null) return;
 
             @event.AggregateRootId = Id;
-            @event.AggregateRootType = AggregateRootType;
-            @event.AggregateRootGeneration = Generation;
-            @event.AggregateRootVersion = ++Version;
-            @event.Version++;
-
+            FillAggregateInfo(@event);
             HandleDomainEvent(@event);
 
-            // 2. 添加到变更事件流
-            if (_mutatingDomainEvents == null)
+            // 2. 添加到当前变更领域事件列表
+            if (MutatingDomainEvents == null)
             {
                 Version = 0;
-                _mutatingDomainEvents = new List<IDomainEvent>();
+                MutatingDomainEvents = new List<IDomainEvent>();
             }
 
-            _mutatingDomainEvents.Add(@event);
+            MutatingDomainEvents.Add(@event);
         }
 
         public virtual DomainCommandResult HandleDomainCommand(IDomainCommand command)
@@ -76,13 +78,22 @@ namespace MDA.Domain.Models
         }
 
         public virtual void HandleDomainEvent(IDomainEvent @event)
-        {
-            ExecuteDomainMessage(DomainMessageType.Event, @event);
-        }
+            => ExecuteDomainMessage(DomainMessageType.Event, @event);
 
         public virtual void PublishDomainNotification(IDomainNotification notification)
         {
-            throw new NotImplementedException();
+            // 1. 填充领域通知信息
+            notification.AggregateRootId = Id;
+            notification.AggregateRootType = AggregateRootType;
+
+            // 2. 添加到当前变更领域通知列表
+            if (MutatingDomainNotifications == null)
+            {
+                Version = 0;
+                MutatingDomainNotifications = new List<IDomainNotification>();
+            }
+
+            MutatingDomainNotifications.Add(notification);
         }
 
         public virtual void ReplayDomainEvents(IEnumerable<IDomainEvent> events)
@@ -136,6 +147,8 @@ namespace MDA.Domain.Models
                     }
 
                     break;
+                case DomainMessageType.Notification:
+                    throw new NotSupportedException($"{messageType}");
                 default:
                     throw new ArgumentOutOfRangeException(nameof(messageType), messageType, null);
             }
@@ -160,6 +173,14 @@ namespace MDA.Domain.Models
             methodDelegate.DynamicInvoke(message);
         }
 
+        protected void FillAggregateInfo(IDomainEvent @event)
+        {
+            @event.AggregateRootType = AggregateRootType;
+            @event.AggregateRootGeneration = Generation;
+            @event.AggregateRootVersion = ++Version;
+            @event.Version++;
+        }
+
         public bool Equals(IEventSourcedAggregateRoot other)
         {
             if (ReferenceEquals(null, other)) return false;
@@ -180,19 +201,16 @@ namespace MDA.Domain.Models
             => HashHelper.ComputeHashCode(Id, Version);
     }
 
-    public abstract class EventSourcedAggregateRoot<TId> : EventSourcedAggregateRoot, IEventSourcedAggregateRoot<TId>
+    public abstract class EventSourcedAggregateRoot<TId> :
+        EventSourcedAggregateRoot,
+        IEventSourcedAggregateRoot<TId>
     {
-        private readonly int _version;
-        private readonly IList<IDomainEvent> _changes;
-
         protected EventSourcedAggregateRoot()
             => base.Id = Id?.ToString();
         protected EventSourcedAggregateRoot(TId id, int version = 0)
             : base(id?.ToString(), version)
         {
             Id = id;
-            _changes = new List<IDomainEvent>();
-            _version = version;
         }
 
         private TId _id;
@@ -219,6 +237,25 @@ namespace MDA.Domain.Models
             if (ReferenceEquals(null, other)) return false;
 
             return other is IEventSourcedAggregateRoot<TId> it && Equals(it);
+        }
+
+        public void ApplyDomainEvent(IDomainEvent<TId> @event)
+        {
+            // 1. 填充事件信息到模型
+            if (@event == null) return;
+
+            @event.AggregateRootId = Id;
+            FillAggregateInfo(@event);
+            HandleDomainEvent(@event);
+
+            // 2. 添加到变更事件流
+            if (MutatingDomainEvents == null)
+            {
+                Version = 0;
+                MutatingDomainEvents = new List<IDomainEvent>();
+            }
+
+            MutatingDomainEvents.Add(@event);
         }
 
         public override bool Equals(object obj)
