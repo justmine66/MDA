@@ -61,7 +61,7 @@ namespace EBank.ApiServer
             // 4. 电子银行应用服务
             services.AddEBankAppServices();
             services.AddSingleton<IBankAccountRepository, MySqlBankAccountRepository>();
-            services.AddSingleton<IBankAccountQueryService, MySqlBankAccountQueryService>();
+            //services.AddSingleton<IBankAccountQueryService, MySqlBankAccountQueryService>();
 
             // 5. 本地服务
             services.AddHostedService<StartupHostedService>();
