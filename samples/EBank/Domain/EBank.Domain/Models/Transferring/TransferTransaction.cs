@@ -12,12 +12,12 @@ namespace EBank.Domain.Models.Transferring
         /// <summary>
         /// 源账户信息
         /// </summary>
-        public TransferTransactionAccount SourceAccount { get; private set; }
+        public TransferAccountInfo SourceAccount { get; private set; }
 
         /// <summary>
         /// 目标账户信息
         /// </summary>
-        public TransferTransactionAccount SinkAccount { get; private set; }
+        public TransferAccountInfo SinkAccount { get; private set; }
 
         /// <summary>
         /// 转账金额
@@ -53,22 +53,19 @@ namespace EBank.Domain.Models.Transferring
                 throw new TransferTransactionDomainException($"收到确认交易账户已验证的领域命令，但交易状态非法: {Status}。");
             }
 
-            if (Validated)
-            {
-                ApplyDomainEvent(new TransferTransactionReadiedDomainEvent(SourceAccount.Id, SinkAccount.Id, TransferTransactionStatus.Validated));
-
-                return;
-            }
-
             switch (command.AccountType)
             {
-                case TransferTransactionAccountType.Source:
+                case TransferAccountType.Source:
                     ApplyDomainEvent(new TransferTransactionSourceAccountValidatedDomainEvent());
                     break;
-                case TransferTransactionAccountType.Sink:
+                case TransferAccountType.Sink:
                     ApplyDomainEvent(new TransferTransactionSinkAccountValidatedDomainEvent());
                     break;
             }
+
+            if (!Validated) return;
+
+            ApplyDomainEvent(new TransferTransactionReadiedDomainEvent(SourceAccount.Id, SinkAccount.Id, TransferTransactionStatus.Validated));
         }
 
         public void OnDomainCommand(ConfirmTransferTransactionSubmittedDomainCommand command)
@@ -105,6 +102,9 @@ namespace EBank.Domain.Models.Transferring
             => SinkAccount.SetValidated();
 
         public void OnDomainEvent(TransferTransactionReadiedDomainEvent @event)
+            => Status = @event.Status;
+
+        public void OnDomainEvent(TransferTransactionCompletedDomainEvent @event)
             => Status = @event.Status;
 
         public void OnDomainEvent(TransferTransactionCancelledDomainEvent @event)

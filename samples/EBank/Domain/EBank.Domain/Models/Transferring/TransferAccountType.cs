@@ -6,7 +6,7 @@ namespace EBank.Domain.Models.Transferring
     /// 交易账户类型
     /// </summary>
     [Flags]
-    public enum TransferTransactionAccountType
+    public enum TransferAccountType
     {
         /// <summary>
         /// 源账号

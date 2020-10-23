@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using MDA.Shared.Hashes;
 
 namespace MDA.Domain.Models
 {
@@ -40,7 +39,7 @@ namespace MDA.Domain.Models
 
         public virtual void ApplyDomainEvent(IDomainEvent @event)
         {
-            // 1. 填充领域事件信息
+            // 1. 填充领域事件信息到聚合根
             if (@event == null) return;
 
             @event.AggregateRootId = Id;
@@ -50,7 +49,6 @@ namespace MDA.Domain.Models
             // 2. 添加到当前变更领域事件列表
             if (MutatingDomainEvents == null)
             {
-                Version = 0;
                 MutatingDomainEvents = new List<IDomainEvent>();
             }
 
@@ -241,17 +239,16 @@ namespace MDA.Domain.Models
 
         public void ApplyDomainEvent(IDomainEvent<TId> @event)
         {
-            // 1. 填充事件信息到模型
+            // 1. 填充事件信息到聚合根
             if (@event == null) return;
 
             @event.AggregateRootId = Id;
             FillAggregateInfo(@event);
             HandleDomainEvent(@event);
 
-            // 2. 添加到变更事件流
+            // 2. 添加到当前变更事件列表
             if (MutatingDomainEvents == null)
             {
-                Version = 0;
                 MutatingDomainEvents = new List<IDomainEvent>();
             }
 

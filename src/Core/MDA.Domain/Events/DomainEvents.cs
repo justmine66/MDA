@@ -1,5 +1,4 @@
 ﻿using MDA.MessageBus;
-using MDA.Shared.Hashes;
 using System;
 
 namespace MDA.Domain.Events

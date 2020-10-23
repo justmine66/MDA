@@ -11,7 +11,7 @@ namespace EBank.Domain.Events.Accounts
         public TransferTransactionSubmittedDomainEvent(
             long transactionId, 
             decimal amount, 
-            TransferTransactionAccountType accountType)
+            TransferAccountType accountType)
         {
             TransactionId = transactionId;
             Amount = amount;
@@ -31,6 +31,6 @@ namespace EBank.Domain.Events.Accounts
         /// <summary>
         /// 账户类型
         /// </summary>
-        public TransferTransactionAccountType AccountType { get; }
+        public TransferAccountType AccountType { get; }
     }
 }

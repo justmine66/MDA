@@ -13,8 +13,8 @@ namespace EBank.Domain.Commands.Accounts
 
         public decimal Amount { get; set; }
 
-        public TransferTransactionAccount Account { get; set; }
+        public TransferAccountInfo Account { get; set; }
 
-        public TransferTransactionAccountType AccountType { get; set; }
+        public TransferAccountType AccountType { get; set; }
     }
 }

@@ -10,8 +10,8 @@ namespace EBank.Domain.Commands.Transferring
     {
         public StartTransferTransactionDomainCommand(
             long transactionId,
-            TransferTransactionAccount sourceAccount, 
-            TransferTransactionAccount sinkAccount, 
+            TransferAccountInfo sourceAccount, 
+            TransferAccountInfo sinkAccount, 
             decimal amount)
         {
             AggregateRootId = transactionId;
@@ -23,12 +23,12 @@ namespace EBank.Domain.Commands.Transferring
         /// <summary>
         /// 源账户信息
         /// </summary>
-        public TransferTransactionAccount SourceAccount { get; }
+        public TransferAccountInfo SourceAccount { get; }
 
         /// <summary>
         /// 目标账户信息
         /// </summary>
-        public TransferTransactionAccount SinkAccount { get; }
+        public TransferAccountInfo SinkAccount { get; }
 
         /// <summary>
         /// 转账金额

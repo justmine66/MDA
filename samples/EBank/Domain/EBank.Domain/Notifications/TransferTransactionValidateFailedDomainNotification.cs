@@ -8,7 +8,7 @@ namespace EBank.Domain.Notifications
     /// </summary>
     public class TransferTransactionValidateFailedDomainNotification : DomainNotification<long>
     {
-        public TransferTransactionValidateFailedDomainNotification(long transactionId, TransferTransactionAccountType accountType, string reason)
+        public TransferTransactionValidateFailedDomainNotification(long transactionId, TransferAccountType accountType, string reason)
         {
             TransactionId = transactionId;
             AccountType = accountType;
@@ -23,7 +23,7 @@ namespace EBank.Domain.Notifications
         /// <summary>
         /// 账户类型
         /// </summary>
-        public TransferTransactionAccountType AccountType { get; }
+        public TransferAccountType AccountType { get; }
 
         /// <summary>
         /// 原因

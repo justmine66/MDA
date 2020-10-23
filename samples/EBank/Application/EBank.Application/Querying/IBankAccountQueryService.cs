@@ -9,6 +9,6 @@ namespace EBank.Application.Querying
     /// </summary>
     public interface IBankAccountQueryService
     {
-        Task<TransferTransactionAccount> GetAccountAsync(long accountId, CancellationToken token = default);
+        Task<TransferAccountInfo> GetAccountAsync(long accountId, CancellationToken token = default);
     }
 }

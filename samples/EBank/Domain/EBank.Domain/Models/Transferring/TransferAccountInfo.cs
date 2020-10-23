@@ -1,11 +1,11 @@
 ﻿namespace EBank.Domain.Models.Transferring
 {
     /// <summary>
-    /// 转账交易账户，值对象
+    /// 转账账户信息，值对象
     /// </summary>
-    public class TransferTransactionAccount
+    public class TransferAccountInfo
     {
-        public TransferTransactionAccount(long id, string name, string bank)
+        public TransferAccountInfo(long id, string name, string bank)
         {
             Id = id;
             Name = name;

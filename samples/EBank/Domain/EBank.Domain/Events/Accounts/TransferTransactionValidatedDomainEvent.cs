@@ -8,7 +8,7 @@ namespace EBank.Domain.Events.Accounts
     /// </summary>
     public class TransferTransactionValidatedDomainEvent : DomainEvent<long>
     {
-        public TransferTransactionValidatedDomainEvent(long transactionId, decimal amount, TransferTransactionAccountType accountType)
+        public TransferTransactionValidatedDomainEvent(long transactionId, decimal amount, TransferAccountType accountType)
         {
             TransactionId = transactionId;
             Amount = amount;
@@ -28,6 +28,6 @@ namespace EBank.Domain.Events.Accounts
         /// <summary>
         /// 账户类型
         /// </summary>
-        public TransferTransactionAccountType AccountType { get; }
+        public TransferAccountType AccountType { get; }
     }
 }

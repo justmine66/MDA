@@ -3,11 +3,11 @@ using MDA.Domain.Events;
 
 namespace EBank.Domain.Events.Transferring
 {
-    public class TransferTransactionStartedDomainEvent : DomainEvent<long, long>
+    public class TransferTransactionStartedDomainEvent : DomainEvent<long>
     {
         public TransferTransactionStartedDomainEvent(
-            TransferTransactionAccount sourceAccount, 
-            TransferTransactionAccount sinkAccount, 
+            TransferAccountInfo sourceAccount, 
+            TransferAccountInfo sinkAccount, 
             decimal amount, 
             TransferTransactionStatus status)
         {
@@ -20,12 +20,12 @@ namespace EBank.Domain.Events.Transferring
         /// <summary>
         /// 源账户信息
         /// </summary>
-        public TransferTransactionAccount SourceAccount { get; private set; }
+        public TransferAccountInfo SourceAccount { get; private set; }
 
         /// <summary>
         /// 目标账户信息
         /// </summary>
-        public TransferTransactionAccount SinkAccount { get; private set; }
+        public TransferAccountInfo SinkAccount { get; private set; }
 
         /// <summary>
         /// 转账金额

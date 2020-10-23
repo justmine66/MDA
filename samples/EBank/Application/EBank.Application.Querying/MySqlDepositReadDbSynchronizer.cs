@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EBank.Application.Querying
 {
-    public class MySqlDepositReadDbStorage :
+    public class MySqlDepositReadDbSynchronizer :
         IAsyncDomainEventHandler<DepositTransactionStartedDomainEvent>,
         IAsyncDomainEventHandler<DepositTransactionReadiedDomainEvent>,
         IAsyncDomainEventHandler<DepositTransactionCompletedDomainEvent>,
@@ -15,14 +15,14 @@ namespace EBank.Application.Querying
     {
         private readonly IRelationalDbStorage _db;
 
-        public MySqlDepositReadDbStorage(IRelationalDbStorageFactory db)
+        public MySqlDepositReadDbSynchronizer(IRelationalDbStorageFactory db)
         {
             _db = db.CreateRelationalDbStorage(DatabaseScheme.ReadDb);
         }
 
         public async Task HandleAsync(DepositTransactionStartedDomainEvent @event, CancellationToken token = default)
         {
-            var sql = $"INSERT INTO `{Tables.DepositTransactions}` (`Id`, `AccountId`, `AccountName`, `Bank`, `amount`, `Status`, `Creator`, `CreatedTimestamp`) VALUES (@TransactionId, @AccountId, @AccountName, @Bank, @amount, @Status, @Creator, @CreatedTimestamp);";
+            var sql = $"INSERT INTO `{Tables.DepositTransactions}` (`Id`, `AccountId`, `AccountName`, `Bank`, `Amount`, `Status`, `Creator`, `CreatedTimestamp`) VALUES (@TransactionId, @AccountId, @AccountName, @Bank, @amount, @Status, @Creator, @CreatedTimestamp);";
 
             var po = new 
             {

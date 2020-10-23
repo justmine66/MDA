@@ -1,6 +1,6 @@
 ﻿using EBank.Application;
-using EBank.Application.Commands.Accounts;
 using EBank.Application.Commands.Depositing;
+using EBank.Application.Commands.Transferring;
 using EBank.Application.Commands.Withdrawing;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -8,22 +8,14 @@ using System.Threading.Tasks;
 namespace EBank.ApiServer.Controllers
 {
     [ApiController]
-    [Route("api/v1/BankAccount")]
-    public class BankAccountController : ControllerBase
+    [Route("api/v1/Transactions")]
+    public class TransactionsController : ControllerBase
     {
         private readonly IEBankApplicationService _eBank;
 
-        public BankAccountController(IEBankApplicationService eBank)
+        public TransactionsController(IEBankApplicationService eBank)
         {
             _eBank = eBank;
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create(OpenBankAccountApplicationCommand command)
-        {
-            await _eBank.OpenAccountAsync(command);
-
-            return Ok();
         }
 
         [Route("Deposit")]
@@ -40,6 +32,15 @@ namespace EBank.ApiServer.Controllers
         public async Task<IActionResult> Withdraw(StartWithdrawApplicationCommand command)
         {
             await _eBank.WithdrawFundsAsync(command);
+
+            return Ok();
+        }
+
+        [Route("Transfer")]
+        [HttpPost]
+        public async Task<IActionResult> Withdraw(StartTransferApplicationCommand command)
+        {
+            await _eBank.TransferFundsAsync(command);
 
             return Ok();
         }

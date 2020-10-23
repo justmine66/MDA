@@ -74,8 +74,8 @@ namespace MDA.Domain.Models
 
         /// <summary>
         /// 应用领域事件。
-        /// 1. 填充事件信息到领域模型。
-        /// 2. 添加到领域事件列表；
+        /// 1. 填充事件信息到聚合根。
+        /// 2. 添加到当前变更领域事件列表。
         /// </summary>
         /// <param name="@event">领域事件</param>
         void ApplyDomainEvent(IDomainEvent @event);

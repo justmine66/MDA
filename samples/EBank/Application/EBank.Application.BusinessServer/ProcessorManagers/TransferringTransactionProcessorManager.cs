@@ -40,9 +40,11 @@ namespace EBank.Application.BusinessServer.ProcessorManagers
             // 1. 验证源账户
             var validateSource = new ValidateTransferTransactionDomainCommand()
             {
+                AggregateRootId = @event.SourceAccount.Id,
                 TransactionId = @event.AggregateRootId,
                 Account = @event.SourceAccount,
-                AccountType = TransferTransactionAccountType.Source
+                Amount = @event.Amount,
+                AccountType = TransferAccountType.Source
             };
 
             _domainCommandPublisher.Publish(validateSource);
@@ -50,9 +52,11 @@ namespace EBank.Application.BusinessServer.ProcessorManagers
             // 2. 验证目标账户
             var validateSink = new ValidateTransferTransactionDomainCommand()
             {
+                AggregateRootId = @event.SinkAccount.Id,
                 TransactionId = @event.AggregateRootId,
                 Account = @event.SinkAccount,
-                AccountType = TransferTransactionAccountType.Sink
+                Amount = @event.Amount,
+                AccountType = TransferAccountType.Sink
             };
 
             _domainCommandPublisher.Publish(validateSink);
