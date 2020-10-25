@@ -16,7 +16,7 @@ namespace MDA.Application.Commands
             this IServiceCollection services,
             params Assembly[] assemblies)
         {
-            services.AddSingleton<IApplicationCommandPublisher, ApplicationCommandPublisher>();
+            services.AddSingleton<IApplicationCommandPublisher, DefaultApplicationCommandPublisher>();
             services.AddSingleton<IApplicationCommandExecutor, ApplicationCommandExecutor>();
             services.AddSingleton<IApplicationCommandContext, ApplicationCommandContext>();
             services.AddSingleton<IApplicationCommandService, ApplicationCommandService>();

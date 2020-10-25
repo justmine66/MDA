@@ -9,9 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\Core\MDA.Application\MDA.Application.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Core\MDA.Domain\MDA.Domain.csproj" />
-    <ProjectReference Include="..\..\Domain\EBank.Domain\EBank.Domain.csproj" />
+    <ProjectReference Include="..\..\..\..\src\StateBackends\MDA.StateBackend.RDBMS.Shared\MDA.StateBackend.RDBMS.Shared.csproj" />
   </ItemGroup>
 
 </Project>

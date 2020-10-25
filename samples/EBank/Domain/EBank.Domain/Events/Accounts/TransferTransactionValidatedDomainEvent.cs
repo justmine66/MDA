@@ -1,5 +1,5 @@
-﻿using EBank.Domain.Models.Transferring;
-using MDA.Domain.Events;
+﻿using MDA.Domain.Events;
+using TransferAccountType = EBank.Domain.Models.Transferring.TransferAccountType;
 
 namespace EBank.Domain.Events.Accounts
 {

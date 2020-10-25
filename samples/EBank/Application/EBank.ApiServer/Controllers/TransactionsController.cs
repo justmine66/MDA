@@ -1,7 +1,7 @@
-﻿using EBank.Application;
-using EBank.Application.Commands.Depositing;
-using EBank.Application.Commands.Transferring;
-using EBank.Application.Commands.Withdrawing;
+﻿using EBank.ApiServer.Application.Business;
+using EBank.Application.Commanding.Depositing;
+using EBank.Application.Commanding.Transferring;
+using EBank.Application.Commanding.Withdrawing;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 

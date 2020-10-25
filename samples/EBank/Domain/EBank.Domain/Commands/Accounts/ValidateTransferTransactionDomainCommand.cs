@@ -1,6 +1,7 @@
 ﻿using EBank.Domain.Models.Accounts;
 using EBank.Domain.Models.Transferring;
 using MDA.Domain.Commands;
+using TransferAccountType = EBank.Domain.Models.Transferring.TransferAccountType;
 
 namespace EBank.Domain.Commands.Accounts
 {

@@ -1,7 +1,5 @@
-using EBank.Application;
-using EBank.Application.Querying;
-using EBank.Domain.Models.Accounts;
-using EBank.Domain.MySql;
+using EBank.ApiServer.Application;
+using EBank.ApiServer.Application.Business;
 using MDA.Application.Commands;
 using MDA.Application.Notifications;
 using MDA.Domain.Commands;
@@ -36,9 +34,7 @@ namespace EBank.ApiServer
 
             var assemblies = new[]
             {
-                Assembly.GetExecutingAssembly(),
-                Assembly.Load("EBank.Application.BusinessServer"),
-                Assembly.Load("EBank.Application.Querying")
+                Assembly.GetExecutingAssembly()
             };
 
             // 1. »ù´¡·þÎñ

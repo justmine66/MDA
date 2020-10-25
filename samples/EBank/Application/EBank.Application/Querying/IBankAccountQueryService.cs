@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using EBank.Domain.Models.Transferring;
+using EBank.Application.Querying.Models;
 
 namespace EBank.Application.Querying
 {

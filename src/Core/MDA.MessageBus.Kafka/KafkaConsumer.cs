@@ -23,7 +23,7 @@ namespace MDA.MessageBus.Kafka
         {
             _groupId = groupId;
             _logger = logger;
-            _kafkaOptions = options.Value ?? throw new ArgumentNullException(nameof(options));
+            _kafkaOptions = options.Value;
         }
 
         public void Subscribe(IEnumerable<string> topics)
@@ -51,7 +51,13 @@ namespace MDA.MessageBus.Kafka
             {
                 if (_consumerClient != null) return;
 
+                // 一、设置消费者组
                 _kafkaOptions.MainConfig["group.id"] = _groupId;
+
+                // 二、设置初始消费偏移量
+                // 1. earliest: 从分区最早的偏移量开始消费
+                // 2. earliest: 从分区最新的偏移量开始消费
+                // 3. none: 未找到偏移量则抛出异常
                 _kafkaOptions.MainConfig["auto.offset.reset"] = "earliest";
 
                 var config = _kafkaOptions.AsKafkaConfig();

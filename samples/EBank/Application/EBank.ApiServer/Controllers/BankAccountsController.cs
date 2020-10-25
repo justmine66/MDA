@@ -1,5 +1,5 @@
-﻿using EBank.Application;
-using EBank.Application.Commands.Accounts;
+﻿using EBank.ApiServer.Application.Business;
+using EBank.Application.Commanding.Accounts;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 

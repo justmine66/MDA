@@ -50,12 +50,22 @@ namespace MDA.MessageBus.Kafka
                     throw new ArgumentNullException(nameof(Servers));
                 }
 
+                // 一、设置消息代理服务列表，参考示例：192.168.2.112:9092,192.168.2.113:9092
                 MainConfig["bootstrap.servers"] = Servers;
+
+                // 设置偏移量提交策略
+                // 1. true: 由kafka管理偏移量，系统会以auto.commit.interval.ms为间隔定期提交偏移量。
+                // 2. false: 由用户管理偏移量。
+                MainConfig["enable.auto.commit"] = "true";
+                // auto.commit.interval.ms默认值为: 5000。
+                MainConfig["auto.commit.interval.ms"] = "5000";
+
                 MainConfig["queue.buffering.max.ms"] = "10";
                 MainConfig["allow.auto.create.topics"] = "true";
-                MainConfig["enable.auto.commit"] = "false";
                 MainConfig["log.connection.close"] = "false";
-                MainConfig["request.timeout.ms"] = "3000";
+
+                
+                
                 MainConfig["message.timeout.ms"] = "5000";
 
                 _kafkaConfig = MainConfig.AsEnumerable();

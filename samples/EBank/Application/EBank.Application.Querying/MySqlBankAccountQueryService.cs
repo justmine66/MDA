@@ -1,4 +1,4 @@
-﻿using EBank.Domain.Models.Transferring;
+﻿using EBank.Application.Querying.Models;
 using MDA.Shared.Utils;
 using MDA.StateBackend.RDBMS.Shared;
 using System.Linq;
