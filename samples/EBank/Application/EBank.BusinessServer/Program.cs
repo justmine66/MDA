@@ -1,5 +1,4 @@
 ﻿using EBank.BusinessServer.Bootstrap;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading;
@@ -20,11 +19,7 @@ namespace EBank.BusinessServer
 
         public static IHost CreateHost(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.AddHostedService<StartupHostedService>();
-                    Bootstrapper.ConfigureServices(hostContext, services);
-                })
+                .ConfigureServices(Bootstrapper.ConfigureServices)
                 .Build();
 
         private static void ShutDown(object sender, ConsoleCancelEventArgs e)

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace EBank.ApiServer.Controllers
 {
     [ApiController]
-    [Route("api/v1/BankAccount")]
+    [Route("api/v1/BankAccounts")]
     public class BankAccountsController : ControllerBase
     {
         private readonly IEBankApplicationService _eBank;

@@ -1,7 +1,8 @@
 ﻿using MDA.Domain.Events;
-using MDA.Shared.Serialization;
-using MDA.Shared.Types;
-using MDA.Shared.Utils;
+using MDA.Infrastructure.Async;
+using MDA.Infrastructure.Serialization;
+using MDA.Infrastructure.Typing;
+using MDA.Infrastructure.Utils;
 using MDA.StateBackend.RDBMS.Shared;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -55,28 +56,39 @@ namespace MDA.StateBackend.MySql
             var insertDomainEventSql = $"INSERT INTO `{tables.DomainEventsIndices}`(`DomainCommandId`,`DomainCommandType`,`DomainCommandVersion`,`AggregateRootId`,`AggregateRootType`,`AggregateRootVersion`,`AggregateRootGeneration`,`DomainEventId`,`DomainEventType`,`DomainEventVersion`,`CreatedTimestamp`) VALUES(@DomainCommandId,@DomainCommandType,@DomainCommandVersion,@AggregateRootId,@AggregateRootType,@AggregateRootVersion,@AggregateRootGeneration,@DomainEventId,@DomainEventType,@DomainEventVersion,@CreatedTimestamp)";
             var insertDomainEventPayloadSql = $"INSERT INTO `{tables.DomainEventPayloads}`(`DomainEventId`,`DomainEventVersion`,`Payload`) VALUES (@DomainEventId,@DomainEventVersion,@Payload)";
 
-            try
+            var maxNumErrorTries = 3;
+            var maxExecutionTime = TimeSpan.FromSeconds(3);
+            var expectedRows = 2;
+            bool ErrorFilter(Exception exc, int attempt)
             {
-                var expectedRows = 2;
-                var affectedRows = await _db.ExecuteAsync(
-                    $"{insertDomainEventSql};{insertDomainEventPayloadSql};", 
-                    command => command.Parameters.AddRange(parameters), 
+                if (exc is MySqlException inner &&
+                    inner.HasDuplicateEntry())
+                {
+                    _logger.LogWarning($"{domainEventRecord.AggregateRootType}: [Ignored]find duplicated domain event from mysql state backend：{inner.Message}.");
+
+                    return false;
+                }
+
+                _logger.LogError($"Append domain event has unknown exception: {LogFormatter.PrintException(exc)}.");
+
+                return true;
+            }
+
+            var affectedRows = await AsyncExecutorWithRetries.ExecuteWithRetriesAsync(async attempt =>
+            {
+                return await _db.ExecuteAsync(
+                    $"{insertDomainEventSql};{insertDomainEventPayloadSql};",
+                    command => command.Parameters.AddRange(parameters),
                     token);
-                if (affectedRows != expectedRows)
-                    return DomainEventResult.StorageFailed(@event.Id,
-                        $"The affected rows returned MySql state backend is incorrect, expected: {expectedRows}, actual: {affectedRows}.");
+            }, maxNumErrorTries, ErrorFilter, maxExecutionTime).ConfigureAwait(false);
 
-                await _eventPublisher.PublishAsync(@event, token);
+            if (affectedRows != expectedRows)
+                return DomainEventResult.StorageFailed(@event.Id,
+                    $"The affected rows returned MySql state backend is incorrect, expected: {expectedRows}, actual: {affectedRows}.");
 
-                return DomainEventResult.StorageSucceed(@event.Id);
-            }
-            catch (Exception ex)
-            {
-                if (TryCheckDuplicateEntryException(domainEventRecord.AggregateRootType, ex, out var message))
-                    return DomainEventResult.StorageSucceed(@event.Id, message);
+            await _eventPublisher.PublishAsync(@event, token);
 
-                return DomainEventResult.StorageFailed(@event.Id, $"Append domain event has unknown exception: {ex}.");
-            }
+            return DomainEventResult.StorageSucceed(@event.Id);
         }
 
         public async Task<IEnumerable<DomainEventResult>> AppendAsync(
@@ -155,21 +167,6 @@ namespace MDA.StateBackend.MySql
             }
 
             return domainEvents;
-        }
-
-        protected bool TryCheckDuplicateEntryException(string name, Exception ex, out string message)
-        {
-            if (ex is MySqlException inner && inner.HasDuplicateEntry())
-            {
-                // 事件已被处理
-                message = $"{name}: [Ignored]find duplicated domain event from mysql state backend：{inner.Message}.";
-
-                return true;
-            }
-
-            message = string.Empty;
-
-            return false;
         }
     }
 }

@@ -1,13 +1,11 @@
-﻿using MDA.Application.Commands;
-using MDA.Application.Notifications;
-using MDA.Domain.Commands;
-using MDA.Domain.Events;
-using MDA.Domain.Models;
+﻿using MDA.Application.DependencyInjection;
+using MDA.Domain.DependencyInjection;
+using MDA.Infrastructure.DependencyInjection;
 using MDA.MessageBus;
+using MDA.MessageBus.DependencyInjection;
 using MDA.MessageBus.Disruptor;
-using MDA.Shared.Serialization;
-using MDA.Shared.Types;
 using MDA.StateBackend.MySql;
+using MDA.StateBackend.RDBMS.Shared.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,21 +30,16 @@ namespace MDA.XUnitTest
                 Assembly.Load("MDA.Application")
             };
 
-            services.AddSerialization();
-            services.AddTypes();
-
             services.AddLogging();
-            services.AddMessageBusDisruptor(assemblies);
 
-            services.AddApplicationNotificationServices();
-
-            services.AddApplicationCommandServices(assemblies);
-
-            services.AddDomainCommandServices();
-            services.AddDomainModelServices();
-            services.AddDomainEventServices();
-
-            services.AddStateBackendMySql(context.Configuration);
+            services.AddMdaServices(ctx =>
+            {
+                ctx.AddInfrastructure();
+                ctx.AddMessageBus(bus => bus.UseDisruptor(), assemblies);
+                ctx.AddStateBackend(state => state.UseMySql(context.Configuration));
+                ctx.AddApplication(app => app.UseMessageBus(MessageBusClientNames.Kafka));
+                ctx.AddDomain(domain => domain.UseMessageBus(MessageBusClientNames.Kafka), context.Configuration);
+            });
         }
 
         public void Configure(IServiceProvider provider, ILoggerFactory loggerFactory, ITestOutputHelperAccessor accessor)
@@ -60,7 +53,7 @@ namespace MDA.XUnitTest
         {
             var queueService = provider.GetService<IMessageQueueService>();
 
-            queueService.StartAsync().GetAwaiter().GetResult();
+            queueService.Start();
         }
     }
 }

@@ -1,36 +1,35 @@
-﻿using MDA.Domain.Commands;
-using MDA.Domain.Events;
-using MDA.Domain.Models;
+﻿using EBank.Domain.Repositories.MySql;
+using MDA.Application.DependencyInjection;
+using MDA.Domain.DependencyInjection;
+using MDA.Infrastructure.DependencyInjection;
+using MDA.MessageBus;
+using MDA.MessageBus.DependencyInjection;
 using MDA.MessageBus.Disruptor;
-using MDA.Shared.Serialization;
-using MDA.Shared.Types;
+using MDA.MessageBus.Kafka;
+using MDA.StateBackend.MySql;
+using MDA.StateBackend.RDBMS.Shared.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
-using MDA.StateBackend.MySql;
 
 namespace EBank.BusinessServer.Bootstrap
 {
     public class Bootstrapper
     {
+        private static readonly Assembly CurrentAssembly = Assembly.GetExecutingAssembly();
+
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
-            var assemblies = new[]
+            services.AddMdaServices(ctx =>
             {
-                Assembly.GetExecutingAssembly()
-            };
+                ctx.AddInfrastructure();
+                ctx.AddMessageBus(bus => bus.UseDisruptor().UseKafka(context.Configuration), CurrentAssembly);
+                ctx.AddStateBackend(state => state.UseMySql(context.Configuration));
+                ctx.AddApplication(app => app.UseMessageBus(MessageBusClientNames.Kafka), CurrentAssembly);
+                ctx.AddDomain(domain => domain.UseMessageBus(MessageBusClientNames.Kafka), context.Configuration);
+            });
 
-            // 1. 基础服务
-            services.AddSerialization();
-            services.AddTypes();
-
-            services.AddMessageBusDisruptor(assemblies);
-
-            services.AddDomainCommandServices();
-            services.AddDomainModelServices();
-            services.AddDomainEventServices();
-
-            services.AddStateBackendMySql(context.Configuration);
+            services.AddSingleton<IBankAccountRepository, MySqlBankAccountRepository>();
         }
     }
 }

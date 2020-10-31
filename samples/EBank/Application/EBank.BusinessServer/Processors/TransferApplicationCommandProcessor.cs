@@ -2,7 +2,7 @@
 using EBank.Domain.Commands.Transferring;
 using EBank.Domain.Models.Transferring;
 using MDA.Application.Commands;
-using MDA.Shared.Utils;
+using MDA.Infrastructure.Utils;
 
 namespace EBank.BusinessServer.Processors
 {

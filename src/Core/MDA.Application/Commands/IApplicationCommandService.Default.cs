@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 
 namespace MDA.Application.Commands
 {
-    public class ApplicationCommandService : IApplicationCommandService
+    public class DefaultApplicationCommandService : IApplicationCommandService
     {
         private readonly IApplicationCommandPublisher _publisher;
         private readonly IApplicationCommandExecutor _executor;
 
-        public ApplicationCommandService(
+        public DefaultApplicationCommandService(
             IApplicationCommandPublisher publisher,
             IApplicationCommandExecutor executor)
         {

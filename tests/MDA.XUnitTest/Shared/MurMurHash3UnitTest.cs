@@ -1,4 +1,4 @@
-﻿using MDA.Shared.Hashes;
+﻿using MDA.Infrastructure.Hashes;
 using Xunit;
 
 namespace MDA.XUnitTest.Shared

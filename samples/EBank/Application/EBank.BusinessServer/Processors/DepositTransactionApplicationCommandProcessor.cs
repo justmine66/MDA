@@ -1,7 +1,7 @@
 ﻿using EBank.Application.Commanding.Depositing;
 using EBank.Domain.Commands.Depositing;
 using MDA.Application.Commands;
-using MDA.Shared.Utils;
+using MDA.Infrastructure.Utils;
 
 namespace EBank.BusinessServer.Processors
 {

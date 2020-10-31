@@ -1,14 +1,12 @@
 using EBank.ApiServer.Application;
-using EBank.ApiServer.Application.Business;
-using MDA.Application.Commands;
-using MDA.Application.Notifications;
-using MDA.Domain.Commands;
-using MDA.Domain.Events;
-using MDA.Domain.Models;
-using MDA.MessageBus.Disruptor;
-using MDA.Shared.Serialization;
-using MDA.Shared.Types;
+using MDA.Application.DependencyInjection;
+using MDA.Domain.DependencyInjection;
+using MDA.Infrastructure.DependencyInjection;
+using MDA.MessageBus;
+using MDA.MessageBus.DependencyInjection;
+using MDA.MessageBus.Kafka;
 using MDA.StateBackend.MySql;
+using MDA.StateBackend.RDBMS.Shared.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -32,35 +30,17 @@ namespace EBank.ApiServer
         {
             services.AddControllers();
 
-            var assemblies = new[]
+            services.AddMdaServices(ctx =>
             {
-                Assembly.GetExecutingAssembly()
-            };
-
-            // 1. 基础服务
-            services.AddSerialization();
-            services.AddTypes();
-
-            services.AddMessageBusDisruptor(assemblies);
-
-            // 2. 应用层服务
-            services.AddApplicationNotificationServices();
-            services.AddApplicationCommandServices(assemblies);
-
-            // 3. 领域层服务
-            services.AddDomainCommandServices();
-            services.AddDomainModelServices();
-            services.AddDomainEventServices();
-
-            services.AddStateBackendMySql(Configuration);
+                ctx.AddInfrastructure();
+                ctx.AddMessageBus(bus => bus.UseKafka(Configuration), Assembly.GetExecutingAssembly());
+                ctx.AddStateBackend(state => state.UseMySql(Configuration));
+                ctx.AddApplication(app => app.UseMessageBus(MessageBusClientNames.Kafka));
+                ctx.AddDomain(domain => domain.UseMessageBus(MessageBusClientNames.Kafka), Configuration);
+            });
 
             // 4. 电子银行应用服务
             services.AddEBankAppServices();
-            services.AddSingleton<IBankAccountRepository, MySqlBankAccountRepository>();
-            //services.AddSingleton<IBankAccountQueryService, MySqlBankAccountQueryService>();
-
-            // 5. 本地服务
-            services.AddHostedService<StartupHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

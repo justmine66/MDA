@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\src\Core\MDA.Application\MDA.Application.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Core\MDA.MessageBus.Disruptor\MDA.MessageBus.Disruptor.csproj" />
+    <ProjectReference Include="..\..\..\..\src\MessageBuses\MDA.MessageBus.Kafka\MDA.MessageBus.Kafka.csproj" />
     <ProjectReference Include="..\..\..\..\src\StateBackends\MDA.StateBackend.MySql\MDA.StateBackend.MySql.csproj" />
     <ProjectReference Include="..\..\Domain\EBank.Domain\EBank.Domain.csproj" />
     <ProjectReference Include="..\EBank.Application.Commanding\EBank.Application.Commanding.csproj" />

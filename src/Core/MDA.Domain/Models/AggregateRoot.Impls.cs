@@ -2,7 +2,7 @@
 using MDA.Domain.Events;
 using MDA.Domain.Notifications;
 using MDA.MessageBus;
-using MDA.Shared.Utils;
+using MDA.Infrastructure.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;

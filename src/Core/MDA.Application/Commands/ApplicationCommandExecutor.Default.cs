@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace MDA.Application.Commands
 {
-    public class ApplicationCommandExecutor : IApplicationCommandExecutor
+    public class DefaultApplicationCommandExecutor : IApplicationCommandExecutor
     {
         public ApplicationCommandResult ExecuteCommand(IApplicationCommand command)
         {

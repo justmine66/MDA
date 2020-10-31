@@ -10,11 +10,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\Core\MDA.MessageBus.Disruptor\MDA.MessageBus.Disruptor.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Core\MDA.Application\MDA.Application.csproj" />
+    <ProjectReference Include="..\..\..\..\src\MessageBuses\MDA.MessageBus.Disruptor\MDA.MessageBus.Disruptor.csproj" />
+    <ProjectReference Include="..\..\..\..\src\MessageBuses\MDA.MessageBus.Kafka\MDA.MessageBus.Kafka.csproj" />
     <ProjectReference Include="..\..\..\..\src\StateBackends\MDA.StateBackend.MySql\MDA.StateBackend.MySql.csproj" />
-    <ProjectReference Include="..\..\Domain\EBank.Domain.Repositories\EBank.Domain.Repositories.csproj" />
+    <ProjectReference Include="..\..\Domain\EBank.Domain.Repositories.MySql\EBank.Domain.Repositories.MySql.csproj" />
     <ProjectReference Include="..\..\Domain\EBank.Domain\EBank.Domain.csproj" />
     <ProjectReference Include="..\EBank.Application.Commanding\EBank.Application.Commanding.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.Development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

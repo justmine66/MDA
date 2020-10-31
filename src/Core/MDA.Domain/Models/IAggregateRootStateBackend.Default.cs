@@ -1,5 +1,5 @@
 ﻿using MDA.Domain.Events;
-using MDA.Shared.Utils;
+using MDA.Infrastructure.Utils;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

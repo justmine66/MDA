@@ -1,7 +1,7 @@
 ﻿using EBank.Application.Commanding.Withdrawing;
 using EBank.Domain.Commands.Withdrawing;
 using MDA.Application.Commands;
-using MDA.Shared.Utils;
+using MDA.Infrastructure.Utils;
 
 namespace EBank.BusinessServer.Processors
 {

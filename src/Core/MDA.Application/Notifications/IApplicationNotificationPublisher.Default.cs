@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace MDA.Application.Notifications
 {
-    public class ApplicationNotificationPublisher : IApplicationNotificationPublisher
+    public class DefaultApplicationNotificationPublisher : IApplicationNotificationPublisher
     {
         private readonly IMessagePublisher _messagePublisher;
 
-        public ApplicationNotificationPublisher(
+        public DefaultApplicationNotificationPublisher(
             IMessagePublisher messagePublisher)
         {
             _messagePublisher = messagePublisher;

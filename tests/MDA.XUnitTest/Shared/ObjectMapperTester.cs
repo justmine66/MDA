@@ -1,4 +1,4 @@
-﻿using MDA.Shared.Mappers;
+﻿using MDA.Infrastructure.Mappers;
 using Xunit;
 
 namespace MDA.XUnitTest.Shared

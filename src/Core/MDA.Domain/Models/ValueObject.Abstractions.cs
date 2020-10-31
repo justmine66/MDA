@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MDA.Shared.Utils;
+using MDA.Infrastructure.Utils;
 
 namespace MDA.Domain.Models
 {

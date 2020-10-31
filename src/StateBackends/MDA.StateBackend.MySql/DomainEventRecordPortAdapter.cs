@@ -1,6 +1,6 @@
 ﻿using MDA.Domain.Events;
-using MDA.Shared.Serialization;
-using MDA.Shared.Types;
+using MDA.Infrastructure.Serialization;
+using MDA.Infrastructure.Typing;
 
 namespace MDA.StateBackend.MySql
 {

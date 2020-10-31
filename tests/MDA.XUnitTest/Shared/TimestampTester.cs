@@ -1,4 +1,4 @@
-﻿using MDA.Shared.DataStructures;
+﻿using MDA.Infrastructure.DataStructures;
 using System;
 using Xunit;
 

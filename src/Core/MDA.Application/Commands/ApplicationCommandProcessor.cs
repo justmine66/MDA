@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using MDA.MessageBus.DependencyInjection;
 
 namespace MDA.Application.Commands
 {

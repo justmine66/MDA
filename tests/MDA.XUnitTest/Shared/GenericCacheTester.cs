@@ -1,4 +1,4 @@
-﻿using MDA.Shared.DataStructures;
+﻿using MDA.Infrastructure.DataStructures;
 using Xunit;
 
 namespace MDA.XUnitTest.Shared

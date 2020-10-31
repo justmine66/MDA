@@ -1,5 +1,5 @@
-﻿using MDA.Shared.DataStructures;
-using MDA.Shared.Utils;
+﻿using MDA.Infrastructure.DataStructures;
+using MDA.Infrastructure.Utils;
 using System;
 using Xunit;
 using Xunit.Abstractions;

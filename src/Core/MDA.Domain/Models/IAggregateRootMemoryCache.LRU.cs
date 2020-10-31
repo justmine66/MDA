@@ -1,4 +1,4 @@
-﻿using MDA.Shared.DataStructures;
+﻿using MDA.Infrastructure.DataStructures;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;

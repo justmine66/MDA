@@ -1,6 +1,6 @@
 ﻿using MDA.Domain.Models;
 using MDA.MessageBus;
-using MDA.Shared.Hashes;
+using MDA.Infrastructure.Hashes;
 using System;
 
 namespace MDA.Domain.Commands
