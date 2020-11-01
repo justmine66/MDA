@@ -22,8 +22,6 @@ namespace EBank.ApiServer.Application.Business
         /// <param name="token"></param>
         public async Task OpenAccountAsync(OpenBankAccountApplicationCommand command, CancellationToken token = default)
         {
-            command.Topic = "EBank.Application.Commands";
-
             await _commandService.PublishAsync(command, token);
         }
 

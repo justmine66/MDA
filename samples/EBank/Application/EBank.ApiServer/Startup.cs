@@ -25,7 +25,6 @@ namespace EBank.ApiServer
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
@@ -34,16 +33,15 @@ namespace EBank.ApiServer
             {
                 ctx.AddInfrastructure();
                 ctx.AddMessageBus(bus => bus.UseKafka(Configuration), Assembly.GetExecutingAssembly());
-                ctx.AddStateBackend(state => state.UseMySql(Configuration));
-                ctx.AddApplication(app => app.UseMessageBus(MessageBusClientNames.Kafka));
+                ctx.AddApplication(app => app.UseMessageBus(MessageBusClientNames.Kafka, Configuration));
                 ctx.AddDomain(domain => domain.UseMessageBus(MessageBusClientNames.Kafka), Configuration);
+                ctx.AddStateBackend(state => state.UseMySql(Configuration));
             });
 
             // 4. 电子银行应用服务
             services.AddEBankAppServices();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

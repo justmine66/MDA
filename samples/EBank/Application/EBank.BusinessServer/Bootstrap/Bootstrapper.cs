@@ -24,9 +24,9 @@ namespace EBank.BusinessServer.Bootstrap
             {
                 ctx.AddInfrastructure();
                 ctx.AddMessageBus(bus => bus.UseDisruptor().UseKafka(context.Configuration), CurrentAssembly);
-                ctx.AddStateBackend(state => state.UseMySql(context.Configuration));
                 ctx.AddApplication(app => app.UseMessageBus(MessageBusClientNames.Kafka), CurrentAssembly);
-                ctx.AddDomain(domain => domain.UseMessageBus(MessageBusClientNames.Kafka), context.Configuration);
+                ctx.AddDomain(domain => domain.UseMessageBus(MessageBusClientNames.Kafka, context.Configuration), context.Configuration);
+                ctx.AddStateBackend(state => state.UseMySql(context.Configuration));
             });
 
             services.AddSingleton<IBankAccountRepository, MySqlBankAccountRepository>();
