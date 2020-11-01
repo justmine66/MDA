@@ -3,11 +3,6 @@ using MDA.Infrastructure.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace MDA.MessageBus.Disruptor
 {
@@ -32,13 +27,13 @@ namespace MDA.MessageBus.Disruptor
                     var handlerProxies = scopeServiceProvider.GetServices(handlerProxyTypeDefinition.MakeGenericType(messageType));
                     if (handlerProxies.IsNotEmpty())
                     {
-                        DoHandle(handlerProxies, data.Message, logger);
+                        MessageHandlerUtils.DynamicInvokeHandle(handlerProxies, data.Message, logger);
                     }
 
                     var asyncHandlerProxies = scopeServiceProvider.GetServices(asyncHandlerProxyTypeDefinition.MakeGenericType(messageType));
                     if (asyncHandlerProxies.IsNotEmpty())
                     {
-                        DoAsyncHandle(asyncHandlerProxies, data.Message, logger);
+                        MessageHandlerUtils.DynamicInvokeAsyncHandle(asyncHandlerProxies, data.Message, logger);
                     }
                 }
             }
@@ -54,64 +49,6 @@ namespace MDA.MessageBus.Disruptor
                 }
 
                 logger.LogError(message);
-            }
-        }
-
-        private void DoHandle(IEnumerable<object> handlerProxies, IMessage message, ILogger logger)
-        {
-            var proxyMessageType = typeof(IMessage);
-            var messageParameter = Expression.Parameter(proxyMessageType, "message");
-            var methodName = "Handle";
-
-            foreach (var proxy in handlerProxies)
-            {
-                var method = proxy.GetType()
-                    .GetMethod(methodName,
-                        BindingFlags.Instance | BindingFlags.Public,
-                        null,
-                        new[] { proxyMessageType },
-                        null);
-                if (method == null)
-                {
-                    logger.LogError($"No method: {methodName} was found in {proxyMessageType.FullName}.");
-                    continue;
-                }
-
-                var call = Expression.Call(Expression.Constant(proxy), method, messageParameter);
-                var lambda = Expression.Lambda<Action<IMessage>>(call, messageParameter);
-                var methodDelegate = lambda.Compile();
-
-                methodDelegate(message);
-            }
-        }
-
-        private void DoAsyncHandle(IEnumerable<object> handlerProxies, IMessage message, ILogger logger)
-        {
-            var proxyMessageType = typeof(IMessage);
-            var tokenType = typeof(CancellationToken);
-            var tokenParameter = Expression.Parameter(tokenType, "token");
-            var messageParameter = Expression.Parameter(proxyMessageType, "message");
-            var methodName = "HandleAsync";
-
-            foreach (var proxy in handlerProxies)
-            {
-                var method = proxy.GetType()
-                    .GetMethod(methodName,
-                        BindingFlags.Instance | BindingFlags.Public,
-                        null,
-                        new[] { proxyMessageType, tokenType },
-                        null);
-                if (method == null)
-                {
-                    logger.LogError($"No method: {methodName} was found in {proxyMessageType.FullName}.");
-                    continue;
-                }
-
-                var call = Expression.Call(Expression.Constant(proxy), method, messageParameter, tokenParameter);
-                var lambda = Expression.Lambda<Func<IMessage, CancellationToken, Task>>(call, messageParameter, tokenParameter);
-                var methodDelegate = lambda.Compile();
-
-                methodDelegate(message, CancellationToken.None).GetAwaiter().GetResult();
             }
         }
     }

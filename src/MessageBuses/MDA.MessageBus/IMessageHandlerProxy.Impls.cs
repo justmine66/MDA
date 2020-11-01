@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace MDA.MessageBus
 {
-    public class DefaultMessageHandlerProxy<TMessage> : IMessageHandlerProxy<TMessage> 
+    public class DefaultMessageHandlerProxy<TMessage> : IMessageHandlerProxy<TMessage>
         where TMessage : class, IMessage
     {
         private readonly IEnumerable<IMessageHandler<TMessage>> _handlers;
@@ -16,6 +16,11 @@ namespace MDA.MessageBus
 
         public void Handle(IMessage message)
         {
+            if (_handlers == null)
+            {
+                return;
+            }
+
             foreach (var handler in _handlers)
             {
                 handler.Handle(message as TMessage);
@@ -23,7 +28,7 @@ namespace MDA.MessageBus
         }
     }
 
-    public class DefaultAsyncMessageHandlerProxy<TMessage> : IAsyncMessageHandlerProxy<TMessage> 
+    public class DefaultAsyncMessageHandlerProxy<TMessage> : IAsyncMessageHandlerProxy<TMessage>
         where TMessage : class, IMessage
     {
         private readonly IEnumerable<IAsyncMessageHandler<TMessage>> _handlers;
@@ -35,6 +40,11 @@ namespace MDA.MessageBus
 
         public async Task HandleAsync(IMessage message, CancellationToken token = default)
         {
+            if (_handlers == null)
+            {
+                return;
+            }
+
             foreach (var handler in _handlers)
             {
                 await handler.HandleAsync(message as TMessage, token);
