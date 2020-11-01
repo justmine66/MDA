@@ -70,11 +70,15 @@ namespace MDA.MessageBus.Kafka
                     return;
                 }
 
-                _logger.LogError("The kafka message publish failed!");
+                var jsonSerializer = _serviceProvider.GetService<IJsonSerializer>();
+
+                _logger.LogError($"The kafka message publish failed, Topic: [{topic}], Message: {jsonSerializer.Serialize(message)}");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Publishing the kafka message, Topic: [{topic}], Message: [{message.Id}, {message.GetType().FullName}], has a unknown exception: {ex}.");
+                var jsonSerializer = _serviceProvider.GetService<IJsonSerializer>();
+
+                _logger.LogError($"Publishing the kafka message, Topic: [{topic}], Message: {jsonSerializer.Serialize(message)}, has a unknown exception: {ex}.");
             }
             finally
             {
@@ -97,10 +101,10 @@ namespace MDA.MessageBus.Kafka
 
             foreach (var header in kafkaMessage.Headers)
             {
-                if (header.Key == "MessageType")
-                {
-                    messageTypeFullName = Encoding.UTF8.GetString(header.GetValueBytes());
-                }
+                if (header.Key != "MessageType") continue;
+
+                messageTypeFullName = Encoding.UTF8.GetString(header.GetValueBytes());
+                break;
             }
 
             var typeResolver = _serviceProvider.GetService<ITypeResolver>();

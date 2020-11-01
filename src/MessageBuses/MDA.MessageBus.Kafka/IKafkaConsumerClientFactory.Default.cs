@@ -3,6 +3,7 @@ using MDA.Infrastructure.Utils;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
 using System.Threading;
 
 namespace MDA.MessageBus.Kafka
@@ -54,6 +55,8 @@ namespace MDA.MessageBus.Kafka
                 }
 
                 _consumerClient.Subscribe(topics);
+
+                _logger.LogInformation($"Subscribed topics: {topics.Aggregate((x, y) => $"{x},{y}")}");
 
                 return _consumerClient;
             }
