@@ -8,16 +8,16 @@ namespace MDA.Domain.Events
         /// <summary>
         /// 已成功
         /// </summary>
-        Succeed = 0 << 0,
+        Succeed = 1 << 0,
 
         /// <summary>
         /// 已失败
         /// </summary>
-        Failed = 0 << 1,
+        Failed = 1 << 1,
 
         /// <summary>
         /// 已超时
         /// </summary>
-        TimeOuted = 0 << 2,
+        TimeOuted = 1 << 2,
     }
 }
