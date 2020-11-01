@@ -2,16 +2,21 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 namespace MDA.Domain.Events
 {
     public class DefaultDomainEventPublisher : IDomainEventPublisher
     {
         private readonly IMessagePublisher _messagePublisher;
+        private readonly DomainEventOptions _options;
 
-        public DefaultDomainEventPublisher(IMessagePublisher messagePublisher)
+        public DefaultDomainEventPublisher(
+            IMessagePublisher messagePublisher, 
+            IOptions<DomainEventOptions> options)
         {
             _messagePublisher = messagePublisher;
+            _options = options.Value;
         }
 
         public void Publish(IDomainEvent @event)
@@ -20,6 +25,8 @@ namespace MDA.Domain.Events
             {
                 throw new ArgumentNullException(nameof(@event));
             }
+
+            @event.Topic = _options.Topic;
 
             _messagePublisher.Publish(@event);
         }
@@ -31,6 +38,8 @@ namespace MDA.Domain.Events
                 throw new ArgumentNullException(nameof(@event));
             }
 
+            @event.Topic = _options.Topic;
+
             _messagePublisher.Publish(@event);
         }
 
@@ -41,6 +50,8 @@ namespace MDA.Domain.Events
                 throw new ArgumentNullException(nameof(@event));
             }
 
+            @event.Topic = _options.Topic;
+
             await _messagePublisher.PublishAsync(@event, token);
         }
 
@@ -50,6 +61,8 @@ namespace MDA.Domain.Events
             {
                 throw new ArgumentNullException(nameof(@event));
             }
+
+            @event.Topic = _options.Topic;
 
             await _messagePublisher.PublishAsync(@event, token);
         }
