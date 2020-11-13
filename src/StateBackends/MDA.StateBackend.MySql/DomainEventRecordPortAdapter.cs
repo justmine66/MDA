@@ -1,6 +1,7 @@
 ﻿using MDA.Domain.Events;
 using MDA.Infrastructure.Serialization;
 using MDA.Infrastructure.Typing;
+using System;
 
 namespace MDA.StateBackend.MySql
 {
@@ -22,7 +23,7 @@ namespace MDA.StateBackend.MySql
                 DomainEventId = @event.Id,
                 DomainEventType = @event.GetType().FullName,
                 DomainEventVersion = @event.Version,
-                Payload = serializer.Serialize(@event)
+                Payload = serializer.Serialize(@event),
             };
 
         public static IDomainEvent ToDomainEvent(
@@ -32,12 +33,12 @@ namespace MDA.StateBackend.MySql
         {
             if (!resolver.TryResolveType(record.DomainEventType, out var domainEventType))
             {
-                return null;
+                throw new TypeLoadException($"Cannot resolve type: {record.DomainEventType}.");
             }
 
             if (!(typeof(IDomainEvent).IsAssignableFrom(domainEventType)))
             {
-                return null;
+                throw new InvalidOperationException($"The {record.DomainEventType} cannot assign to {typeof(IDomainEvent).FullName}.");
             }
 
             var obj = binarySerializer.Deserialize(record.Payload, domainEventType);

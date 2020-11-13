@@ -63,5 +63,10 @@ namespace MDA.StateBackend.MySql
         /// 有效载荷
         /// </summary>
         public byte[] Payload { get; set; }
+
+        /// <summary>
+        /// 领域事件载荷容量，单位：字节。
+        /// </summary>
+        public int DomainEventPayloadBytes => Payload.Length;
     }
 }

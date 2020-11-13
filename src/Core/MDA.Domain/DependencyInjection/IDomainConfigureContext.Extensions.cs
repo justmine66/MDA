@@ -1,4 +1,5 @@
 ﻿using MDA.Domain.Events;
+using MDA.Domain.Notifications;
 using MDA.MessageBus;
 using MDA.MessageBus.DependencyInjection;
 using Microsoft.Extensions.Configuration;
@@ -21,11 +22,18 @@ namespace MDA.Domain.DependencyInjection
             IConfiguration configuration = null)
         {
             context.Services.AddTypedMessagePublisher<IDomainEventPublisher, DefaultDomainEventPublisher>(name);
+            context.Services.AddTypedMessagePublisher<IDomainNotificationPublisher, DefaultDomainNotificationPublisher>(name);
 
             context.Services.Configure<DomainEventOptions>(_ => { });
             if (configuration != null)
             {
                 context.Services.Configure<DomainEventOptions>(configuration.GetSection(nameof(DomainEventOptions)));
+            }
+
+            context.Services.Configure<DomainNotificationOptions>(_ => { });
+            if (configuration != null)
+            {
+                context.Services.Configure<DomainNotificationOptions>(configuration.GetSection(nameof(DomainNotificationOptions)));
             }
 
             return context;

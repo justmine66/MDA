@@ -1,3 +1,4 @@
+using System.IO;
 using EBank.ApiServer.Application;
 using MDA.Application.DependencyInjection;
 using MDA.Domain.DependencyInjection;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using System.Reflection;
 
 namespace EBank.ApiServer
@@ -28,6 +30,20 @@ namespace EBank.ApiServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "EBank HTTP API",
+                    Version = "v1",
+                    Description = "The EBank Service HTTP API"
+                });
+
+                var basePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+                var xmlPath = Path.Combine(basePath, "EBank.ApiServer.xml");
+                options.IncludeXmlComments(xmlPath);
+            });
 
             services.AddMdaServices(ctx =>
             {
@@ -48,6 +64,14 @@ namespace EBank.ApiServer
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger()
+                .UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "EBank API V1");
+                c.OAuthClientId("ebank");
+                c.OAuthAppName("EBank Swagger UI");
+            });
 
             app.UseRouting();
 

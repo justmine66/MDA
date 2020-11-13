@@ -10,6 +10,7 @@ namespace EBank.ApiServer.Application.Querying
 {
     public class MySqlBankAccountReadDbSynchronizer :
         IAsyncDomainEventHandler<AccountOpenedDomainEvent>,
+        IAsyncDomainEventHandler<AccountNameChangedDomainEvent>,
         IAsyncDomainEventHandler<DepositTransactionSubmittedDomainEvent>,
         IAsyncDomainEventHandler<WithdrawTransactionSubmittedDomainEvent>,
         IAsyncDomainEventHandler<TransferTransactionSubmittedDomainEvent>
@@ -41,6 +42,19 @@ namespace EBank.ApiServer.Application.Querying
             };
 
             await _db.ExecuteAsync(sql, parameter, token);
+        }
+
+        public async Task HandleAsync(AccountNameChangedDomainEvent @event, CancellationToken token)
+        {
+            var sql = $"UPDATE `{Tables.BankAccounts}` SET `Name`=@Name WHERE `Id`=@AccountId;";
+
+            var po = new
+            {
+                AccountId = @event.AggregateRootId,
+                Name = @event.AccountName
+            };
+
+            await _db.ExecuteAsync(sql, po, token);
         }
 
         public async Task HandleAsync(DepositTransactionSubmittedDomainEvent @event, CancellationToken token = default)

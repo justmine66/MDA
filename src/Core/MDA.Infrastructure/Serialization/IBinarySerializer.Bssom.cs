@@ -5,7 +5,7 @@ namespace MDA.Infrastructure.Serialization
 {
     public class BssomBinarySerializer : IBinarySerializer
     {
-        public byte[] Serialize<T>(T obj)
+        public byte[] Serialize<T>(T obj, params string[] ignoreKeys)
         {
             return BssomSerializer.Serialize(obj);
         }

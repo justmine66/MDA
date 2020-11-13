@@ -1,4 +1,5 @@
-﻿using MDA.Application.Commands;
+﻿using System.ComponentModel.DataAnnotations;
+using MDA.Application.Commands;
 using MDA.Infrastructure.Utils;
 
 namespace EBank.Application.Commanding.Accounts
@@ -16,16 +17,18 @@ namespace EBank.Application.Commanding.Accounts
         /// <summary>
         /// 账户名
         /// </summary>
+        [Required]
         public string AccountName { get; set; }
 
         /// <summary>
         /// 开户行
         /// </summary>
+        [Required]
         public string Bank { get; set; }
 
         /// <summary>
         /// 初始余额
         /// </summary>
-        public decimal InitialBalance { get; set; }
+        public decimal? InitialBalance { get; set; }
     }
 }

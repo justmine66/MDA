@@ -1,4 +1,5 @@
 ﻿using MDA.Domain.Events;
+using MDA.Domain.Models;
 using MDA.StateBackend.RDBMS.Shared;
 using MDA.StateBackend.RDBMS.Shared.DependencyInjection;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +13,7 @@ namespace MDA.StateBackend.MySql
         {
             context.Services.AddSingleton<IRelationalDbStorageFactory, MySqlRelationalDbStorageFactory>();
             context.Services.AddSingleton<IDomainEventStateBackend, MySqlDomainEventStateBackend>();
+            context.Services.AddSingleton(typeof(IAggregateRootCheckpointStateBackend<>), typeof(MySqlAggregateRootCheckpointStateBackend<>));
 
             context.Services.Configure<MySqlStateBackendOptions>(_ => { });
             if (configuration != null)

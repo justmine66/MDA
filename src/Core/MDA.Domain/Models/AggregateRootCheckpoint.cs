@@ -1,44 +1,61 @@
-﻿using System;
+﻿using MDA.Infrastructure.Serialization;
+using System;
 
 namespace MDA.Domain.Models
 {
     /// <summary>
-    /// 表示聚合根一次完整的快照检查点
+    /// 聚合根检查点
+    /// 表示聚合根某一个时刻的一次完整快照
     /// </summary>
-    public class AggregateRootCheckpoint
+    public class AggregateRootCheckpoint<TPayload>
+        where TPayload : ISerializationMetadataProvider
     {
-        public AggregateRootCheckpoint(IEventSourcedAggregateRoot aggregateRoot, int generation = 0)
+        public AggregateRootCheckpoint(
+            string aggregateRootId,
+            Type aggregateRootType,
+            int aggregateRootGeneration,
+            long aggregateRootVersion,
+            TPayload payload)
         {
-            AggregateRoot = aggregateRoot;
-            LastModified = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            Generation = generation;
+            AggregateRootId = aggregateRootId;
+            AggregateRootType = aggregateRootType;
+            AggregateRootGeneration = aggregateRootGeneration;
+            AggregateRootVersion = aggregateRootVersion;
+            Payload = payload;
+            Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         }
 
         /// <summary>
-        /// 聚合根
+        /// 聚合根标识
         /// </summary>
-        public IEventSourcedAggregateRoot AggregateRoot { get; set; }
+        public string AggregateRootId { get; }
 
         /// <summary>
-        /// 最后更新时间戳
+        /// 聚合根类型完全限定名
         /// </summary>
-        public long LastModified { get; set; }
+        public Type AggregateRootType { get; }
 
         /// <summary>
-        /// 第几代
+        /// 第几代聚合根,随着检查点(Checkpoint)快照而递增.
         /// </summary>
-        public int Generation { get; set; }
+        public int AggregateRootGeneration { get; }
 
-        public AggregateRootCheckpoint Refresh(IEventSourcedAggregateRoot aggregateRoot)
-        {
-            AggregateRoot = aggregateRoot;
-            LastModified = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            Generation++;
+        /// <summary>
+        /// 聚合根版本
+        /// </summary>
+        public long AggregateRootVersion { get; }
 
-            return this;
-        }
+        /// <summary>
+        /// 时间戳
+        /// </summary>
+        public long Timestamp { get; set; }
+
+        /// <summary>
+        /// 有效载荷
+        /// </summary>
+        public TPayload Payload { get; set; }
 
         public override string ToString()
-            => $"AggregateRootId: {AggregateRoot.Id},AggregateRootType: {AggregateRoot.GetType()}, Generation: {Generation}, LastModified: {LastModified}";
+            => $"AggregateRootId: {AggregateRootId}, AggregateRootType: {AggregateRootType.FullName}, AggregateRootGeneration: {AggregateRootGeneration}, AggregateRootVersion: {AggregateRootVersion}, Timestamp: {Timestamp}";
     }
 }

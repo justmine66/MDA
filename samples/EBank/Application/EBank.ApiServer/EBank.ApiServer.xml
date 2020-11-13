@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>EBank.ApiServer</name>
+    </assembly>
+    <members>
+        <member name="T:EBank.ApiServer.Application.Business.IEBankApplicationService">
+            <summary>
+            电子银行应用层服务
+            </summary>
+        </member>
+        <member name="M:EBank.ApiServer.Application.Business.IEBankApplicationService.OpenAccountAsync(EBank.Application.Commanding.Accounts.OpenBankAccountApplicationCommand,System.Threading.CancellationToken)">
+            <summary>
+            开户
+            </summary>
+            <param name="command">命令</param>
+            <param name="token">取消令牌</param>
+        </member>
+        <member name="M:EBank.ApiServer.Application.Business.IEBankApplicationService.ChangeAccountNameAsync(EBank.Application.Commanding.Accounts.ChangeAccountNameApplicationCommand,System.Threading.CancellationToken)">
+            <summary>
+            变更账户名
+            </summary>
+            <param name="command">命令</param>
+            <param name="token">取消令牌</param>
+        </member>
+        <member name="M:EBank.ApiServer.Application.Business.IEBankApplicationService.DepositedFundsAsync(EBank.Application.Commanding.Depositing.StartDepositApplicationCommand,System.Threading.CancellationToken)">
+            <summary>
+            存款
+            </summary>
+            <param name="command">命令</param>
+            <param name="token">取消令牌</param>
+        </member>
+        <member name="M:EBank.ApiServer.Application.Business.IEBankApplicationService.WithdrawFundsAsync(EBank.Application.Commanding.Withdrawing.StartWithdrawApplicationCommand,System.Threading.CancellationToken)">
+            <summary>
+            取款
+            </summary>
+            <param name="command"></param>
+            <param name="token">取消令牌</param>
+        </member>
+        <member name="M:EBank.ApiServer.Application.Business.IEBankApplicationService.TransferFundsAsync(EBank.Application.Commanding.Transferring.StartTransferApplicationCommand,System.Threading.CancellationToken)">
+            <summary>
+            转账
+            </summary>
+            <param name="command">命令</param>
+            <param name="token">取消令牌</param>
+        </member>
+        <member name="M:EBank.ApiServer.Application.Business.DefaultEBankApplicationService.OpenAccountAsync(EBank.Application.Commanding.Accounts.OpenBankAccountApplicationCommand,System.Threading.CancellationToken)">
+            <summary>
+            开户
+            </summary>
+            <param name="command"></param>
+            <param name="token"></param>
+        </member>
+        <member name="M:EBank.ApiServer.Application.Business.DefaultEBankApplicationService.ChangeAccountNameAsync(EBank.Application.Commanding.Accounts.ChangeAccountNameApplicationCommand,System.Threading.CancellationToken)">
+            <summary>
+            变更账户名
+            </summary>
+            <param name="command"></param>
+            <param name="token"></param>
+            <returns></returns>
+        </member>
+        <member name="M:EBank.ApiServer.Application.Business.DefaultEBankApplicationService.DepositedFundsAsync(EBank.Application.Commanding.Depositing.StartDepositApplicationCommand,System.Threading.CancellationToken)">
+            <summary>
+            存款
+            </summary>
+            <param name="command"></param>
+            <param name="token"></param>
+        </member>
+        <member name="M:EBank.ApiServer.Application.Business.DefaultEBankApplicationService.WithdrawFundsAsync(EBank.Application.Commanding.Withdrawing.StartWithdrawApplicationCommand,System.Threading.CancellationToken)">
+            <summary>
+            取款
+            </summary>
+            <param name="command"></param>
+            <param name="token"></param>
+        </member>
+        <member name="M:EBank.ApiServer.Application.Business.DefaultEBankApplicationService.TransferFundsAsync(EBank.Application.Commanding.Transferring.StartTransferApplicationCommand,System.Threading.CancellationToken)">
+            <summary>
+            转账
+            </summary>
+            <param name="command"></param>
+            <param name="token"></param>
+        </member>
+        <member name="T:EBank.ApiServer.Application.Querying.IBankAccountQueryService">
+            <summary>
+            银行账户查询服务
+            </summary>
+        </member>
+        <member name="P:EBank.ApiServer.Application.Querying.Models.TransferAccountInfo.Id">
+            <summary>
+            账户号
+            </summary>
+        </member>
+        <member name="P:EBank.ApiServer.Application.Querying.Models.TransferAccountInfo.Name">
+            <summary>
+            账户名
+            </summary>
+        </member>
+        <member name="P:EBank.ApiServer.Application.Querying.Models.TransferAccountInfo.Bank">
+            <summary>
+            开户行
+            </summary>
+        </member>
+        <member name="T:EBank.ApiServer.Controllers.BankAccountsController">
+            <summary>
+            银行账户控制器
+            </summary>
+        </member>
+        <member name="M:EBank.ApiServer.Controllers.BankAccountsController.Open(EBank.Application.Commanding.Accounts.OpenBankAccountApplicationCommand)">
+            <summary>
+            开户
+            </summary>
+            <param name="command">命令</param>
+            <returns></returns>
+            <response code="201">服务器已接受命令</response>
+            <response code="400">请求参数不合法</response>
+            <response code="401">身份认证失败</response>
+        </member>
+        <member name="M:EBank.ApiServer.Controllers.BankAccountsController.ChangeName(EBank.Application.Commanding.Accounts.ChangeAccountNameApplicationCommand)">
+            <summary>
+            变更账户名
+            </summary>
+            <param name="command">命令</param>
+            <returns></returns>
+        </member>
+        <member name="T:EBank.ApiServer.Controllers.TransactionsController">
+            <summary>
+            交易控制器
+            </summary>
+        </member>
+        <member name="M:EBank.ApiServer.Controllers.TransactionsController.DepositAsync(EBank.Application.Commanding.Depositing.StartDepositApplicationCommand)">
+            <summary>
+            存款
+            </summary>
+            <param name="command">命令</param>
+            <returns></returns>
+        </member>
+        <member name="M:EBank.ApiServer.Controllers.TransactionsController.WithdrawAsync(EBank.Application.Commanding.Withdrawing.StartWithdrawApplicationCommand)">
+            <summary>
+            取款
+            </summary>
+            <param name="command">命令</param>
+            <returns></returns>
+        </member>
+        <member name="M:EBank.ApiServer.Controllers.TransactionsController.WithdrawAsync(EBank.Application.Commanding.Transferring.StartTransferApplicationCommand)">
+            <summary>
+            转账
+            </summary>
+            <param name="command">命令</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

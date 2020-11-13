@@ -16,7 +16,7 @@ namespace MDA.Infrastructure.Utils
             }
         }
 
-        public static T EatExceptionOrDefault<T>(Func<T> action, T defaultValue = default(T))
+        public static T EatExceptionOrDefault<T>(Func<T> action, T defaultValue = default)
         {
             try
             {

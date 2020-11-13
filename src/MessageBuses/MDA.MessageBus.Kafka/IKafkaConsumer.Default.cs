@@ -51,13 +51,6 @@ namespace MDA.MessageBus.Kafka
                     // Ensure the consumer leaves the group cleanly and final offsets are committed.
                     client.Close();
                 }
-                catch (Exception)
-                {
-                    // Ensure the consumer leaves the group cleanly and final offsets are committed.
-                    client.Close();
-
-                    throw;
-                }
             }
         }
 

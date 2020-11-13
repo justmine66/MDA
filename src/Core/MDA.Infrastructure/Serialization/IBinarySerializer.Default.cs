@@ -1,5 +1,5 @@
-﻿using System;
-using MDA.Infrastructure.Utils;
+﻿using MDA.Infrastructure.Utils;
+using System;
 
 namespace MDA.Infrastructure.Serialization
 {
@@ -12,9 +12,9 @@ namespace MDA.Infrastructure.Serialization
             _jsonSerializer = jsonSerializer;
         }
 
-        public byte[] Serialize<T>(T obj)
+        public byte[] Serialize<T>(T obj, params string[] ignoreKeys)
         {
-            var json = _jsonSerializer.Serialize(obj);
+            var json = _jsonSerializer.Serialize(obj, ignoreKeys);
 
             return BinarySerializationHelper.SerializeString(json);
         }

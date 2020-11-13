@@ -1,8 +1,8 @@
 ﻿using MDA.Domain.Commands;
 using MDA.Domain.Events;
 using MDA.Domain.Notifications;
-using MDA.MessageBus;
 using MDA.Infrastructure.Utils;
+using MDA.MessageBus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -87,7 +87,6 @@ namespace MDA.Domain.Models
             // 2. 添加到当前变更领域通知列表
             if (MutatingDomainNotifications == null)
             {
-                Version = 0;
                 MutatingDomainNotifications = new List<IDomainNotification>();
             }
 
@@ -197,6 +196,8 @@ namespace MDA.Domain.Models
 
         public override int GetHashCode()
             => HashHelper.ComputeHashCode(Id, Version);
+
+        public string[] IgnoreKeys => new[] { nameof(MutatingDomainEvents), nameof(MutatingDomainNotifications), nameof(IgnoreKeys) };
     }
 
     public abstract class EventSourcedAggregateRoot<TId> :

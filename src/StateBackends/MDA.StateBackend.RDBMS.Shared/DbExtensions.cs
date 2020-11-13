@@ -1,8 +1,10 @@
-﻿using System;
+﻿using MDA.Infrastructure.Utils;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -353,19 +355,45 @@ namespace MDA.StateBackend.RDBMS.Shared
             //This is done like this in order to box value types.
             //Otherwise property.SetValue() would have a copy of the struct, which would
             //get garbage collected. Consequently the original struct value would not be set.            
-            var obj = Activator.CreateInstance<TResult>();
-            var properties = obj.GetType().GetProperties();
-
-            foreach (var t in properties)
+            var result = Activator.CreateInstance<TResult>();
+            var properties = result.GetType().GetProperties();
+            var columnNames = record.GetColumnNames();
+            if (columnNames.IsEmpty())
             {
-                var rp = record[t.Name];
-                if (!Equals(rp, DBNull.Value))
-                {
-                    t.SetValue(obj, rp, null);
-                }
+                return default;
             }
 
-            return obj;
+            foreach (var property in properties)
+            {
+                if (!property.CanWrite)
+                {
+                    continue;
+                }
+
+                var name = property.Name;
+                if (!columnNames.Contains(name))
+                {
+                    continue;
+                }
+
+                var rp = record[name];
+                if (Equals(rp, DBNull.Value))
+                {
+                    continue;
+                }
+
+                property.SetValue(result, rp, null);
+            }
+
+            return result;
+        }
+
+        public static IEnumerable<string> GetColumnNames(this IDataRecord record)
+        {
+            for (var i = 0; i < record.FieldCount; i++)
+            {
+                yield return record.GetName(i);
+            }
         }
     }
 }

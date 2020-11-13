@@ -6,11 +6,11 @@ namespace MDA.Domain.Models
 {
     public interface IAggregateRootCheckpointManager
     {
-        Task SnapshotCheckpointAsync<TAggregateRootId>(
-            IEventSourcedAggregateRoot<TAggregateRootId> aggregateRoot,
+        Task CheckpointAsync(
+            IEventSourcedAggregateRoot aggregateRoot,
             CancellationToken token = default);
 
-        Task<AggregateRootCheckpoint> RestoreCheckpointAsync(
+        Task<AggregateRootCheckpoint<IEventSourcedAggregateRoot>> GetLatestCheckpointAsync(
             string aggregateRootId,
             Type aggregateRootType,
             CancellationToken token = default);

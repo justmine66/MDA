@@ -41,6 +41,7 @@ namespace MDA.Infrastructure.DataStructures
         private long _nextGeneration;
         private long _generationToFree;
         private readonly TimeSpan _maxAge;
+        private readonly TimeSpan _ttl;
 
         // We want this to be a reference type so that we can update the values in the cache
         // without having to call AddOrUpdate, which is a nuisance
@@ -68,9 +69,10 @@ namespace MDA.Infrastructure.DataStructures
         /// Creates a new LRU cache.
         /// </summary>
         /// <param name="maxSize">Maximum number of entries to allow.</param>
+        /// <param name="ttl">Time of live of an entry.</param>
         /// <param name="maxAge">Maximum age of an entry.</param>
         /// <param name="fetcher"></param>
-        public LruCache(int maxSize, TimeSpan maxAge, FetchValueDelegate fetcher = null)
+        public LruCache(int maxSize, TimeSpan ttl, TimeSpan maxAge, FetchValueDelegate fetcher = null)
         {
             if (maxSize <= 0)
             {
@@ -116,6 +118,12 @@ namespace MDA.Infrastructure.DataStructures
             _cache.Clear();
         }
 
+        /// <summary>
+        /// 尝试获取缓存值，如果超过 MaxAge，该条目将被惰性清理掉。
+        /// </summary>
+        /// <param name="key">键</param>
+        /// <param name="value">键</param>
+        /// <returns>是否成功</returns>
         public bool TryGetValue(TKey key, out TValue value)
         {
             value = default;

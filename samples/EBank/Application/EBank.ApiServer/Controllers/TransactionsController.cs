@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace EBank.ApiServer.Controllers
 {
+    /// <summary>
+    /// 交易控制器
+    /// </summary>
     [ApiController]
     [Route("api/v1/Transactions")]
     public class TransactionsController : ControllerBase
@@ -18,27 +21,42 @@ namespace EBank.ApiServer.Controllers
             _eBank = eBank;
         }
 
+        /// <summary>
+        /// 存款
+        /// </summary>
+        /// <param name="command">命令</param>
+        /// <returns></returns>
         [Route("Deposit")]
         [HttpPost]
-        public async Task<IActionResult> Deposit(StartDepositApplicationCommand command)
+        public async Task<IActionResult> DepositAsync(StartDepositApplicationCommand command)
         {
             await _eBank.DepositedFundsAsync(command);
 
             return Ok();
         }
 
+        /// <summary>
+        /// 取款
+        /// </summary>
+        /// <param name="command">命令</param>
+        /// <returns></returns>
         [Route("Withdraw")]
         [HttpPost]
-        public async Task<IActionResult> Withdraw(StartWithdrawApplicationCommand command)
+        public async Task<IActionResult> WithdrawAsync(StartWithdrawApplicationCommand command)
         {
             await _eBank.WithdrawFundsAsync(command);
 
             return Ok();
         }
 
+        /// <summary>
+        /// 转账
+        /// </summary>
+        /// <param name="command">命令</param>
+        /// <returns></returns>
         [Route("Transfer")]
         [HttpPost]
-        public async Task<IActionResult> Withdraw(StartTransferApplicationCommand command)
+        public async Task<IActionResult> WithdrawAsync(StartTransferApplicationCommand command)
         {
             await _eBank.TransferFundsAsync(command);
 

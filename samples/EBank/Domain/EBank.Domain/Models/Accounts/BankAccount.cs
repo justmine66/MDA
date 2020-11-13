@@ -1,6 +1,5 @@
 ﻿using EBank.Domain.Commands.Accounts;
 using EBank.Domain.Events.Accounts;
-using EBank.Domain.Models.Transferring;
 using EBank.Domain.Notifications;
 using MDA.Domain.Models;
 using MDA.Domain.Shared;
@@ -112,6 +111,17 @@ namespace EBank.Domain.Models.Accounts
             var @event = new AccountOpenedDomainEvent(command.AccountName, command.Bank, command.InitialBalance);
 
             ApplyDomainEvent(@event);
+        }
+
+        /// <summary>
+        /// 变更账户名
+        /// </summary>
+        /// <param name="command">领域命令</param>
+        public void OnDomainCommand(ChangeAccountNameDomainCommand command)
+        {
+            var evt = new AccountNameChangedDomainEvent(command.AccountName);
+
+            ApplyDomainEvent(evt);
         }
 
         /// <summary>
@@ -318,6 +328,11 @@ namespace EBank.Domain.Models.Accounts
             Balance = @event.InitialBalance;
             Bank = @event.Bank;
             Status = BankAccountStatus.Activated;
+        }
+
+        public void OnDomainEvent(AccountNameChangedDomainEvent @event)
+        {
+            Name = @event.AccountName;
         }
 
         public void OnDomainEvent(DepositTransactionValidatedDomainEvent @event)

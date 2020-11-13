@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace EBank.BusinessServer.Processors
 {
-    public class BankAccountApplicationCommandProcessor : 
-        IAsyncApplicationCommandHandler<OpenBankAccountApplicationCommand>
+    public class BankAccountApplicationCommandProcessor :
+        IAsyncApplicationCommandHandler<OpenBankAccountApplicationCommand>,
+        IApplicationCommandHandler<ChangeAccountNameApplicationCommand>
     {
         private readonly IBankAccountRepository _accountIndex;
 
@@ -33,7 +34,16 @@ namespace EBank.BusinessServer.Processors
                 appCommand.AccountId,
                 appCommand.AccountName,
                 appCommand.Bank,
-                appCommand.InitialBalance);
+                appCommand.InitialBalance ?? 0);
+
+            context.DomainCommandPublisher.Publish(domainCommand);
+        }
+
+        public void OnApplicationCommand(
+            IApplicationCommandContext context,
+            ChangeAccountNameApplicationCommand command)
+        {
+            var domainCommand = new ChangeAccountNameDomainCommand(command.AccountId, command.AccountName);
 
             context.DomainCommandPublisher.Publish(domainCommand);
         }

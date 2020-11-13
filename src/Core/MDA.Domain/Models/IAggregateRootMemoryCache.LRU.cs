@@ -1,4 +1,5 @@
 ﻿using MDA.Infrastructure.DataStructures;
+using MDA.Infrastructure.Hashes;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -9,13 +10,18 @@ namespace MDA.Domain.Models
     {
         private const string CacheKeyMask = "{0}.{1}";
 
-        private readonly LruCache<string, IEventSourcedAggregateRoot> _cache;
         private readonly ILogger _logger;
+        private readonly LruCache<int, IEventSourcedAggregateRoot> _cache;
 
-        public LruAggregateRootMemoryCache(IOptions<AggregateRootCacheOptions> options, ILogger<LruAggregateRootMemoryCache> logger)
+        public LruAggregateRootMemoryCache(
+            IOptions<AggregateRootCacheOptions> options,
+            ILogger<LruAggregateRootMemoryCache> logger)
         {
             _logger = logger;
-            _cache = new LruCache<string, IEventSourcedAggregateRoot>(options.Value.MaxSize, options.Value.ToTimeSpan());
+
+            var ops = options.Value;
+            _cache = new LruCache<int, IEventSourcedAggregateRoot>(ops.MaxSize, TimeSpan.FromSeconds(ops.TTL), TimeSpan.FromSeconds(ops.MaxAge));
+            _cache.RaiseFlushEvent += OnFlushed;// 单例模式下，只注册一次。
         }
 
         public IEventSourcedAggregateRoot Get(string aggregateRootId, Type aggregateRootType)
@@ -83,7 +89,18 @@ namespace MDA.Domain.Models
 
         public void Clear() => _cache.Clear();
 
-        private string GetCacheKey(string aggregateRootId, Type aggregateRootType)
-            => string.Format(CacheKeyMask, aggregateRootType.FullName, aggregateRootId);
+        private int GetCacheKey(string aggregateRootId, Type aggregateRootType)
+        {
+            var fullName = string.Format(CacheKeyMask, aggregateRootType.FullName, aggregateRootId);
+
+            return MurMurHash3.Hash(fullName);
+        }
+
+        private void OnFlushed(object sender, LruCache<int, IEventSourcedAggregateRoot>.FlushEventArgs args)
+        {
+            var aggregateRoot = args.Value;
+
+            _logger.LogWarning($"The aggregate root over the maximum age, removed from memory LRU cache, id: {aggregateRoot.Id}, Type: {aggregateRoot.GetType().FullName}, Generation: {aggregateRoot.Generation}, Version: {aggregateRoot.Version}.");
+        }
     }
 }

@@ -4,7 +4,7 @@ namespace MDA.Infrastructure.Utils
 {
     public static class PreConditions
 	{
-		public static void NotNull<T>(T argument, string argumentName) where T : class
+        public static void NotNull<T>(T argument, string argumentName) where T : class
 		{
 			if (argument == null)
 				throw new ArgumentNullException(argumentName);

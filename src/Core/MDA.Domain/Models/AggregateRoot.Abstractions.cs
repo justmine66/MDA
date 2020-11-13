@@ -1,6 +1,7 @@
 ﻿using MDA.Domain.Commands;
 using MDA.Domain.Events;
 using MDA.Domain.Notifications;
+using MDA.Infrastructure.Serialization;
 using System;
 using System.Collections.Generic;
 
@@ -9,7 +10,7 @@ namespace MDA.Domain.Models
     /// <summary>
     /// 聚合根，封装对象的业务规则。
     /// </summary>
-    public interface IAggregateRoot
+    public interface IAggregateRoot : ISerializationMetadataProvider
     {
         /// <summary>
         /// 标识

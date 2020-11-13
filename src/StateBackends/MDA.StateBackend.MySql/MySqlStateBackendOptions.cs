@@ -2,8 +2,9 @@
 {
     public class MySqlStateBackendOptions
     {
-        public ConnectionStrings ConnectionStrings { get; set; }
-        public DomainEventOptions DomainEventOptions { get; set; }
+        public ConnectionStrings ConnectionStrings { get; set; } = new ConnectionStrings();
+        public DomainEventOptions DomainEventOptions { get; set; } = new DomainEventOptions();
+        public DomainModelOptions DomainModelOptions { get; set; } = new DomainModelOptions();
     }
 
     public class ConnectionStrings
@@ -15,13 +16,25 @@
 
     public class DomainEventOptions
     {
-        public DomainEventTables Tables { get; set; }
+        public DomainEventTables Tables { get; set; } = new DomainEventTables();
 
         public class DomainEventTables
         {
-            public string DomainEventsIndices { get; set; } = "domain_event_indices";
+            public string DomainEventIndices { get; set; } = "domain_event_indices";
 
-            public string DomainEventPayloads { get; set; } = "domain_event_payloads";
+            public string DomainEvents { get; set; } = "domain_events";
+        }
+    }
+
+    public class DomainModelOptions
+    {
+        public DomainModelTables Tables { get; set; } = new DomainModelTables();
+
+        public class DomainModelTables
+        {
+            public string AggregateRootCheckpointIndices { get; set; } = "aggregate_root_checkpoint_indices";
+
+            public string AggregateRootCheckpoints { get; set; } = "aggregate_root_checkpoints";
         }
     }
 }

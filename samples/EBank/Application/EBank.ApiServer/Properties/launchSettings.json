@@ -3,8 +3,8 @@
   "profiles": {
     "EBank.ApiServer": {
       "commandName": "Project",
-      "launchBrowser": false,
-      "launchUrl": "BankAccount",
+      "launchBrowser": true,
+      "launchUrl": "swagger/index.html",
       "applicationUrl": "http://localhost:5080",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

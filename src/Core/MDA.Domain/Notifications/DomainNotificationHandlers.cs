@@ -1,17 +1,18 @@
-﻿using System.Threading;
+﻿using MDA.MessageBus;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MDA.Domain.Notifications
 {
-    public interface IDomainNotificationHandler<in TDomainNotification>
+    public interface IDomainNotificationHandler<in TDomainNotification> : IMessageHandler<TDomainNotification>
         where TDomainNotification : IDomainNotification
     {
-        void Handle(TDomainNotification notification);
+        new void Handle(TDomainNotification notification);
     }
 
-    public interface IAsyncDomainNotificationHandler<in TDomainNotification>
+    public interface IAsyncDomainNotificationHandler<in TDomainNotification> : IAsyncMessageHandler<TDomainNotification>
         where TDomainNotification : IDomainNotification
     {
-        Task HandleAsync(TDomainNotification notification, CancellationToken token = default);
+        new Task HandleAsync(TDomainNotification notification, CancellationToken token = default);
     }
 }

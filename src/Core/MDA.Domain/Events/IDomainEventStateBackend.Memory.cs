@@ -22,17 +22,17 @@ namespace MDA.Domain.Events
             IDomainEvent @event,
             CancellationToken token = default)
         {
-            if (@event != null)
-            {
-                _dict.AddOrUpdate(@event.AggregateRootId, new List<IDomainEvent>() { @event },
-                    (key, oldValue) =>
-                    {
-                        oldValue.Add(@event);
-                        return oldValue;
-                    });
+            if (@event == null)
+                return await Task.FromResult(DomainEventResult.StorageSucceed(@event.Id));
 
-                await _eventPublisher.PublishAsync(@event, token);
-            }
+            _dict.AddOrUpdate(@event.AggregateRootId, new List<IDomainEvent>() { @event },
+                (key, oldValue) =>
+                {
+                    oldValue.Add(@event);
+                    return oldValue;
+                });
+
+            await _eventPublisher.PublishAsync(@event, token);
 
             return await Task.FromResult(DomainEventResult.StorageSucceed(@event.Id));
         }
@@ -65,14 +65,12 @@ namespace MDA.Domain.Events
 
         public async Task<IEnumerable<IDomainEvent>> GetEventStreamAsync(
             string aggregateRootId,
-            int generation = 0,
             long startOffset = 0,
             CancellationToken token = default)
-            => await GetEventStreamAsync(aggregateRootId, generation, startOffset, long.MaxValue, token);
+            => await GetEventStreamAsync(aggregateRootId, startOffset, long.MaxValue, token);
 
         public async Task<IEnumerable<IDomainEvent>> GetEventStreamAsync(
             string aggregateRootId,
-            int generation = 0,
             long startOffset = 0,
             long endOffset = long.MaxValue,
             CancellationToken token = default)
@@ -84,10 +82,15 @@ namespace MDA.Domain.Events
 
             if (_dict.TryGetValue(aggregateRootId, out var events))
             {
-                return events.SkipWhile(it => it.AggregateRootGeneration <= generation && it.Version <= startOffset);
+                return events.SkipWhile(it => it.Version <= startOffset);
             }
 
             return await Task.FromResult(Enumerable.Empty<IDomainEvent>());
+        }
+
+        public async Task<DomainEventMetrics> StatMetricsAsync(string aggregateRootId, int generation, CancellationToken token = default)
+        {
+            return await Task.FromResult(new DomainEventMetrics());
         }
     }
 }

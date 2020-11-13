@@ -1,14 +1,15 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Runtime.Serialization;
+using MDA.Infrastructure.Utils;
 
 namespace MDA.Domain.Models
 {
-    public class AggregateRootFactory : IAggregateRootFactory
+    public class DefaultAggregateRootFactory : IAggregateRootFactory
     {
         private readonly ILogger _logger;
 
-        public AggregateRootFactory(ILogger<AggregateRootFactory> logger)
+        public DefaultAggregateRootFactory(ILogger<DefaultAggregateRootFactory> logger)
         {
             _logger = logger;
         }
@@ -30,7 +31,7 @@ namespace MDA.Domain.Models
             }
             catch (Exception e)
             {
-                _logger.LogError($"Failed to create aggregate root, reason: {e}.");
+                _logger.LogError($"Creating aggregate root instance has a unknown exception: {LogFormatter.PrintException(e)}.");
 
                 return null;
             }

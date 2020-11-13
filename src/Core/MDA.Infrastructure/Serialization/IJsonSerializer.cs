@@ -4,10 +4,10 @@ namespace MDA.Infrastructure.Serialization
 {
     public interface IJsonSerializer
     {
-        string Serialize<T>(T obj);
+        string Serialize<TPayload>(TPayload obj, params string[] ignoreKeys);
 
-        T Deserialize<T>(string bytes);
+        TPayload Deserialize<TPayload>(string json);
 
-        object Deserialize(string value, Type type);
+        object Deserialize(string json, Type type);
     }
 }

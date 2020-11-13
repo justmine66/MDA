@@ -20,6 +20,13 @@ namespace EBank.ApiServer.Application.Business
         Task OpenAccountAsync(OpenBankAccountApplicationCommand command, CancellationToken token = default);
 
         /// <summary>
+        /// 变更账户名
+        /// </summary>
+        /// <param name="command">命令</param>
+        /// <param name="token">取消令牌</param>
+        Task ChangeAccountNameAsync(ChangeAccountNameApplicationCommand command, CancellationToken token = default);
+
+        /// <summary>
         /// 存款
         /// </summary>
         /// <param name="command">命令</param>

@@ -50,11 +50,11 @@ namespace MDA.StateBackend.MySql
             }
 
             var domainEventRecord = DomainEventRecordPortAdapter.ToDomainEventRecord(@event, _binarySerializer);
-            var parameters = DbParameterProvider.GetDbParameters(domainEventRecord, domainEventRecord.DomainEventId);
+            var parameters = DbParameterProvider.ReflectionParameters(domainEventRecord);
 
             var tables = _options.DomainEventOptions.Tables;
-            var insertDomainEventSql = $"INSERT INTO `{tables.DomainEventsIndices}`(`DomainCommandId`,`DomainCommandType`,`DomainCommandVersion`,`AggregateRootId`,`AggregateRootType`,`AggregateRootVersion`,`AggregateRootGeneration`,`DomainEventId`,`DomainEventType`,`DomainEventVersion`,`CreatedTimestamp`) VALUES(@DomainCommandId,@DomainCommandType,@DomainCommandVersion,@AggregateRootId,@AggregateRootType,@AggregateRootVersion,@AggregateRootGeneration,@DomainEventId,@DomainEventType,@DomainEventVersion,@CreatedTimestamp)";
-            var insertDomainEventPayloadSql = $"INSERT INTO `{tables.DomainEventPayloads}`(`DomainEventId`,`DomainEventVersion`,`Payload`) VALUES (@DomainEventId,@DomainEventVersion,@Payload)";
+            var insertDomainEventIndexSql = $"INSERT INTO `{tables.DomainEventIndices}`(`DomainCommandId`,`DomainCommandType`,`DomainCommandVersion`,`AggregateRootId`,`AggregateRootType`,`AggregateRootVersion`,`AggregateRootGeneration`,`DomainEventId`,`DomainEventType`,`DomainEventVersion`,`DomainEventPayloadBytes`,`CreatedTimestamp`) VALUES(@DomainCommandId,@DomainCommandType,@DomainCommandVersion,@AggregateRootId,@AggregateRootType,@AggregateRootVersion,@AggregateRootGeneration,@DomainEventId,@DomainEventType,@DomainEventVersion,@DomainEventPayloadBytes,@CreatedTimestamp)";
+            var insertDomainEventSql = $"INSERT INTO `{tables.DomainEvents}`(`DomainEventId`,`Payload`) VALUES (@DomainEventId,@Payload)";
 
             var maxNumErrorTries = 3;
             var maxExecutionTime = TimeSpan.FromSeconds(3);
@@ -77,7 +77,7 @@ namespace MDA.StateBackend.MySql
             var affectedRows = await AsyncExecutorWithRetries.ExecuteWithRetriesAsync(async attempt =>
             {
                 return await _db.ExecuteAsync(
-                    $"{insertDomainEventSql};{insertDomainEventPayloadSql};",
+                    $"{insertDomainEventIndexSql};{insertDomainEventSql};",
                     command => command.Parameters.AddRange(parameters),
                     token);
             }, maxNumErrorTries, ErrorFilter, maxExecutionTime).ConfigureAwait(false);
@@ -112,37 +112,30 @@ namespace MDA.StateBackend.MySql
 
         public async Task<IEnumerable<IDomainEvent>> GetEventStreamAsync(
             string aggregateRootId,
-            int generation = 0,
             long startOffset = 0,
             CancellationToken token = default)
             => await GetEventStreamAsync(
                 aggregateRootId,
-                generation,
                 startOffset,
                 long.MaxValue,
                 token);
 
         public async Task<IEnumerable<IDomainEvent>> GetEventStreamAsync(
             string aggregateRootId,
-            int generation,
             long startOffset = 0,
             long endOffset = long.MaxValue,
             CancellationToken token = default)
         {
-            if (string.IsNullOrWhiteSpace(aggregateRootId) ||
-                startOffset < 0)
-            {
-                return null;
-            }
+            PreConditions.NotNullOrEmpty(aggregateRootId, nameof(aggregateRootId));
+            PreConditions.Nonnegative(startOffset, nameof(startOffset));
 
             var tables = _options.DomainEventOptions.Tables;
 
-            var sql = $"SELECT d.`DomainCommandId`,d.`DomainCommandType`,d.`DomainCommandVersion`,d.`AggregateRootId`,d.`AggregateRootType`,d.`AggregateRootVersion`,d.`AggregateRootGeneration`,d.`DomainEventId`,d.`DomainEventType`,d.`DomainEventVersion`,d.`CreatedTimestamp`, p.`Payload` FROM `{tables.DomainEventsIndices}` d LEFT JOIN `{tables.DomainEventPayloads}` p ON d.`DomainEventId`=p.`DomainEventId` WHERE d.`AggregateRootId`=@AggregateRootId AND d.AggregateRootGeneration>=@Generation AND d.AggregateRootVersion>=@StartOffset AND d.AggregateRootVersion<@EndOffset";
+            var sql = $"SELECT d.`DomainCommandId`,d.`DomainCommandType`,d.`DomainCommandVersion`,d.`AggregateRootId`,d.`AggregateRootType`,d.`AggregateRootVersion`,d.`AggregateRootGeneration`,d.`DomainEventId`,d.`DomainEventType`,d.`DomainEventVersion`,d.`CreatedTimestamp`, p.`Payload` FROM `{tables.DomainEventIndices}` d INNER JOIN `{tables.DomainEvents}` p ON d.`DomainEventId`=p.`DomainEventId` WHERE d.`AggregateRootId`=@AggregateRootId AND d.AggregateRootVersion>=@StartOffset AND d.AggregateRootVersion<@EndOffset";
 
             var records = await _db.ReadAsync<DomainEventRecord>(sql, new
             {
                 AggregateRootId = aggregateRootId,
-                Generation = generation,
                 StartOffset = startOffset,
                 EndOffset = endOffset
             }, token);
@@ -167,6 +160,38 @@ namespace MDA.StateBackend.MySql
             }
 
             return domainEvents;
+        }
+
+        public async Task<DomainEventMetrics> StatMetricsAsync(
+            string aggregateRootId,
+            int generation,
+            CancellationToken token = default)
+        {
+            PreConditions.NotNullOrEmpty(aggregateRootId, nameof(aggregateRootId));
+            PreConditions.Nonnegative(generation, nameof(generation));
+
+            var tables = _options.DomainEventOptions.Tables;
+            var sql = $"SELECT `DomainEventPayloadBytes` AS `UnCheckpointedBytes` FROM `{tables.DomainEventIndices}` WHERE `AggregateRootId`=@AggregateRootId AND AggregateRootGeneration>=@Generation";
+
+            var records = await _db.ReadAsync<DomainEventMetrics>(sql, new
+            {
+                AggregateRootId = aggregateRootId,
+                Generation = generation
+            }, token);
+
+            if (records.IsEmpty())
+            {
+                return DomainEventMetrics.Empty;
+            }
+
+            var aggregate = new DomainEventMetrics();
+            foreach (var record in records)
+            {
+                aggregate.UnCheckpointedCount++;
+                aggregate.UnCheckpointedBytes += record.UnCheckpointedBytes;
+            }
+
+            return aggregate;
         }
     }
 }

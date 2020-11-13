@@ -6,8 +6,8 @@ namespace MDA.Infrastructure.Serialization
     {
         public static IServiceCollection AddSerialization(this IServiceCollection services)
         {
+            services.AddSingleton<IJsonSerializer, NewtonsoftJsonSerializer>();
             services.AddSingleton<IBinarySerializer, DefaultBinarySerializer>();
-            services.AddSingleton<IJsonSerializer, DefaultJsonSerializer>();
 
             return services;
         }

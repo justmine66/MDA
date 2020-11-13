@@ -26,6 +26,17 @@ namespace EBank.ApiServer.Application.Business
         }
 
         /// <summary>
+        /// 变更账户名
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task ChangeAccountNameAsync(ChangeAccountNameApplicationCommand command, CancellationToken token = default)
+        {
+            await _commandService.PublishAsync(command, token);
+        }
+
+        /// <summary>
         /// 存款
         /// </summary>
         /// <param name="command"></param>
