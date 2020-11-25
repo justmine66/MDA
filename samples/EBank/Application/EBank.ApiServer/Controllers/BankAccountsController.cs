@@ -1,4 +1,5 @@
 ﻿using EBank.ApiServer.Application.Business;
+using EBank.ApiServer.Application.Querying;
 using EBank.Application.Commanding.Accounts;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -12,11 +13,15 @@ namespace EBank.ApiServer.Controllers
     [Route("api/v1/BankAccounts")]
     public class BankAccountsController : ControllerBase
     {
-        private readonly IEBankApplicationService _eBank;
+        private readonly IEBankApplicationService _eBankApplicationService;
+        private readonly IBankAccountQueryService _accountQueryService;
 
-        public BankAccountsController(IEBankApplicationService eBank)
+        public BankAccountsController(
+            IEBankApplicationService eBankApplicationService,
+            IBankAccountQueryService accountQueryService)
         {
-            _eBank = eBank;
+            _eBankApplicationService = eBankApplicationService;
+            _accountQueryService = accountQueryService;
         }
 
         /// <summary>
@@ -31,9 +36,9 @@ namespace EBank.ApiServer.Controllers
         [ProducesResponseType(202)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> Open([FromBody]OpenBankAccountApplicationCommand command)
+        public async Task<IActionResult> OpenAsync([FromBody] OpenBankAccountApplicationCommand command)
         {
-            await _eBank.OpenAccountAsync(command);
+            await _eBankApplicationService.OpenAccountAsync(command);
 
             return Accepted(command.AccountId);
         }
@@ -45,11 +50,24 @@ namespace EBank.ApiServer.Controllers
         /// <returns></returns>
         [Route("ChangeName")]
         [HttpPost]
-        public async Task<IActionResult> ChangeName(ChangeAccountNameApplicationCommand command)
+        public async Task<IActionResult> ChangeNameAsync(ChangeAccountNameApplicationCommand command)
         {
-            await _eBank.ChangeAccountNameAsync(command);
+            await _eBankApplicationService.ChangeAccountNameAsync(command);
 
             return Ok();
+        }
+
+        /// <summary>
+        /// 获取银行账户
+        /// </summary>
+        /// <param name="accountId">账号</param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetBankAccountAsync(long accountId)
+        {
+            var account = await _accountQueryService.GetAccountAsync(accountId);
+
+            return Ok(account);
         }
     }
 }

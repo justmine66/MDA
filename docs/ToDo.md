@@ -8,3 +8,4 @@
 8. 超过MaxAge的聚合根，Checkpoint逻辑。
 9. LRU Cache支持TTL。
 10. 测试聚合根变更后序列化问题。
+11. 支持定时checkpoint。

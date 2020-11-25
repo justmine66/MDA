@@ -85,19 +85,24 @@
             银行账户查询服务
             </summary>
         </member>
-        <member name="P:EBank.ApiServer.Application.Querying.Models.TransferAccountInfo.Id">
+        <member name="P:EBank.ApiServer.Application.Querying.Models.BankAccountView.Id">
             <summary>
             账户号
             </summary>
         </member>
-        <member name="P:EBank.ApiServer.Application.Querying.Models.TransferAccountInfo.Name">
+        <member name="P:EBank.ApiServer.Application.Querying.Models.BankAccountView.Name">
             <summary>
             账户名
             </summary>
         </member>
-        <member name="P:EBank.ApiServer.Application.Querying.Models.TransferAccountInfo.Bank">
+        <member name="P:EBank.ApiServer.Application.Querying.Models.BankAccountView.Bank">
             <summary>
             开户行
+            </summary>
+        </member>
+        <member name="P:EBank.ApiServer.Application.Querying.Models.BankAccountView.Balance">
+            <summary>
+            初始余额
             </summary>
         </member>
         <member name="T:EBank.ApiServer.Controllers.BankAccountsController">
@@ -105,7 +110,7 @@
             银行账户控制器
             </summary>
         </member>
-        <member name="M:EBank.ApiServer.Controllers.BankAccountsController.Open(EBank.Application.Commanding.Accounts.OpenBankAccountApplicationCommand)">
+        <member name="M:EBank.ApiServer.Controllers.BankAccountsController.OpenAsync(EBank.Application.Commanding.Accounts.OpenBankAccountApplicationCommand)">
             <summary>
             开户
             </summary>
@@ -115,11 +120,18 @@
             <response code="400">请求参数不合法</response>
             <response code="401">身份认证失败</response>
         </member>
-        <member name="M:EBank.ApiServer.Controllers.BankAccountsController.ChangeName(EBank.Application.Commanding.Accounts.ChangeAccountNameApplicationCommand)">
+        <member name="M:EBank.ApiServer.Controllers.BankAccountsController.ChangeNameAsync(EBank.Application.Commanding.Accounts.ChangeAccountNameApplicationCommand)">
             <summary>
             变更账户名
             </summary>
             <param name="command">命令</param>
+            <returns></returns>
+        </member>
+        <member name="M:EBank.ApiServer.Controllers.BankAccountsController.GetBankAccountAsync(System.Int64)">
+            <summary>
+            获取银行账户
+            </summary>
+            <param name="accountId">账号</param>
             <returns></returns>
         </member>
         <member name="T:EBank.ApiServer.Controllers.TransactionsController">

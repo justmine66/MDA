@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "MDA.FunctionalTest": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

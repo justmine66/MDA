@@ -1,6 +1,6 @@
 ﻿namespace EBank.ApiServer.Application.Querying.Models
 {
-    public class TransferAccountInfo
+    public class BankAccountView
     {
         /// <summary>
         /// 账户号
@@ -16,5 +16,10 @@
         /// 开户行
         /// </summary>
         public string Bank { get; set; }
+
+        /// <summary>
+        /// 初始余额
+        /// </summary>
+        public decimal Balance { get; set; }
     }
 }

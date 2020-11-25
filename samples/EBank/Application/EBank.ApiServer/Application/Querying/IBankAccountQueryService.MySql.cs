@@ -16,11 +16,11 @@ namespace EBank.ApiServer.Application.Querying
             _db = db.CreateRelationalDbStorage(DatabaseScheme.ReadDb);
         }
 
-        public async Task<TransferAccountInfo> GetAccountAsync(long accountId, CancellationToken token = default)
+        public async Task<BankAccountView> GetAccountAsync(long accountId, CancellationToken token = default)
         {
-            var sql = $"SELECT `Id`,`Name`,`Bank` FROM {Tables.BankAccounts} WHERE `Id`=@Id";
+            var sql = $"SELECT `Id`,`Name`,`Bank`,`Balance` FROM {Tables.BankAccounts} WHERE `Id`=@Id";
 
-            var records = await _db.ReadAsync<TransferAccountInfo>(sql, new
+            var records = await _db.ReadAsync<BankAccountView>(sql, new
             {
                 Id = accountId
             }, token);

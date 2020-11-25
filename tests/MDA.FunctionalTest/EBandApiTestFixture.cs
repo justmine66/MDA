@@ -14,8 +14,6 @@ namespace MDA.FunctionalTest
             Services = serviceProvider;
 
             Client = httpClient;
-
-            Client.BaseAddress = new Uri(EBankApiServer.Origin);
         }
     }
 }
