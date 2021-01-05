@@ -1,5 +1,6 @@
-using System.IO;
 using EBank.ApiServer.Application;
+using EBank.ApiServer.Infrastructure;
+using EBank.ApiServer.Infrastructure.Swagger;
 using MDA.Application.DependencyInjection;
 using MDA.Domain.DependencyInjection;
 using MDA.Infrastructure.DependencyInjection;
@@ -13,37 +14,27 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 using System.Reflection;
 
 namespace EBank.ApiServer
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment hostEnvironment)
         {
             Configuration = configuration;
+            HostEnvironment = hostEnvironment;
         }
 
         public IConfiguration Configuration { get; }
 
+        public IWebHostEnvironment HostEnvironment { get; }
+
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-
-            services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "EBank HTTP API",
-                    Version = "v1",
-                    Description = "The EBank Service HTTP API"
-                });
-
-                var basePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
-                var xmlPath = Path.Combine(basePath, "EBank.ApiServer.xml");
-                options.IncludeXmlComments(xmlPath);
-            });
+            services.AddApiDocuments(HostEnvironment);
+            services.AddApiVersionServices();
+            services.AddControllerServices();
 
             services.AddMdaServices(ctx =>
             {
@@ -65,13 +56,7 @@ namespace EBank.ApiServer
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseSwagger()
-                .UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "EBank API V1");
-                c.OAuthClientId("ebank");
-                c.OAuthAppName("EBank Swagger UI");
-            });
+            app.UseApiDocuments();
 
             app.UseRouting();
 
