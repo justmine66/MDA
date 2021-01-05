@@ -99,7 +99,7 @@ namespace EBank.ApiServer.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [Produces(MediaTypeNames.Application.Json)]
 #endif
-        public async Task<IActionResult> WithdrawAsync(StartTransfer dto)
+        public async Task<IActionResult> TransferAsync(StartTransfer dto)
         {
             var command = ObjectPortMapper<StartTransfer, StartTransferApplicationCommand>.Map(dto);
 

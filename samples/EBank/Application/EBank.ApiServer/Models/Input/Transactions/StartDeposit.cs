@@ -31,7 +31,7 @@ namespace EBank.ApiServer.Models.Input.Transactions
         /// <summary>
         /// 金额
         /// </summary>
-        /// <example>1000</example>
+        /// <example>100</example>
         [Required]
         public decimal Amount { get; set; }
     }
