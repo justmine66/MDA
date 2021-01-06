@@ -1,4 +1,5 @@
 ﻿using MDA.Domain.Events;
+using MDA.Domain.Exceptions;
 using MDA.Infrastructure.Scheduling;
 using MDA.Infrastructure.Utils;
 using Microsoft.Extensions.Logging;
@@ -69,7 +70,7 @@ namespace MDA.Domain.Models
 
             if (eventStream.IsEmpty())
             {
-                DoCacheAndCheckpoint(aggregateRoot, token);
+                CacheAndCheckpoint(aggregateRoot, token);
 
                 return aggregateRoot;
             }
@@ -88,7 +89,7 @@ namespace MDA.Domain.Models
 
             _logger.LogInformation($"Replayed domain event stream of the aggregate root, id: {aggregateStringId}, Type: {aggregateRootFullName}, Generation: {aggregateRoot.Generation}, Version: {aggregateRoot.Version}.");
 
-            DoCacheAndCheckpoint(aggregateRoot, token);
+            CacheAndCheckpoint(aggregateRoot, token);
 
             return aggregateRoot;
         }
@@ -96,14 +97,14 @@ namespace MDA.Domain.Models
         public async Task<IEnumerable<DomainEventResult>> AppendMutatingDomainEventsAsync(IEnumerable<IDomainEvent> events, CancellationToken token = default)
             => await _eventStateBackend.AppendAsync(events, token);
 
-        private void DoCacheAndCheckpoint(IEventSourcedAggregateRoot aggregateRoot, CancellationToken token)
+        private void CacheAndCheckpoint(IEventSourcedAggregateRoot aggregateRoot, CancellationToken token)
         {
             _memoryCache.Set(aggregateRoot);
 
-            _timer.NewTimeout(new FunctionTimerTask(async it => await DoCheckpointAsync(it, aggregateRoot, token)), TimeSpan.FromSeconds(_options.StepInSeconds));
+            _timer.NewTimeout(new FunctionTimerTask(async it => await CheckpointAsync(it, aggregateRoot, token)), TimeSpan.FromSeconds(_options.StepInSeconds));
         }
 
-        private async Task DoCheckpointAsync(
+        private async Task CheckpointAsync(
             ITimeout timeout,
             IEventSourcedAggregateRoot aggregateRoot,
             CancellationToken token)
@@ -112,7 +113,7 @@ namespace MDA.Domain.Models
 
             await _checkpointManager.CheckpointAsync(aggregateRoot, token);
 
-            timeout.Timer.NewTimeout(new FunctionTimerTask(async it => await DoCheckpointAsync(it, aggregateRoot, token)), TimeSpan.FromSeconds(_options.StepInSeconds));
+            timeout.Timer.NewTimeout(new FunctionTimerTask(async it => await CheckpointAsync(it, aggregateRoot, token)), TimeSpan.FromSeconds(_options.StepInSeconds));
         }
     }
 }

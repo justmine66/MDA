@@ -94,7 +94,7 @@ namespace MDA.MessageBus.Kafka
         public async Task StopAsync(CancellationToken token = default)
             => await Task.CompletedTask;
 
-        private void Consumer_Received(object sender, ConsumeResult<string, byte[]> eventArgs)
+        private async void Consumer_Received(object sender, ConsumeResult<string, byte[]> eventArgs)
         {
             var kafkaMessage = eventArgs.Message;
             var messageTypeFullName = string.Empty;
@@ -129,13 +129,13 @@ namespace MDA.MessageBus.Kafka
             {
                 var hasHandler = false;
                 var scopeServiceProvider = scope.ServiceProvider;
+
                 var handlerProxies = scopeServiceProvider.GetServices(handlerProxyTypeDefinition.MakeGenericType(messageType));
                 if (handlerProxies.IsNotEmpty())
                 {
                     hasHandler = true;
 
                     MessageHandlerUtils.DynamicInvokeHandle(handlerProxies, message, _logger);
-
                 }
 
                 var asyncHandlerProxies =
@@ -144,7 +144,7 @@ namespace MDA.MessageBus.Kafka
                 {
                     hasHandler = true;
 
-                    MessageHandlerUtils.DynamicInvokeAsyncHandle(asyncHandlerProxies, message, _logger);
+                    await MessageHandlerUtils.DynamicInvokeAsyncHandle(asyncHandlerProxies, message, _logger);
                 }
 
                 if (!hasHandler)
