@@ -38,7 +38,7 @@ namespace MDA.MessageBus
             }
         }
 
-        public static void DynamicInvokeAsyncHandle(IEnumerable<object> handlerProxies, IMessage message, ILogger logger)
+        public static async Task DynamicInvokeAsyncHandle(IEnumerable<object> handlerProxies, IMessage message, ILogger logger)
         {
             var proxyMessageType = typeof(IMessage);
             var tokenType = typeof(CancellationToken);
@@ -64,7 +64,7 @@ namespace MDA.MessageBus
                 var lambda = Expression.Lambda<Func<IMessage, CancellationToken, Task>>(call, messageParameter, tokenParameter);
                 var methodDelegate = lambda.Compile();
 
-                methodDelegate(message, CancellationToken.None).GetAwaiter().GetResult();
+                await methodDelegate(message, CancellationToken.None);
             }
         }
     }
