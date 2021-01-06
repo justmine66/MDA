@@ -2,12 +2,7 @@
 
 USE `ebank_statedb`;
 
-DROP TABLE `aggregate_root_checkpoint_indices`;
-DROP TABLE `aggregate_root_checkpoints`;
-DROP TABLE `domain_event_indices`;
-DROP TABLE `domain_events`;
-
-CREATE TABLE `aggregate_root_checkpoint_indices`
+CREATE TABLE If NOT Exists `aggregate_root_checkpoint_indices`
 (
   `pkId` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增长标识',
   `AggregateRootId` varchar(36) DEFAULT '' NOT NULL COMMENT '聚合根标识',
@@ -19,7 +14,7 @@ CREATE TABLE `aggregate_root_checkpoint_indices`
   KEY `IX_AggregateRoot_Version` (`AggregateRootId`,`AggregateRootVersion`,`AggregateRootGeneration`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='聚合根检查点索引表';
 
-CREATE TABLE `aggregate_root_checkpoints`
+CREATE TABLE If NOT Exists `aggregate_root_checkpoints`
 (
   `pkId` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增长标识',
   `AggregateRootId` varchar(36) DEFAULT '' NOT NULL COMMENT '聚合根标识',
@@ -28,7 +23,7 @@ CREATE TABLE `aggregate_root_checkpoints`
   KEY `IX_AggregateRootId` (`AggregateRootId`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='聚合根检查点有效载荷表';
 
-CREATE TABLE `domain_event_indices`
+CREATE TABLE If NOT Exists `domain_event_indices`
 (
   `pkId` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增长标识',
   `DomainCommandId` varchar(36) DEFAULT '' NOT NULL COMMENT '领域命令标识',
@@ -48,7 +43,7 @@ CREATE TABLE `domain_event_indices`
   KEY `IX_AggregateRoot_Generation_Version` (`AggregateRootId`,`AggregateRootGeneration`,`AggregateRootVersion`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='领域事件索引表';
 
-CREATE TABLE `domain_events`
+CREATE TABLE If NOT Exists `domain_events`
 (
   `pkId` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增长标识',
   `DomainEventId` varchar(36) DEFAULT '' NOT NULL COMMENT '领域事件标识',

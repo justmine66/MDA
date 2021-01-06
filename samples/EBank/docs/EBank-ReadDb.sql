@@ -2,7 +2,7 @@
 
 USE `ebank_readdb`;
 
-CREATE TABLE `bank_accounts`
+CREATE TABLE If Not Exists `bank_accounts`
 (
   `pkId` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增长标识',
   `Id` bigint(20) DEFAULT 0 NOT NULL COMMENT '账号',
@@ -15,7 +15,7 @@ CREATE TABLE `bank_accounts`
   UNIQUE KEY `IX_Account_Id` (`Id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银行账户表';
 
-CREATE TABLE `deposit_transactions`
+CREATE TABLE If Not Exists `deposit_transactions`
 (
   `pkId` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增长标识',
   `Id` bigint(20) DEFAULT 0 NOT NULL COMMENT '交易号',
@@ -30,7 +30,7 @@ CREATE TABLE `deposit_transactions`
   UNIQUE KEY `IX_Transaction_Id` (`Id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='存款交易表';
 
-CREATE TABLE `withdraw_transactions`
+CREATE TABLE If Not Exists `withdraw_transactions`
 (
   `pkId` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增长标识',
   `Id` bigint(20) DEFAULT 0 NOT NULL COMMENT '交易号',
@@ -45,7 +45,7 @@ CREATE TABLE `withdraw_transactions`
   UNIQUE KEY `IX_Transaction_Id` (`Id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='取款交易表';
 
-CREATE TABLE `transfer_transactions`
+CREATE TABLE If Not Exists `transfer_transactions`
 (
   `pkId` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增长标识',
   `Id` bigint(20) DEFAULT 0 NOT NULL COMMENT '交易号',
