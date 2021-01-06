@@ -77,6 +77,11 @@ namespace EBank.ApiServer.Controllers
 #endif
         public async Task<IActionResult> ChangeNameAsync(ChangeAccountName dto)
         {
+            if (!await _accountQueryService.HasAccountAsync(dto.AccountId))
+            {
+                return NotFound();
+            }
+
             var command = ObjectPortMapper<ChangeAccountName, ChangeAccountNameApplicationCommand>.Map(dto);
 
             await _eBankApplicationService.ChangeAccountNameAsync(command);
@@ -96,7 +101,7 @@ namespace EBank.ApiServer.Controllers
         /// <returns></returns>
         [HttpGet("{accountId:long}")]
 #if !RELEASE
-        [ProducesResponseType(typeof(ApiResult<long>), StatusCodes.Status202Accepted)]
+        [ProducesResponseType(typeof(ApiResult<long>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiErrorResult), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiErrorResult), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiErrorResult), StatusCodes.Status404NotFound)]
@@ -107,6 +112,10 @@ namespace EBank.ApiServer.Controllers
         public async Task<IActionResult> GetBankAccountAsync([Required, FromRoute] long accountId)
         {
             var account = await _accountQueryService.GetAccountAsync(accountId);
+            if (account == null)
+            {
+                return NotFound();
+            }
 
             return Ok(account);
         }
