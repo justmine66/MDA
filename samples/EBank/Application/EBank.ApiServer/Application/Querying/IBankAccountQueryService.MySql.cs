@@ -27,5 +27,17 @@ namespace EBank.ApiServer.Application.Querying
 
             return records.IsEmpty() ? null : records.FirstOrDefault();
         }
+
+        public async Task<bool> HasAccountAsync(long accountId, CancellationToken token = default)
+        {
+            var sql = $"SELECT 1 FROM {Tables.BankAccounts} WHERE `Id`=@Id";
+
+            var hasAccount = await _db.ReadAsync<bool>(sql, new
+            {
+                Id = accountId
+            }, token);
+
+            return hasAccount.IsNotEmpty();
+        }
     }
 }
