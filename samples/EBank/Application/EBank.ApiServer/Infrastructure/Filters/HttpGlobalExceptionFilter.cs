@@ -1,7 +1,9 @@
-﻿using EBank.ApiServer.Infrastructure.Exceptions;
+﻿using EBank.ApiServer.Infrastructure.ActionResults;
+using EBank.ApiServer.Infrastructure.Exceptions;
 using EBank.ApiServer.Models.Output;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -32,7 +34,9 @@ namespace EBank.ApiServer.Infrastructure.Filters
                     context.Exception,
                     aggregateMessage);
 
-                context.Result = ApiErrorResult.BadRequest(domainException.Messages ?? new[] { context.Exception.Message });
+                var result = ApiErrorResult.BadRequest(domainException.Messages ?? new[] {context.Exception.Message});
+
+                context.Result = new BadRequestObjectResult(result);
                 context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
             }
             else
@@ -47,7 +51,9 @@ namespace EBank.ApiServer.Infrastructure.Filters
                     devMessage = context.Exception;
                 }
 
-                context.Result = ApiExceptionResult.InternalServerError(new[] { "An server error occur." }, devMessage);
+                var result = ApiExceptionResult.InternalServerError(new[] {"An server error occur."}, devMessage);
+
+                context.Result = new InternalServerErrorObjectResult(result);
                 context.HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
             }
 

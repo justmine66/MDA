@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
 namespace EBank.ApiServer.Models.Output
@@ -13,7 +12,7 @@ namespace EBank.ApiServer.Models.Output
         /// 是否成功
         /// </summary>
         /// <example>true</example>
-        public bool IsSuccess { get; set; } = true;
+        public bool IsSuccessful { get; set; } = true;
 
         /// <summary>
         /// 状态，通常为 HTTP 状态码，也可为业务约定代码。
@@ -24,31 +23,15 @@ namespace EBank.ApiServer.Models.Output
         /// <summary>
         /// 消息列表
         /// </summary>
-        public IEnumerable<string> Messages { get; set; }
+        public object Messages { get; set; }
 
-        public static OkObjectResult Ok(params string[] messages)
-        {
-            return new OkObjectResult(new ApiResult()
-            {
-                Status = StatusCodes.Status200OK,
-                Messages = messages
-            });
-        }
-
-        public static OkObjectResult Ok(
-            IEnumerable<string> messages = null,
-            int status = StatusCodes.Status200OK)
-        {
-            return new OkObjectResult(new ApiResult()
-            {
-                Status = status,
-                Messages = messages
-            });
-        }
-
-        public static ApiResult Accepted(
-            IEnumerable<string> messages = null,
-            int status = StatusCodes.Status202Accepted)
+        /// <summary>
+        /// 创建新 <see cref="ApiResult"/> 实例。
+        /// </summary>
+        /// <param name="status">状态</param>
+        /// <param name="messages">消息</param>
+        /// <returns></returns>
+        public static ApiResult New(int status, IEnumerable<string> messages = null)
         {
             return new ApiResult()
             {
@@ -56,6 +39,85 @@ namespace EBank.ApiServer.Models.Output
                 Messages = messages
             };
         }
+
+        /// <summary>
+        /// 创建新 <see cref="ApiResult"/> 实例。
+        /// </summary>
+        /// <param name="status">状态</param>
+        /// <param name="messages">消息</param>
+        /// <returns></returns>
+        public static ApiResult New(int status, params string[] messages)
+        {
+            return new ApiResult()
+            {
+                Status = status,
+                Messages = messages
+            };
+        }
+
+        /// <summary>
+        /// 成功
+        /// </summary>
+        /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
+        /// <param name="messages"></param>
+        /// <returns>结果</returns>
+        public static ApiResult Ok(int status = StatusCodes.Status200OK, IEnumerable<string> messages = null) => New(status, messages);
+
+        /// <summary>
+        /// 成功
+        /// </summary>
+        /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
+        /// <param name="messages"></param>
+        /// <returns>结果</returns>
+        public static ApiResult Ok(int status = StatusCodes.Status200OK, params string[] messages) => New(status, messages);
+
+        /// <summary>
+        /// 已接受
+        /// </summary>
+        /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
+        /// <param name="messages"></param>
+        /// <returns>结果</returns>
+        public static ApiResult Accepted(int status = StatusCodes.Status202Accepted, IEnumerable<string> messages = null) => New(status, messages);
+
+        /// <summary>
+        /// 已接受
+        /// </summary>
+        /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
+        /// <param name="messages"></param>
+        /// <returns>结果</returns>
+        public static ApiResult Accepted(int status = StatusCodes.Status202Accepted, params string[] messages) => New(status, messages);
+
+        /// <summary>
+        /// 已创建
+        /// </summary>
+        /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
+        /// <param name="messages"></param>
+        /// <returns>结果</returns>
+        public static ApiResult Created(int status = StatusCodes.Status201Created, params string[] messages) => New(status, messages);
+
+        /// <summary>
+        /// 已创建
+        /// </summary>
+        /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
+        /// <param name="messages"></param>
+        /// <returns>结果</returns>
+        public static ApiResult Created(int status = StatusCodes.Status201Created, IEnumerable<string> messages = null) => New(status, messages);
+
+        /// <summary>
+        /// 已删除
+        /// </summary>
+        /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
+        /// <param name="messages"></param>
+        /// <returns>结果</returns>
+        public static ApiResult NoContent(int status = StatusCodes.Status204NoContent, params string[] messages) => New(status, messages);
+
+        /// <summary>
+        /// 已删除
+        /// </summary>
+        /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
+        /// <param name="messages"></param>
+        /// <returns>结果</returns>
+        public static ApiResult NoContent(int status = StatusCodes.Status204NoContent, IEnumerable<string> messages = null) => New(status, messages);
     }
 
     /// <summary>
@@ -69,16 +131,110 @@ namespace EBank.ApiServer.Models.Output
         /// </summary>
         public TPayload Payload { get; set; }
 
-        public static OkObjectResult Ok(TPayload payload = default,
-            IEnumerable<string> messages = null,
-            int status = StatusCodes.Status200OK)
+        /// <summary>
+        /// 创建新 <see cref="ApiResult{TPayload}"/> 实例。
+        /// </summary>
+        /// <param name="payload">内容载荷类型</param>
+        /// <param name="status">状态</param>
+        /// <param name="messages">消息</param>
+        /// <returns></returns>
+        public static ApiResult<TPayload> New(TPayload payload, int status, IEnumerable<string> messages = null)
         {
-            return new OkObjectResult(new ApiResult<TPayload>()
+            return new ApiResult<TPayload>()
             {
+                Payload = payload,
                 Status = status,
-                Messages = messages,
-                Payload = payload
-            });
+                Messages = messages
+            };
         }
+
+        /// <summary>
+        /// 创建新 <see cref="ApiResult"/> 实例。
+        /// </summary>
+        /// <param name="payload">内容载荷类型</param>
+        /// <param name="status">状态</param>
+        /// <param name="messages">消息</param>
+        /// <returns></returns>
+        public static ApiResult<TPayload> New(TPayload payload, int status, params string[] messages)
+        {
+            return new ApiResult<TPayload>()
+            {
+                Payload = payload,
+                Status = status,
+                Messages = messages
+            };
+        }
+
+        /// <summary>
+        /// 成功
+        /// </summary>
+        /// <param name="payload">内容载荷类型</param>
+        /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
+        /// <param name="messages"></param>
+        /// <returns>结果</returns>
+        public static ApiResult<TPayload> Ok(TPayload payload = default, int status = StatusCodes.Status200OK, IEnumerable<string> messages = null) => New(payload, status, messages);
+
+        /// <summary>
+        /// 成功
+        /// </summary>
+        /// <param name="payload">内容载荷类型</param>
+        /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
+        /// <param name="messages"></param>
+        /// <returns>结果</returns>
+        public static ApiResult<TPayload> Ok(TPayload payload = default, int status = StatusCodes.Status200OK, params string[] messages) => New(payload, status, messages);
+
+        /// <summary>
+        /// 已接受
+        /// </summary>
+        /// <param name="payload">内容载荷类型</param>
+        /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
+        /// <param name="messages"></param>
+        /// <returns>结果</returns>
+        public static ApiResult<TPayload> Accepted(TPayload payload = default, int status = StatusCodes.Status202Accepted, IEnumerable<string> messages = null) => New(payload, status, messages);
+
+        /// <summary>
+        /// 已接受
+        /// </summary>
+        /// <param name="payload">内容载荷类型</param>
+        /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
+        /// <param name="messages"></param>
+        /// <returns>结果</returns>
+        public static ApiResult<TPayload> Accepted(TPayload payload = default, int status = StatusCodes.Status202Accepted, params string[] messages) => New(payload, status, messages);
+
+        /// <summary>
+        /// 已创建
+        /// </summary>
+        /// <param name="payload">内容载荷类型</param>
+        /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
+        /// <param name="messages"></param>
+        /// <returns>结果</returns>
+        public static ApiResult<TPayload> Created(TPayload payload = default, int status = StatusCodes.Status201Created, IEnumerable<string> messages = null) => New(payload, status, messages);
+
+        /// <summary>
+        /// 已创建
+        /// </summary>
+        /// <param name="payload">内容载荷类型</param>
+        /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
+        /// <param name="messages"></param>
+        /// <returns>结果</returns>
+        public static ApiResult<TPayload> Created(TPayload payload = default, int status = StatusCodes.Status201Created, params string[] messages) => New(payload, status, messages);
+
+        /// <summary>
+        /// 已删除
+        /// </summary>
+        /// <param name="payload">内容载荷类型</param>
+        /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
+        /// <param name="messages"></param>
+        /// <returns>结果</returns>
+        public static ApiResult<TPayload> NoContent(TPayload payload = default, int status = StatusCodes.Status204NoContent, IEnumerable<string> messages = null) => New(payload, status, messages);
+
+        /// <summary>
+        /// 已删除
+        /// </summary>
+        /// <param name="payload">内容载荷类型</param>
+        /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
+        /// <param name="messages"></param>
+        /// <returns>结果</returns>
+        public static ApiResult<TPayload> NoContent(TPayload payload = default, int status = StatusCodes.Status204NoContent, params string[] messages) => New(payload, status, messages);
     }
 }

@@ -1,50 +1,66 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace EBank.ApiServer.Models.Output
 {
     /// <summary>
     /// 已知错误情况下的 API 响应结果
     /// </summary>
-    public class ApiErrorResult
+    public class ApiErrorResult : ApiResult
     {
         /// <summary>
-        /// 是否成功
+        /// 创建新 <see cref="ApiErrorResult"/> 实例。
         /// </summary>
-        /// <example>false</example>
-        public bool IsSuccess { get; set; } = false;
-
-        /// <summary>
-        /// 状态，一般为 HTTP 状态码
-        /// </summary>
-        /// <example>400</example>
-        public int Status { get; set; }
-
-        /// <summary>
-        /// 消息列表
-        /// </summary>
-        public object Messages { get; set; }
-
-        public static NotFoundObjectResult NotFound(
-            object messages = null,
-            int status = StatusCodes.Status404NotFound)
+        /// <param name="status">状态</param>
+        /// <param name="messages">消息</param>
+        /// <returns></returns>
+        public static ApiErrorResult New(int status, object messages = null)
         {
-            return new NotFoundObjectResult(new ApiErrorResult()
+            return new ApiErrorResult()
             {
+                IsSuccessful = false,
                 Status = status,
                 Messages = messages
-            });
+            };
         }
 
-        public static BadRequestObjectResult BadRequest(
+        /// <summary>
+        /// 未找到资源
+        /// </summary>
+        /// <param name="messages">消息</param>
+        /// <param name="status">状态</param>
+        /// <returns>结果</returns>
+        public static ApiErrorResult NotFound(
             object messages = null,
-            int status = StatusCodes.Status400BadRequest)
-        {
-            return new BadRequestObjectResult(new ApiErrorResult()
-            {
-                Status = status,
-                Messages = messages
-            });
-        }
+            int status = StatusCodes.Status404NotFound) => New(status, messages);
+
+        /// <summary>
+        /// 无法验证请求
+        /// </summary>
+        /// <param name="messages">消息</param>
+        /// <param name="status">状态</param>
+        /// <returns>结果</returns>
+        public static ApiErrorResult BadRequest(
+            object messages = null,
+            int status = StatusCodes.Status400BadRequest) => New(status, messages);
+
+        /// <summary>
+        /// 未认证
+        /// </summary>
+        /// <param name="messages">消息</param>
+        /// <param name="status">状态</param>
+        /// <returns>结果</returns>
+        public static ApiErrorResult Unauthorized(
+            object messages = null,
+            int status = StatusCodes.Status401Unauthorized) => New(status, messages);
+
+        /// <summary>
+        /// 未授权
+        /// </summary>
+        /// <param name="messages">消息</param>
+        /// <param name="status">状态</param>
+        /// <returns>结果</returns>
+        public static ApiErrorResult Forbidden(
+            object messages = null,
+            int status = StatusCodes.Status403Forbidden) => New(status, messages);
     }
 }
