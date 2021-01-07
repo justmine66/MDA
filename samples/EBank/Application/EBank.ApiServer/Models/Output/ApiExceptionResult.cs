@@ -31,7 +31,7 @@ namespace EBank.ApiServer.Models.Output
         }
 
         /// <summary>
-        /// 服务器内部异常
+        /// 服务器端错误
         /// </summary>
         /// <param name="messages">消息，受众为对接者。</param>
         /// <param name="developerMessages">消息，受众为开发环境的开发者。</param>

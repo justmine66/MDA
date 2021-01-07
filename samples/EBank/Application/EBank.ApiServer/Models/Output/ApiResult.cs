@@ -56,7 +56,7 @@ namespace EBank.ApiServer.Models.Output
         }
 
         /// <summary>
-        /// 成功
+        /// 请求成功
         /// </summary>
         /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
         /// <param name="messages"></param>
@@ -64,7 +64,7 @@ namespace EBank.ApiServer.Models.Output
         public static ApiResult Ok(int status = StatusCodes.Status200OK, IEnumerable<string> messages = null) => New(status, messages);
 
         /// <summary>
-        /// 成功
+        /// 请求成功
         /// </summary>
         /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
         /// <param name="messages"></param>
@@ -72,7 +72,7 @@ namespace EBank.ApiServer.Models.Output
         public static ApiResult Ok(int status = StatusCodes.Status200OK, params string[] messages) => New(status, messages);
 
         /// <summary>
-        /// 已接受
+        /// 请求已接受，如果是前后端协调的异步处理，以便实现读写分离，提高性能，建议返回这个状态码，比如：银行转账，先返回已接受，客户端再轮询结果。
         /// </summary>
         /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
         /// <param name="messages"></param>
@@ -80,7 +80,7 @@ namespace EBank.ApiServer.Models.Output
         public static ApiResult Accepted(int status = StatusCodes.Status202Accepted, IEnumerable<string> messages = null) => New(status, messages);
 
         /// <summary>
-        /// 已接受
+        /// 请求已接受，如果是前后端协调的异步处理，以便实现读写分离，提高性能，建议返回这个状态码，比如：银行转账，先返回已接受，客户端再轮询结果。
         /// </summary>
         /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
         /// <param name="messages"></param>
@@ -88,7 +88,7 @@ namespace EBank.ApiServer.Models.Output
         public static ApiResult Accepted(int status = StatusCodes.Status202Accepted, params string[] messages) => New(status, messages);
 
         /// <summary>
-        /// 已创建
+        /// 请求已成功创建了资源，如果是新增数据，建议返回这个状态码。
         /// </summary>
         /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
         /// <param name="messages"></param>
@@ -96,7 +96,7 @@ namespace EBank.ApiServer.Models.Output
         public static ApiResult Created(int status = StatusCodes.Status201Created, params string[] messages) => New(status, messages);
 
         /// <summary>
-        /// 已创建
+        /// 请求已成功创建了资源，如果是新增数据，建议返回这个状态码。
         /// </summary>
         /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
         /// <param name="messages"></param>
@@ -104,7 +104,7 @@ namespace EBank.ApiServer.Models.Output
         public static ApiResult Created(int status = StatusCodes.Status201Created, IEnumerable<string> messages = null) => New(status, messages);
 
         /// <summary>
-        /// 已删除
+        /// 请求成功，但没有资源返回，如果是删除数据，建议返回这个状态码。
         /// </summary>
         /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
         /// <param name="messages"></param>
@@ -112,7 +112,7 @@ namespace EBank.ApiServer.Models.Output
         public static ApiResult NoContent(int status = StatusCodes.Status204NoContent, params string[] messages) => New(status, messages);
 
         /// <summary>
-        /// 已删除
+        /// 请求成功，但没有资源返回，如果是删除数据，建议返回这个状态码。
         /// </summary>
         /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
         /// <param name="messages"></param>
@@ -166,7 +166,7 @@ namespace EBank.ApiServer.Models.Output
         }
 
         /// <summary>
-        /// 成功
+        /// 请求成功
         /// </summary>
         /// <param name="payload">内容载荷类型</param>
         /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
@@ -175,7 +175,7 @@ namespace EBank.ApiServer.Models.Output
         public static ApiResult<TPayload> Ok(TPayload payload = default, int status = StatusCodes.Status200OK, IEnumerable<string> messages = null) => New(payload, status, messages);
 
         /// <summary>
-        /// 成功
+        /// 请求成功
         /// </summary>
         /// <param name="payload">内容载荷类型</param>
         /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
@@ -184,7 +184,7 @@ namespace EBank.ApiServer.Models.Output
         public static ApiResult<TPayload> Ok(TPayload payload = default, int status = StatusCodes.Status200OK, params string[] messages) => New(payload, status, messages);
 
         /// <summary>
-        /// 已接受
+        /// 请求已接受，如果是前后端协调的异步处理，以便实现读写分离，提高性能，建议返回这个状态码，比如：银行转账，先返回已接受，客户端再轮询结果。
         /// </summary>
         /// <param name="payload">内容载荷类型</param>
         /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
@@ -193,7 +193,7 @@ namespace EBank.ApiServer.Models.Output
         public static ApiResult<TPayload> Accepted(TPayload payload = default, int status = StatusCodes.Status202Accepted, IEnumerable<string> messages = null) => New(payload, status, messages);
 
         /// <summary>
-        /// 已接受
+        /// 请求已接受，如果是前后端协调的异步处理，以便实现读写分离，提高性能，建议返回这个状态码，比如：银行转账，先返回已接受，客户端再轮询结果。
         /// </summary>
         /// <param name="payload">内容载荷类型</param>
         /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
@@ -202,7 +202,7 @@ namespace EBank.ApiServer.Models.Output
         public static ApiResult<TPayload> Accepted(TPayload payload = default, int status = StatusCodes.Status202Accepted, params string[] messages) => New(payload, status, messages);
 
         /// <summary>
-        /// 已创建
+        /// 请求已成功创建了资源，如果是新增数据，建议返回这个状态码。
         /// </summary>
         /// <param name="payload">内容载荷类型</param>
         /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
@@ -211,7 +211,7 @@ namespace EBank.ApiServer.Models.Output
         public static ApiResult<TPayload> Created(TPayload payload = default, int status = StatusCodes.Status201Created, IEnumerable<string> messages = null) => New(payload, status, messages);
 
         /// <summary>
-        /// 已创建
+        /// 请求已成功创建了资源，如果是新增数据，建议返回这个状态码。
         /// </summary>
         /// <param name="payload">内容载荷类型</param>
         /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
@@ -220,7 +220,7 @@ namespace EBank.ApiServer.Models.Output
         public static ApiResult<TPayload> Created(TPayload payload = default, int status = StatusCodes.Status201Created, params string[] messages) => New(payload, status, messages);
 
         /// <summary>
-        /// 已删除
+        /// 请求成功，但没有资源返回，如果是删除数据，建议返回这个状态码。
         /// </summary>
         /// <param name="payload">内容载荷类型</param>
         /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>
@@ -229,7 +229,7 @@ namespace EBank.ApiServer.Models.Output
         public static ApiResult<TPayload> NoContent(TPayload payload = default, int status = StatusCodes.Status204NoContent, IEnumerable<string> messages = null) => New(payload, status, messages);
 
         /// <summary>
-        /// 已删除
+        /// 请求成功，但没有资源返回，如果是删除数据，建议返回这个状态码。
         /// </summary>
         /// <param name="payload">内容载荷类型</param>
         /// <param name="status">状态，通常为 HTTP 状态码，也可为业务约定代码。</param>

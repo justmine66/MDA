@@ -24,7 +24,7 @@ namespace EBank.ApiServer.Models.Output
         }
 
         /// <summary>
-        /// 未找到资源
+        /// 未找到资源，如果资源不存在，建议返回此状态码。
         /// </summary>
         /// <param name="messages">消息</param>
         /// <param name="status">状态</param>
@@ -34,7 +34,7 @@ namespace EBank.ApiServer.Models.Output
             int status = StatusCodes.Status404NotFound) => New(status, messages);
 
         /// <summary>
-        /// 无法验证请求
+        /// 无法验证请求，如果服务端无法处理请求，建议返回此状态码。
         /// </summary>
         /// <param name="messages">消息</param>
         /// <param name="status">状态</param>
@@ -44,7 +44,7 @@ namespace EBank.ApiServer.Models.Output
             int status = StatusCodes.Status400BadRequest) => New(status, messages);
 
         /// <summary>
-        /// 未认证
+        /// 未认证，如果没有提供身份信息，建议返回此状态码。
         /// </summary>
         /// <param name="messages">消息</param>
         /// <param name="status">状态</param>
@@ -54,7 +54,7 @@ namespace EBank.ApiServer.Models.Output
             int status = StatusCodes.Status401Unauthorized) => New(status, messages);
 
         /// <summary>
-        /// 未授权
+        /// 未授权，如果身份认证成功，但无权访问，建议返回此状态码。
         /// </summary>
         /// <param name="messages">消息</param>
         /// <param name="status">状态</param>
