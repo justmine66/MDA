@@ -5,7 +5,7 @@ using MDA.Domain.Models;
 namespace EBank.Domain.Models.Transferring
 {
     /// <summary>
-    /// 表示一笔转账交易，聚合根。
+    /// 表示一笔转账交易，内存状态。
     /// </summary>
     public partial class TransferTransaction
     {
@@ -35,6 +35,9 @@ namespace EBank.Domain.Models.Transferring
         public bool Validated => SourceAccount.Validated && SinkAccount.Validated;
     }
 
+    /// <summary>
+    /// 表示一笔转账交易，处理业务
+    /// </summary>
     public partial class TransferTransaction : EventSourcedAggregateRoot<long>
     {
         #region [ Handler Domain Commands ]

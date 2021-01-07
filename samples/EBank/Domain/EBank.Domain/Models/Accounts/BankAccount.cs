@@ -1,16 +1,16 @@
 ﻿using EBank.Domain.Commands.Accounts;
 using EBank.Domain.Events.Accounts;
+using EBank.Domain.Models.Transferring;
 using EBank.Domain.Notifications;
 using MDA.Domain.Models;
 using MDA.Domain.Shared;
 using System.Collections.Generic;
 using System.Linq;
-using TransferAccountType = EBank.Domain.Models.Transferring.TransferAccountType;
 
 namespace EBank.Domain.Models.Accounts
 {
     /// <summary>
-    /// 表示一个银行账户聚合根，封装状态。
+    /// 表示一个银行账户聚合根，内存状态。
     /// </summary>
     public partial class BankAccount
     {
@@ -86,7 +86,7 @@ namespace EBank.Domain.Models.Accounts
     }
 
     /// <summary>
-    /// 表示一个账户聚合根，封装业务规则。
+    /// 表示一个账户聚合根，处理业务。
     /// </summary>
     public partial class BankAccount : EventSourcedAggregateRoot<long>
     {
@@ -98,16 +98,6 @@ namespace EBank.Domain.Models.Accounts
         /// <param name="command">领域命令</param>
         public void OnDomainCommand(OpenAccountDomainCommand command)
         {
-            PreConditions.GreaterThanZero<OpenAccountDomainCommand>("Id", command.AggregateRootId);
-
-            PreConditions.NotNullOrWhiteSpace<OpenAccountDomainCommand>(nameof(command.AccountName), command.AccountName);
-            PreConditions.GreaterThanOrEqual<OpenAccountDomainCommand>($"{nameof(command.AccountName)} length", command.AccountName.Length, DomainRules.PreConditions.Account.Name.Length.Minimum);
-            PreConditions.LessThanOrEqual<OpenAccountDomainCommand>($"{nameof(command.AccountName)} length", command.AccountName.Length,
-                DomainRules.PreConditions.Account.Name.Length.Maximum);
-
-            PreConditions.GreaterThanZero<OpenAccountDomainCommand>(nameof(command.InitialBalance), command.InitialBalance);
-            PreConditions.NotNullOrWhiteSpace<OpenAccountDomainCommand>(nameof(command.Bank), command.Bank);
-
             var @event = new AccountOpenedDomainEvent(command.AccountName, command.Bank, command.InitialBalance);
 
             ApplyDomainEvent(@event);
@@ -130,19 +120,7 @@ namespace EBank.Domain.Models.Accounts
         /// <param name="command">领域命令</param>
         public void OnDomainCommand(ValidateDepositTransactionDomainCommand command)
         {
-            // 1. 参数预检
-            PreConditions.NotNullOrWhiteSpace<ValidateDepositTransactionDomainCommand>(nameof(command.AccountName), command.AccountName);
-            PreConditions.GreaterThanOrEqual<ValidateDepositTransactionDomainCommand>($"{nameof(command.AccountName)} length", command.AccountName.Length, DomainRules.PreConditions.Account.Name.Length.Minimum);
-            PreConditions.LessThanOrEqual<ValidateDepositTransactionDomainCommand>($"{nameof(command.AccountName)} length", command.AccountName.Length, DomainRules.PreConditions.Account.Name.Length.Maximum);
-            PreConditions.NotNullOrWhiteSpace<ValidateDepositTransactionDomainCommand>(nameof(command.Bank), command.Bank);
-
-            // 2. 业务预检
-            if (Id != command.AggregateRootId)
-            {
-                PublishDomainNotification(new DepositTransactionValidateFailedDomainNotification(command.TransactionId, "存款失败，账户号不正确。"));
-
-                return;
-            }
+            // 1. 业务预检
             if (Name != command.AccountName)
             {
                 PublishDomainNotification(new DepositTransactionValidateFailedDomainNotification(command.TransactionId, "存款失败，账户名不正确。"));
@@ -156,7 +134,7 @@ namespace EBank.Domain.Models.Accounts
                 return;
             }
 
-            // 3. 业务操作
+            // 2. 处理业务
             ApplyDomainEvent(new DepositTransactionValidatedDomainEvent(command.TransactionId, command.Amount));
         }
 

@@ -66,7 +66,7 @@ namespace EBank.ApiServer.Controllers
         /// <param name="messages">消息</param>
         /// <returns>结果</returns>
         [NonAction]
-        public AcceptedResult Accepted(params string[] messages) => Accepted<object>(null, StatusCodes.Status202Accepted, messages);
+        public AcceptedResult Accepted(params string[] messages) => Accepted<object>(null, StatusCodes.Status200OK, messages);
 
         /// <summary>
         /// 创建一个 <see cref="AcceptedResult"/> 对象。
@@ -109,7 +109,7 @@ namespace EBank.ApiServer.Controllers
         /// <param name="messages">消息</param>
         /// <returns>结果</returns>
         [NonAction]
-        public NotFoundObjectResult NotFound(params string[] messages) => NotFound(StatusCodes.Status202Accepted, messages);
+        public NotFoundObjectResult NotFound(params string[] messages) => NotFound(StatusCodes.Status404NotFound, messages);
 
         /// <summary>
         /// 创建一个 <see cref="NotFoundObjectResult"/> 对象。
@@ -140,7 +140,7 @@ namespace EBank.ApiServer.Controllers
         /// <param name="messages">消息</param>
         /// <returns>结果</returns>
         [NonAction]
-        public BadRequestObjectResult BadRequest(params string[] messages) => BadRequest(StatusCodes.Status202Accepted, messages);
+        public BadRequestObjectResult BadRequest(params string[] messages) => BadRequest(StatusCodes.Status400BadRequest, messages);
 
         /// <summary>
         /// 创建一个 <see cref="BadRequestObjectResult"/> 对象。

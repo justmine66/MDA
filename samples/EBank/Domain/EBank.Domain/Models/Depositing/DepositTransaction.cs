@@ -1,15 +1,14 @@
 ﻿using EBank.Domain.Commands.Depositing;
 using EBank.Domain.Events.Depositing;
 using MDA.Domain.Models;
-using MDA.Domain.Shared;
 
 namespace EBank.Domain.Models.Depositing
 {
     /// <summary>
-    /// 表示一笔存款交易
+    /// 表示一笔存款交易，内存状态。
     /// 定义：将金额存入哪个银行的哪个账户。
     /// </summary>
-    public partial class DepositTransaction : EventSourcedAggregateRoot<long>
+    public partial class DepositTransaction 
     {
         /// <summary>
         /// 账户号
@@ -37,17 +36,15 @@ namespace EBank.Domain.Models.Depositing
         public DepositTransactionStatus Status { get; private set; }
     }
 
-    public partial class DepositTransaction
+    /// <summary>
+    /// 表示一笔存款交易，处理业务。
+    /// </summary>
+    public partial class DepositTransaction : EventSourcedAggregateRoot<long>
     {
         #region [ Handler Domain Commands ]
 
         public void OnDomainCommand(StartDepositTransactionDomainCommand command)
         {
-            PreConditions.GreaterThan(nameof(command.AccountId), command.AccountId, 0);
-            PreConditions.NotNullOrWhiteSpace(nameof(command.AccountName), command.AccountName);
-            PreConditions.NotNullOrWhiteSpace(nameof(command.Bank), command.Bank);
-            PreConditions.GreaterThan(nameof(command.Amount), command.Amount, 0);
-
             var @event = new DepositTransactionStartedDomainEvent(command.AccountId, command.AccountName, command.Bank, command.Amount);
 
             ApplyDomainEvent(@event);

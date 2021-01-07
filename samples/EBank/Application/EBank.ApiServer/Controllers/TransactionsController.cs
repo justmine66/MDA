@@ -1,4 +1,5 @@
 ﻿using EBank.ApiServer.Application.Business;
+using EBank.ApiServer.Application.Querying;
 using EBank.ApiServer.Models.Input.Transactions;
 using EBank.ApiServer.Models.Output;
 using EBank.Application.Commanding.Depositing;
@@ -18,10 +19,14 @@ namespace EBank.ApiServer.Controllers
     public class TransactionsController : AbstractController
     {
         private readonly IEBankApplicationService _eBankApplicationService;
+        private readonly IBankAccountQueryService _accountQueryService;
 
-        public TransactionsController(IEBankApplicationService eBankApplicationService)
+        public TransactionsController(
+            IEBankApplicationService eBankApplicationService,
+            IBankAccountQueryService accountQueryService)
         {
             _eBankApplicationService = eBankApplicationService;
+            _accountQueryService = accountQueryService;
         }
 
         /// <summary>
@@ -45,11 +50,16 @@ namespace EBank.ApiServer.Controllers
 #endif
         public async Task<IActionResult> DepositAsync(StartDeposit dto)
         {
+            if (!await _accountQueryService.HasAccountAsync(dto.AccountId))
+            {
+                return NotFound("The bank account does not exist.");
+            }
+
             var command = ObjectPortMapper<StartDeposit, StartDepositApplicationCommand>.Map(dto);
 
             await _eBankApplicationService.DepositedFundsAsync(command);
 
-            return Ok();
+            return Accepted();
         }
 
         /// <summary>
@@ -73,11 +83,16 @@ namespace EBank.ApiServer.Controllers
 #endif
         public async Task<IActionResult> WithdrawAsync(StartWithdraw dto)
         {
+            if (!await _accountQueryService.HasAccountAsync(dto.AccountId))
+            {
+                return NotFound("The bank account does not exist.");
+            }
+
             var command = ObjectPortMapper<StartWithdraw, StartWithdrawApplicationCommand>.Map(dto);
 
             await _eBankApplicationService.WithdrawFundsAsync(command);
 
-            return Ok();
+            return Accepted();
         }
 
         /// <summary>
@@ -101,11 +116,28 @@ namespace EBank.ApiServer.Controllers
 #endif
         public async Task<IActionResult> TransferAsync(StartTransfer dto)
         {
-            var command = ObjectPortMapper<StartTransfer, StartTransferApplicationCommand>.Map(dto);
+            var source = dto.SourceAccount;
+            if (!await _accountQueryService.HasAccountAsync(source.Id))
+            {
+                return NotFound("The source account does not exist.");
+            }
+
+            var sink = dto.SinkAccount;
+            if (!await _accountQueryService.HasAccountAsync(sink.Id))
+            {
+                return NotFound("The sink account does not exist.");
+            }
+
+            var command = new StartTransferApplicationCommand()
+            {
+                Amount = dto.Amount,
+                SourceAccount = ObjectPortMapper<StartTransfer.TransferAccount, StartTransferApplicationCommand.TransferAccount>.Map(source),
+                SinkAccount = ObjectPortMapper<StartTransfer.TransferAccount, StartTransferApplicationCommand.TransferAccount>.Map(sink)
+            };
 
             await _eBankApplicationService.TransferFundsAsync(command);
 
-            return Ok();
+            return Accepted();
         }
     }
 }

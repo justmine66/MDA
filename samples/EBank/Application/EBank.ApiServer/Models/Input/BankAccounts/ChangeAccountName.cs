@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using EBank.ApiServer.Infrastructure.ModelValidations;
+using EBank.Domain.Models.Accounts;
 
 namespace EBank.ApiServer.Models.Input.BankAccounts
 {
@@ -12,6 +14,7 @@ namespace EBank.ApiServer.Models.Input.BankAccounts
         /// </summary>
         /// <example>5392026437095184</example>
         [Required]
+        [GreaterThanAndEqual(DomainRules.PreConditions.Account.Id.Range.Minimum)]
         public long AccountId { get; set; }
 
         /// <summary>
@@ -19,6 +22,8 @@ namespace EBank.ApiServer.Models.Input.BankAccounts
         /// </summary>
         /// <example>张三</example>
         [Required]
+        [MinLength(DomainRules.PreConditions.Account.Name.Length.Minimum)]
+        [MaxLength(DomainRules.PreConditions.Account.Name.Length.Maximum)]
         public string AccountName { get; set; }
     }
 }

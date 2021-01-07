@@ -6,10 +6,10 @@ using MDA.Domain.Shared;
 namespace EBank.Domain.Models.Withdrawing
 {
     /// <summary>
-    /// 表示一笔取款交易
+    /// 表示一笔取款交易，内存状态。
     /// 定义：从哪个银行的哪个账户取款。
     /// </summary>
-    public partial class WithdrawTransaction : EventSourcedAggregateRoot<long>
+    public partial class WithdrawTransaction 
     {
         public WithdrawTransaction(
             long id,
@@ -51,7 +51,10 @@ namespace EBank.Domain.Models.Withdrawing
         public WithdrawTransactionStatus Status { get; private set; }
     }
 
-    public partial class WithdrawTransaction
+    /// <summary>
+    /// 表示一笔取款交易，处理业务。
+    /// </summary>
+    public partial class WithdrawTransaction : EventSourcedAggregateRoot<long>
     {
         #region [ Handler Domain Commands ]
 

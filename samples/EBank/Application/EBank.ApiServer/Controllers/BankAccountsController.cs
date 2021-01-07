@@ -78,7 +78,7 @@ namespace EBank.ApiServer.Controllers
         {
             if (!await _accountQueryService.HasAccountAsync(dto.AccountId))
             {
-                return NotFound();
+                return NotFound("The bank account does not exist.");
             }
 
             var command = ObjectPortMapper<ChangeAccountName, ChangeAccountNameApplicationCommand>.Map(dto);
