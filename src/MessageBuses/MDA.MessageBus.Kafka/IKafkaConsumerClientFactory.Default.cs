@@ -25,6 +25,8 @@ namespace MDA.MessageBus.Kafka
             _options = options.Value;
         }
 
+        public string ConsumeGroup => _options.Group;
+
         public IConsumer<string, byte[]> CreateClient()
         {
             if (_consumerClient != null)
@@ -56,7 +58,7 @@ namespace MDA.MessageBus.Kafka
 
                 _consumerClient.Subscribe(topics);
 
-                _logger.LogInformation($"Subscribed topics: {topics.Aggregate((x, y) => $"{x},{y}")}");
+                _logger.LogInformation($"The consume group: {_options.Group} subscribed topics: {topics.Aggregate((x, y) => $"{x},{y}")}");
 
                 return _consumerClient;
             }

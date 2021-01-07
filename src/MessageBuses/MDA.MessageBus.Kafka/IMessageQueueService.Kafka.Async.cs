@@ -110,7 +110,7 @@ namespace MDA.MessageBus.Kafka
             var typeResolver = _serviceProvider.GetService<ITypeResolver>();
             if (!typeResolver.TryResolveType(messageTypeFullName, out var messageType))
             {
-                _logger.LogError($"Received kafka message, cannot resolve type: {messageTypeFullName}.");
+                _logger.LogError($"The Consume Group: {_consumer.Group} received kafka message, cannot resolve type: {messageTypeFullName}.");
 
                 return;
             };
@@ -118,7 +118,7 @@ namespace MDA.MessageBus.Kafka
             var payload = _serializer.Deserialize(eventArgs.Message.Value, messageType);
             if (!(payload is IMessage message))
             {
-                _logger.LogError($"Deserialized kafka message, incorrect message type,expected: {messageTypeFullName}, actual: {payload.GetType().FullName}.");
+                _logger.LogError($"The Consume Group: {_consumer.Group} deserialized kafka message, incorrect message type,expected: {messageTypeFullName}, actual: {payload.GetType().FullName}.");
 
                 return;
             };
@@ -138,8 +138,7 @@ namespace MDA.MessageBus.Kafka
                     MessageHandlerUtils.DynamicInvokeHandle(handlerProxies, message, _logger);
                 }
 
-                var asyncHandlerProxies =
-                    scopeServiceProvider.GetServices(asyncHandlerProxyTypeDefinition.MakeGenericType(messageType));
+                var asyncHandlerProxies = scopeServiceProvider.GetServices(asyncHandlerProxyTypeDefinition.MakeGenericType(messageType));
                 if (asyncHandlerProxies.IsNotEmpty())
                 {
                     hasHandler = true;
@@ -149,7 +148,7 @@ namespace MDA.MessageBus.Kafka
 
                 if (!hasHandler)
                 {
-                    _logger.LogError($"No message handler found: {messageTypeFullName}.");
+                    _logger.LogError($"No message handler found for {messageTypeFullName}, the consume group: {_consumer.Group}.");
                 }
             }
         }

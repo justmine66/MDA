@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace MDA.MessageBus
 {
-    public class MessageHeaders : IEnumerable<MessageHeader>, IList<MessageHeader>
+    public class MessageHeaders : IList<MessageHeader>
     {
         private readonly List<MessageHeader> _headers = new List<MessageHeader>();
 

@@ -24,16 +24,24 @@ namespace MDA.MessageBus.Disruptor
                     var handlerProxyTypeDefinition = typeof(IMessageHandlerProxy<>);
                     var asyncHandlerProxyTypeDefinition = typeof(IAsyncMessageHandlerProxy<>);
 
+                    var hasHandler = false;
                     var handlerProxies = scopeServiceProvider.GetServices(handlerProxyTypeDefinition.MakeGenericType(messageType));
                     if (handlerProxies.IsNotEmpty())
                     {
+                        hasHandler = true;
                         MessageHandlerUtils.DynamicInvokeHandle(handlerProxies, data.Message, logger);
                     }
 
                     var asyncHandlerProxies = scopeServiceProvider.GetServices(asyncHandlerProxyTypeDefinition.MakeGenericType(messageType));
                     if (asyncHandlerProxies.IsNotEmpty())
                     {
+                        hasHandler = true;
                         MessageHandlerUtils.DynamicInvokeAsyncHandle(asyncHandlerProxies, data.Message, logger);
+                    }
+
+                    if (!hasHandler)
+                    {
+                        logger.LogError($"No message handler found: {messageType.FullName}.");
                     }
                 }
             }

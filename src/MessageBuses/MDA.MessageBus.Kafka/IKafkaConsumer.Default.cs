@@ -54,6 +54,8 @@ namespace MDA.MessageBus.Kafka
             }
         }
 
+        public string Group => _clientFactory.ConsumeGroup;
+
         public event EventHandler<ConsumeResult<string, byte[]>> OnConsumeReceived;
     }
 }
