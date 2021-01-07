@@ -80,27 +80,27 @@ namespace MDA.Domain.Commands
                 return;
             }
 
-            var hasEvent = false;
+            var hasDomainEvent = false;
             var mutatingDomainEvents = aggregate.MutatingDomainEvents;
-            if (!mutatingDomainEvents.IsEmpty())
+            if (mutatingDomainEvents.IsNotEmpty())
             {
-                hasEvent = true;
+                hasDomainEvent = true;
 
                 await ProcessMutatingDomainEventsAsync(aggregate.MutatingDomainEvents, command, token);
             }
 
-            var hasNotification = false;
+            var hasDomainNotification = false;
             var mutatingDomainNotifications = aggregate.MutatingDomainNotifications;
-            if (!mutatingDomainNotifications.IsEmpty())
+            if (mutatingDomainNotifications.IsNotEmpty())
             {
-                hasNotification = true;
+                hasDomainNotification = true;
 
                 await PublishMutatingDomainNotificationsAsync(mutatingDomainNotifications, command, token);
             }
 
-            if (!hasEvent && !hasNotification)
+            if (!hasDomainEvent && !hasDomainNotification)
             {
-                _logger.LogWarning($"The domain command: [Id: {commandId}, Type: {commandType.FullName}] dit not apply domain event and notifacation for aggregate root: [Id: {aggregateRootStringId}, Type: {aggregateRootType.FullName}], please confirm whether the state will be lost.");
+                _logger.LogWarning($"The domain command: [Id: {commandId}, Type: {commandType.FullName}] apply neither domain event nor generate domain notification for aggregate root: [Id: {aggregateRootStringId}, Type: {aggregateRootType.FullName}], please confirm whether the state will be lost.");
             }
         }
 

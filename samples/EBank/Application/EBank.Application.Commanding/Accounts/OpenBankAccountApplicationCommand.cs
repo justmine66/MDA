@@ -17,13 +17,11 @@ namespace EBank.Application.Commanding.Accounts
         /// <summary>
         /// 账户名
         /// </summary>
-        [Required]
         public string AccountName { get; set; }
 
         /// <summary>
         /// 开户行
         /// </summary>
-        [Required]
         public string Bank { get; set; }
 
         /// <summary>

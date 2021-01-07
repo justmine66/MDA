@@ -25,6 +25,6 @@ namespace EBank.ApiServer.Models.Input.BankAccounts
         /// 初始余额
         /// </summary>
         /// <example>1000</example>
-        public decimal? InitialBalance { get; set; }
+        public decimal InitialBalance { get; set; }
     }
 }

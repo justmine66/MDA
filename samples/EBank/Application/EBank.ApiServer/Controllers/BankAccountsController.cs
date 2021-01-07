@@ -1,6 +1,6 @@
 ﻿using EBank.ApiServer.Application.Business;
 using EBank.ApiServer.Application.Querying;
-using EBank.ApiServer.Models.Input;
+using EBank.ApiServer.Models.Input.BankAccounts;
 using EBank.ApiServer.Models.Output;
 using EBank.Application.Commanding.Accounts;
 using MDA.Infrastructure.Mappers;
@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using System.Threading.Tasks;
-using EBank.ApiServer.Models.Input.BankAccounts;
 
 namespace EBank.ApiServer.Controllers
 {
