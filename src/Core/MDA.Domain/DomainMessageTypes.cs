@@ -3,7 +3,7 @@
 namespace MDA.Domain
 {
     [Flags]
-    public enum DomainMessageType
+    public enum DomainMessageTypes
     {
         Command = 1 << 0,
         Event = 1 << 1,

@@ -70,13 +70,13 @@ namespace MDA.Domain.Models
                 return DomainCommandResult.Failed(command.Id, $"Incorrect the aggregate root id, expected: {Id}, actual: {aggregateRootId}");
             }
 
-            ExecuteDomainMessage(DomainMessageType.Command, command);
+            ExecuteDomainMessage(DomainMessageTypes.Command, command);
 
             return DomainCommandResult.Succeed(command.Id);
         }
 
         public virtual void HandleDomainEvent(IDomainEvent @event)
-            => ExecuteDomainMessage(DomainMessageType.Event, @event);
+            => ExecuteDomainMessage(DomainMessageTypes.Event, @event);
 
         public virtual void PublishDomainNotification(IDomainNotification notification)
         {
@@ -113,7 +113,7 @@ namespace MDA.Domain.Models
             }
         }
 
-        private void ExecuteDomainMessage(DomainMessageType messageType, IMessage message)
+        private void ExecuteDomainMessage(DomainMessageTypes messageType, IMessage message)
         {
             var messageParameterType = message.GetType();
             var messageParameterTypeFullName = message.GetType();
@@ -122,7 +122,7 @@ namespace MDA.Domain.Models
             string methodName;
             switch (messageType)
             {
-                case DomainMessageType.Command:
+                case DomainMessageTypes.Command:
                     methodName = "OnDomainCommand";
 
                     var domainCommandType = typeof(IDomainCommand);
@@ -133,7 +133,7 @@ namespace MDA.Domain.Models
                     }
 
                     break;
-                case DomainMessageType.Event:
+                case DomainMessageTypes.Event:
                     methodName = "OnDomainEvent";
 
                     var domainEventType = typeof(IDomainEvent);
@@ -144,7 +144,7 @@ namespace MDA.Domain.Models
                     }
 
                     break;
-                case DomainMessageType.Notification:
+                case DomainMessageTypes.Notification:
                     throw new NotSupportedException($"{messageType}");
                 default:
                     throw new ArgumentOutOfRangeException(nameof(messageType), messageType, null);
