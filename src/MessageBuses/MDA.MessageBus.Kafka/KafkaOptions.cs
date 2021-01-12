@@ -1,10 +1,10 @@
 ﻿namespace MDA.MessageBus.Kafka
 {
-    public abstract class KafkaOptions
+    public class KafkaOptions
     {
         /// <summary>
-        /// Broker 服务列表，示例：192.168.2.112:9092,192.168.2.113:9092。
+        /// Broker 服务列表
         /// </summary>
-        public string BrokerServers { get; set; }
+        public string[] BrokerServers { get; set; }
     }
 }

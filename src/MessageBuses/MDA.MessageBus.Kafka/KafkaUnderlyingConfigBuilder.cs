@@ -1,6 +1,8 @@
-﻿using System;
+﻿using MDA.Infrastructure.Utils;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MDA.MessageBus.Kafka
 {
@@ -38,7 +40,12 @@ namespace MDA.MessageBus.Kafka
 
         public KafkaUnderlyingConfigBuilder Append(KafkaProducerOptions options)
         {
-            Append("bootstrap.servers", options.BrokerServers);
+            if (options.BrokerServers == null || options.BrokerServers.Length <= 0)
+            {
+                throw new ArgumentNullException(nameof(options.BrokerServers));
+            }
+
+            Append("bootstrap.servers", options.BrokerServers.Aggregate((x, y) => $"{x},{y}"));
             Append("request.required.acks", options.AcknowledgeOptions.Type);
             Append("request.timeout.ms", options.AcknowledgeOptions.TimeoutMilliseconds);
             Append("message.send.max.retries", options.AcknowledgeOptions.MaxRetries);
@@ -49,7 +56,17 @@ namespace MDA.MessageBus.Kafka
 
         public KafkaUnderlyingConfigBuilder Append(KafkaConsumerOptions options)
         {
-            Append("bootstrap.servers", options.BrokerServers);
+            if (options.BrokerServers == null || options.BrokerServers.Length <= 0)
+            {
+                throw new ArgumentNullException(nameof(options.BrokerServers));
+            }
+            if (options.Topics == null || options.Topics.Length <= 0)
+            {
+                throw new ArgumentNullException(nameof(options.BrokerServers));
+            }
+            PreConditions.NotNullOrEmpty(options.Group, nameof(options.Group));
+
+            Append("bootstrap.servers", options.BrokerServers.Aggregate((x, y) => $"{x},{y}"));
             Append("allow.auto.create.topics", options.AllowAutoCreateTopic);
             Append("group.id", options.Group);
             Append("auto.offset.reset", options.BootstrapOffsetOptions.AutoResetType);
