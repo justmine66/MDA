@@ -6,6 +6,7 @@ using MDA.Domain.Models;
 using MDA.Domain.Shared;
 using System.Collections.Generic;
 using System.Linq;
+using MDA.Domain.Exceptions;
 
 namespace EBank.Domain.Models.Accounts
 {

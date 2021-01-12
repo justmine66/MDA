@@ -13,23 +13,20 @@ namespace MDA.Domain.Models
             services.AddSingleton(typeof(IAggregateRootCheckpointStateBackend<>), typeof(MemoryAggregateRootCheckpointStateBackend<>));
             services.AddSingleton<IAggregateRootCheckpointManager, DefaultAggregateRootCheckpointManager>();
 
+            services.Configure<AggregateRootOptions>(_ => { });
             services.Configure<AggregateRootCacheOptions>(_ => { });
-            if (configuration != null)
-            {
-                services.Configure<AggregateRootCacheOptions>(configuration.GetSection(nameof(AggregateRootCacheOptions)));
-            }
-
             services.Configure<AggregateRootStateBackendOptions>(_ => { });
-            if (configuration != null)
-            {
-                services.Configure<AggregateRootStateBackendOptions>(configuration.GetSection(nameof(AggregateRootStateBackendOptions)));
-            }
-
             services.Configure<CheckpointTriggerOptions>(_ => { });
-            if (configuration != null)
-            {
-                services.Configure<CheckpointTriggerOptions>(configuration.GetSection(nameof(CheckpointTriggerOptions)));
-            }
+
+            if (configuration == null) return services;
+
+            var domainOptions = configuration.GetSection("MDA").GetSection("DomainOptions");
+            var aggregateRootOptions = domainOptions.GetSection(nameof(AggregateRootOptions));
+
+            services.Configure<AggregateRootOptions>(aggregateRootOptions);
+            services.Configure<AggregateRootCacheOptions>(aggregateRootOptions.GetSection(nameof(AggregateRootOptions.CacheOptions)));
+            services.Configure<AggregateRootStateBackendOptions>(aggregateRootOptions.GetSection(nameof(AggregateRootOptions.StateBackendOptions)));
+            services.Configure<CheckpointTriggerOptions>(aggregateRootOptions.GetSection(nameof(AggregateRootOptions.CheckpointTriggerOptions)));
 
             return services;
         }

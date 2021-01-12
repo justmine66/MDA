@@ -1,4 +1,5 @@
-﻿using EBank.Application.Commanding.Accounts;
+﻿using EBank.ApiServer.Infrastructure.Exceptions;
+using EBank.Application.Commanding.Accounts;
 using EBank.Application.Commanding.Depositing;
 using EBank.Application.Commanding.Transferring;
 using EBank.Application.Commanding.Withdrawing;
@@ -12,7 +13,7 @@ namespace EBank.ApiServer.Application.Business
     {
         private readonly IApplicationCommandService _commandService;
 
-        public DefaultEBankApplicationService(IApplicationCommandService commandService) 
+        public DefaultEBankApplicationService(IApplicationCommandService commandService)
                 => _commandService = commandService;
 
         /// <summary>
@@ -20,9 +21,9 @@ namespace EBank.ApiServer.Application.Business
         /// </summary>
         /// <param name="command"></param>
         /// <param name="token"></param>
-        public async Task OpenAccountAsync(OpenBankAccountApplicationCommand command, CancellationToken token = default)
+        public async Task<ApplicationCommandResult> OpenAccountAsync(OpenBankAccountApplicationCommand command, CancellationToken token = default)
         {
-            await _commandService.PublishAsync(command, token);
+           return await _commandService.ExecuteCommandAsync(command, token);
         }
 
         /// <summary>
@@ -43,7 +44,11 @@ namespace EBank.ApiServer.Application.Business
         /// <param name="token"></param>
         public async Task DepositedFundsAsync(StartDepositApplicationCommand command, CancellationToken token = default)
         {
-            await _commandService.PublishAsync(command, token);
+            var result = await _commandService.ExecuteCommandAsync(command, token);
+            if (!result.Succeed())
+            {
+                throw new ApiDomainException(result);
+            }
         }
 
         /// <summary>

@@ -6,19 +6,13 @@ namespace MDA.Application.Commands
     /// 应用层命令执行结果的返回方案
     /// </summary>
     [Flags]
-    public enum ApplicationCommandResultReturnScheme
+    public enum ApplicationCommandResultReturnSchemes
     {
         /// <summary>
-        /// 当应用层命令被发送后，返回执行结果。
+        /// 不返回结果。
         /// </summary>
 
-        OnApplicationCommandSent = 1 << 0,
-
-        /// <summary>
-        /// 当应用层命令被处理后，返回执行结果。
-        /// </summary>
-
-        OnApplicationCommandHandled = 1 << 1,
+        None = 1 << 0,
 
         /// <summary>
         /// 当领域命令被处理后，返回执行结果。

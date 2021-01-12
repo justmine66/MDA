@@ -25,15 +25,15 @@ namespace EBank.ApiServer.Infrastructure.Filters
 
         public void OnException(ExceptionContext context)
         {
-            if (context.Exception is DomainException domainException)
+            if (context.Exception is ApiDomainException domainException)
             {
-                var aggregateMessage = domainException.Messages == null
-                    ? context.Exception.Message
-                    : JsonConvert.SerializeObject(domainException.Messages);
+                //var aggregateMessage = domainException.Messages == null
+                //    ? context.Exception.Message
+                //    : JsonConvert.SerializeObject(domainException.Messages);
 
-                _logger.LogError(new EventId(context.Exception.HResult),
-                    context.Exception,
-                    aggregateMessage);
+                //_logger.LogError(new EventId(context.Exception.HResult),
+                //    context.Exception,
+                //    aggregateMessage);
 
                 var result = ApiErrorResult.BadRequest(domainException.Messages ?? new[] { context.Exception.Message });
 

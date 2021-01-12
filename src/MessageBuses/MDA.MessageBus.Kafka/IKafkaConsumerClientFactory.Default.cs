@@ -18,11 +18,15 @@ namespace MDA.MessageBus.Kafka
         private readonly ILogger<DefaultKafkaConsumer> _logger;
 
         public DefaultKafkaConsumerClientFactory(
+            IOptions<KafkaOptions> kafkaOptions,
             IOptions<KafkaConsumerOptions> options,
             ILogger<DefaultKafkaConsumer> logger)
         {
             _logger = logger;
             _options = options.Value;
+            _options.BrokerServers = _options.BrokerServers == null || _options.BrokerServers.Length <= 0
+                ? kafkaOptions.Value.BrokerServers
+                : _options.BrokerServers;
         }
 
         public string ConsumeGroup => _options.Group;

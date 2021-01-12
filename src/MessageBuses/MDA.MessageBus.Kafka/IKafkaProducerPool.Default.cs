@@ -15,9 +15,15 @@ namespace MDA.MessageBus.Kafka
         private int _connectionPoolSize;
         private bool _disposed;
 
-        public DefaultKafkaProducerPool(IOptions<KafkaProducerOptions> options)
+        public DefaultKafkaProducerPool(
+            IOptions<KafkaOptions> kafkaOptions,
+            IOptions<KafkaProducerOptions> options)
         {
             _options = options.Value;
+            _options.BrokerServers = _options.BrokerServers == null || _options.BrokerServers.Length <= 0
+                ? kafkaOptions.Value.BrokerServers
+                : _options.BrokerServers;
+
             _connectionPoolSize = _options.ConnectionPoolSize;
             _producerPool = new ConcurrentQueue<IProducer<string, byte[]>>();
         }
@@ -75,7 +81,7 @@ namespace MDA.MessageBus.Kafka
                 //清理托管资源
                 _connectionPoolSize = 0;
 
-                while (_producerPool.TryDequeue(out var producer)) 
+                while (_producerPool.TryDequeue(out var producer))
                     producer.Dispose();
             }
 

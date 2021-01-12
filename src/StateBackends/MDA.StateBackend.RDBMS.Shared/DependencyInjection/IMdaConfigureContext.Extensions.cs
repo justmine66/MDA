@@ -1,5 +1,4 @@
 ﻿using MDA.Infrastructure.DependencyInjection;
-using Microsoft.Extensions.Configuration;
 using System;
 
 namespace MDA.StateBackend.RDBMS.Shared.DependencyInjection

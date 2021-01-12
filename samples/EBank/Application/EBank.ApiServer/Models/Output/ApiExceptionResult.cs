@@ -41,5 +41,15 @@ namespace EBank.ApiServer.Models.Output
             object messages = null,
             object developerMessages = null,
             int status = StatusCodes.Status500InternalServerError) => New(status, messages, developerMessages);
+
+        /// <summary>
+        /// 上游网关超时
+        /// </summary>
+        /// <param name="messages">消息，受众为对接者。</param>
+        /// <param name="status">状态</param>
+        /// <returns></returns>
+        public static ApiExceptionResult GatewayTimeout(
+            object messages = null,
+            int status = StatusCodes.Status504GatewayTimeout) => New(status, messages);
     }
 }

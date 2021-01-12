@@ -49,7 +49,7 @@ namespace MDA.StateBackend.MySql
             var record = AggregateRootCheckpointRecordPortAdapter.ToRecord(checkpoint, _binarySerializer);
             var parameters = DbParameterProvider.ReflectionParameters(record);
 
-            var tables = _options.DomainModelOptions.Tables;
+            var tables = _options.Tables.DomainModelOptions;
 
             var insertCheckpointIndexSql = $"INSERT INTO `{tables.AggregateRootCheckpointIndices}`(`AggregateRootId`,`AggregateRootType`,`AggregateRootVersion`,`AggregateRootGeneration`,`CreatedTimestamp`) VALUES(@AggregateRootId,@AggregateRootType,@AggregateRootVersion,@AggregateRootGeneration,@CreatedTimestamp)";
             var insertCheckpointSql = $"INSERT INTO `{tables.AggregateRootCheckpoints}`(`AggregateRootId`,`Payload`) VALUES (@AggregateRootId,@Payload)";
@@ -99,7 +99,7 @@ namespace MDA.StateBackend.MySql
                 throw new ArgumentException($"The {aggregateRootType.FullName} cannot assign to {typeof(IEventSourcedAggregateRoot).FullName}.");
             }
 
-            var tables = _options.DomainModelOptions.Tables;
+            var tables = _options.Tables.DomainModelOptions;
 
             var sql = $"SELECT d.`AggregateRootId`,d.`AggregateRootType`,d.`AggregateRootVersion`,d.`AggregateRootGeneration`,d.`CreatedTimestamp`, p.`Payload` FROM `{tables.AggregateRootCheckpointIndices}` d INNER JOIN `{tables.AggregateRootCheckpoints}` p ON d.`AggregateRootId`=p.`AggregateRootId` WHERE d.`AggregateRootId`=@AggregateRootId ORDER BY d.`pkId` DESC LIMIT 1";
 

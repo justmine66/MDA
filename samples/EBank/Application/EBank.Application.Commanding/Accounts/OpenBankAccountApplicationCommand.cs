@@ -1,6 +1,5 @@
 ﻿using MDA.Application.Commands;
 using MDA.Infrastructure.Utils;
-using System.ComponentModel.DataAnnotations;
 
 namespace EBank.Application.Commanding.Accounts
 {

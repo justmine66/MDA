@@ -11,7 +11,7 @@ namespace MDA.MessageBus.DependencyInjection
         private static readonly List<Type[]> AddedProxies = new List<Type[]>();
         private static readonly List<Type[]> AddedAsyncProxies = new List<Type[]>();
 
-        public static void AddMessageHandlers(IServiceCollection services, params Assembly[] assemblies)
+        public static void LoadMessageHandlers(IServiceCollection services, params Assembly[] assemblies)
         {
             var assemblyList = new List<Assembly>();
             assemblyList.AddRange(assemblies);

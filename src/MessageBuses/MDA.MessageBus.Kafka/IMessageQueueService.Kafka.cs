@@ -16,14 +16,15 @@ namespace MDA.MessageBus.Kafka
         public void Start()
         {
             // ignore
-            _logger.LogWarning($"The method: {nameof(IMessagePublisher)}.{nameof(IMessagePublisher.Publish)} Will ignore all message, please use method: {nameof(IMessagePublisher)}.{nameof(IMessagePublisher.PublishAsync)}.");
+
+            _logger.LogWarning("Not supported.");
         }
 
         public void Enqueue(IMessage message)
         {
             // ignore
 
-            _logger.LogWarning($"The method: {nameof(IMessagePublisher)}.{nameof(IMessagePublisher.Publish)} Will be not publish message, {message.Topic}, {message.Id}, , please use method: {nameof(IMessagePublisher)}.{nameof(IMessagePublisher.PublishAsync)}.");
+            _logger.LogWarning("Not supported.");
         }
 
         public void Stop()

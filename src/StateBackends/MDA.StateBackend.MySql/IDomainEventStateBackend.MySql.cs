@@ -52,7 +52,7 @@ namespace MDA.StateBackend.MySql
             var domainEventRecord = DomainEventRecordPortAdapter.ToDomainEventRecord(@event, _binarySerializer);
             var parameters = DbParameterProvider.ReflectionParameters(domainEventRecord);
 
-            var tables = _options.DomainEventOptions.Tables;
+            var tables = _options.Tables.DomainEventOptions;
             var insertDomainEventIndexSql = $"INSERT INTO `{tables.DomainEventIndices}`(`DomainCommandId`,`DomainCommandType`,`DomainCommandVersion`,`AggregateRootId`,`AggregateRootType`,`AggregateRootVersion`,`AggregateRootGeneration`,`DomainEventId`,`DomainEventType`,`DomainEventVersion`,`DomainEventPayloadBytes`,`CreatedTimestamp`) VALUES(@DomainCommandId,@DomainCommandType,@DomainCommandVersion,@AggregateRootId,@AggregateRootType,@AggregateRootVersion,@AggregateRootGeneration,@DomainEventId,@DomainEventType,@DomainEventVersion,@DomainEventPayloadBytes,@CreatedTimestamp)";
             var insertDomainEventSql = $"INSERT INTO `{tables.DomainEvents}`(`DomainEventId`,`Payload`) VALUES (@DomainEventId,@Payload)";
 
@@ -129,7 +129,7 @@ namespace MDA.StateBackend.MySql
             PreConditions.NotNullOrEmpty(aggregateRootId, nameof(aggregateRootId));
             PreConditions.Nonnegative(startOffset, nameof(startOffset));
 
-            var tables = _options.DomainEventOptions.Tables;
+            var tables = _options.Tables.DomainEventOptions;
 
             var sql = $"SELECT d.`DomainCommandId`,d.`DomainCommandType`,d.`DomainCommandVersion`,d.`AggregateRootId`,d.`AggregateRootType`,d.`AggregateRootVersion`,d.`AggregateRootGeneration`,d.`DomainEventId`,d.`DomainEventType`,d.`DomainEventVersion`,d.`CreatedTimestamp`, p.`Payload` FROM `{tables.DomainEventIndices}` d INNER JOIN `{tables.DomainEvents}` p ON d.`DomainEventId`=p.`DomainEventId` WHERE d.`AggregateRootId`=@AggregateRootId AND d.AggregateRootVersion>=@StartOffset AND d.AggregateRootVersion<@EndOffset";
 
@@ -170,7 +170,7 @@ namespace MDA.StateBackend.MySql
             PreConditions.NotNullOrEmpty(aggregateRootId, nameof(aggregateRootId));
             PreConditions.Nonnegative(generation, nameof(generation));
 
-            var tables = _options.DomainEventOptions.Tables;
+            var tables = _options.Tables.DomainEventOptions;
             var sql = $"SELECT `DomainEventPayloadBytes` AS `UnCheckpointedBytes` FROM `{tables.DomainEventIndices}` WHERE `AggregateRootId`=@AggregateRootId AND AggregateRootGeneration>=@Generation";
 
             var records = await _db.ReadAsync<DomainEventMetrics>(sql, new

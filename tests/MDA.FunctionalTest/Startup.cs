@@ -84,13 +84,13 @@ namespace MDA.FunctionalTest
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Latest);
 
-            services.AddMdaServices(ctx =>
+            services.AddMda(ctx =>
             {
                 ctx.AddInfrastructure();
-                ctx.AddMessageBus(bus => bus.UseKafka(configuration), Assembly.GetExecutingAssembly());
+                ctx.AddMessageBus(bus => bus.AddKafka(configuration), Assembly.GetExecutingAssembly());
                 ctx.AddApplication(app => app.UseMessageBus(MessageBusClientNames.Kafka, configuration));
                 ctx.AddDomain(domain => domain.UseMessageBus(MessageBusClientNames.Kafka), configuration);
-                ctx.AddStateBackend(state => state.UseMySql(configuration));
+                ctx.AddStateBackend(state => state.AddMySql(configuration));
             });
 
             // 4. 电子银行应用服务

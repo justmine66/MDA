@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MDA.Infrastructure.PreConditions
+namespace MDA.Infrastructure.Validations
 {
     public class NotNull<T>
     {

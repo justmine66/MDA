@@ -19,6 +19,6 @@ namespace MDA.MessageBus
         public void Publish(IMessage message) => _queueService.Enqueue(message);
 
         public async Task PublishAsync(IMessage message, CancellationToken token)
-            => await _asyncQueueService.EnqueueAsync(message, token);
+            => await _asyncQueueService.EnqueueAsync(message, token).ConfigureAwait(false);
     }
 }

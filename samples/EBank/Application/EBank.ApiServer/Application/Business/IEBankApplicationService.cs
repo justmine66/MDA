@@ -2,6 +2,7 @@
 using EBank.Application.Commanding.Depositing;
 using EBank.Application.Commanding.Transferring;
 using EBank.Application.Commanding.Withdrawing;
+using MDA.Application.Commands;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace EBank.ApiServer.Application.Business
         /// </summary>
         /// <param name="command">命令</param>
         /// <param name="token">取消令牌</param>
-        Task OpenAccountAsync(OpenBankAccountApplicationCommand command, CancellationToken token = default);
+        Task<ApplicationCommandResult> OpenAccountAsync(OpenBankAccountApplicationCommand command, CancellationToken token = default);
 
         /// <summary>
         /// 变更账户名

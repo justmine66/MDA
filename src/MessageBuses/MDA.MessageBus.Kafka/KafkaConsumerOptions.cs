@@ -11,12 +11,12 @@
         public string Group { get; set; }
 
         /// <summary>
-        /// 消费者订阅的主题列表
+        /// 主题列表
         /// </summary>
         public string[] Topics { get; set; }
 
         /// <summary>
-        /// 允许自动创建主题
+        /// 允许自动创建主题，
         /// </summary>
         public bool AllowAutoCreateTopic { get; set; } = true;
 

@@ -9,6 +9,16 @@ namespace MDA.Domain.Notifications
     public interface IDomainNotification : IMessage
     {
         /// <summary>
+        /// 应用层命令标识
+        /// </summary>
+        string ApplicationCommandId { get; set; }
+
+        /// <summary>
+        /// 应用层命令类型
+        /// </summary>
+        string ApplicationCommandType { get; set; }
+
+        /// <summary>
         /// 领域命令标识
         /// </summary>
         string DomainCommandId { get; set; }
@@ -53,20 +63,24 @@ namespace MDA.Domain.Notifications
     {
         protected DomainNotification() { }
         protected DomainNotification(
-            string domainCommandId,
-            Type domainCommandType,
-            string aggregateRootId,
-            Type aggregateRootType,
+            string applicationCommandId, string applicationCommandType,
+            string domainCommandId, Type domainCommandType,
+            string aggregateRootId, Type aggregateRootType,
             int version = 0)
         {
             Id = Guid.NewGuid().ToString("N");
             Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            ApplicationCommandId = applicationCommandId;
+            ApplicationCommandType = applicationCommandType;
             DomainCommandId = domainCommandId;
             DomainCommandType = domainCommandType;
             AggregateRootId = aggregateRootId;
             AggregateRootType = aggregateRootType;
             Version = version;
         }
+
+        public string ApplicationCommandId { get; set; }
+        public string ApplicationCommandType { get; set; }
 
         public string DomainCommandId { get; set; }
         public Type DomainCommandType { get; set; }
@@ -81,22 +95,20 @@ namespace MDA.Domain.Notifications
     /// 领域通知基类
     /// </summary>
     /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
-    public abstract class DomainNotification<TAggregateRootId> : 
-        DomainNotification, 
+    public abstract class DomainNotification<TAggregateRootId> :
+        DomainNotification,
         IDomainNotification<TAggregateRootId>
     {
         protected DomainNotification() { }
         protected DomainNotification(
-            string domainCommandId,
-            Type domainCommandType,
-            TAggregateRootId aggregateRootId,
-            Type aggregateRootType,
+            string applicationCommandId, string applicationCommandType,
+            string domainCommandId, Type domainCommandType,
+            TAggregateRootId aggregateRootId, Type aggregateRootType,
             int version = 0)
-            : base(domainCommandId,
-            domainCommandType,
-            string.Empty,
-            aggregateRootType,
-            version)
+            : base(applicationCommandId, applicationCommandType,
+                domainCommandId, domainCommandType,
+            string.Empty, aggregateRootType, 
+                version)
         {
             AggregateRootId = aggregateRootId;
         }

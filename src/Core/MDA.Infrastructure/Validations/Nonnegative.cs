@@ -1,17 +1,17 @@
 ﻿using System;
 
-namespace MDA.Infrastructure.PreConditions
+namespace MDA.Infrastructure.Validations
 {
-    public class Positive<T>
+    public class Nonnegative<T>
     {
-        public Positive(T value)
+        public Nonnegative(T value)
         {
             Value = value;
         }
 
         public T Value { get; set; }
 
-        public static implicit operator Positive<T>(T value)
+        public static implicit operator Nonnegative<T>(T value)
         {
             if (value == null)
                 throw new ArgumentNullException();
@@ -46,9 +46,9 @@ namespace MDA.Infrastructure.PreConditions
                     throw new ArgumentNullException();
             }
 
-            return new Positive<T>(value);
+            return new Nonnegative<T>(value);
         }
 
-        public static implicit operator T(Positive<T> value) => value.Value;
+        public static implicit operator T(Nonnegative<T> value) => value.Value;
     }
 }

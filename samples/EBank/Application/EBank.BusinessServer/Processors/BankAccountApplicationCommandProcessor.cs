@@ -34,7 +34,11 @@ namespace EBank.BusinessServer.Processors
                 appCommand.AccountId,
                 appCommand.AccountName,
                 appCommand.Bank,
-                appCommand.InitialBalance ?? 0);
+                appCommand.InitialBalance ?? 0)
+            {
+                ApplicationCommandId = appCommand.Id,
+                ApplicationCommandType = appCommand.GetType().FullName
+            };
 
             context.DomainCommandPublisher.Publish(domainCommand);
         }

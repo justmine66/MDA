@@ -20,13 +20,15 @@ namespace EBank.BusinessServer.Bootstrap
 
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
-            services.AddMdaServices(ctx =>
+            services.AddMda(ctx =>
             {
                 ctx.AddInfrastructure();
-                ctx.AddMessageBus(bus => bus.UseDisruptor().UseKafka(context.Configuration), CurrentAssembly);
+                ctx.AddMessageBus(bus => bus.AddDisruptor().AddKafka(context.Configuration), CurrentAssembly);
+
                 ctx.AddApplication(app => app.UseMessageBus(MessageBusClientNames.Kafka), CurrentAssembly);
                 ctx.AddDomain(domain => domain.UseMessageBus(MessageBusClientNames.Kafka, context.Configuration), context.Configuration);
-                ctx.AddStateBackend(state => state.UseMySql(context.Configuration));
+
+                ctx.AddStateBackend(state => state.AddMySql(context.Configuration));
             });
 
             services.AddSingleton<IBankAccountRepository, MySqlBankAccountRepository>();

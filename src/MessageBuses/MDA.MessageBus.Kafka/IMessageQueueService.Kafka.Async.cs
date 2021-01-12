@@ -118,7 +118,7 @@ namespace MDA.MessageBus.Kafka
             var payload = _serializer.Deserialize(eventArgs.Message.Value, messageType);
             if (!(payload is IMessage message))
             {
-                _logger.LogError($"The Consume Group: {_consumer.Group} deserialized kafka message, incorrect message type,expected: {messageTypeFullName}, actual: {payload.GetType().FullName}.");
+                _logger.LogError($"The Consume Group: {_consumer.Group} deserialized kafka message, incorrect message type, expected: {messageTypeFullName}, actual: {payload.GetType().FullName}.");
 
                 return;
             };

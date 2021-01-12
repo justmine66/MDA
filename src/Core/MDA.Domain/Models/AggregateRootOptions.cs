@@ -1,12 +1,24 @@
 ﻿namespace MDA.Domain.Models
 {
+    /// <summary>
+    /// 聚合根配置项
+    /// </summary>
     public class AggregateRootOptions
     {
+        /// <summary>
+        /// 检查点触发配置项
+        /// </summary>
         public CheckpointTriggerOptions CheckpointTriggerOptions { get; set; }
 
+        /// <summary>
+        /// 聚合根缓存配置项
+        /// </summary>
         public AggregateRootCacheOptions CacheOptions { get; set; }
-        
-        public AggregateRootStateBackendOptions BackendOptions { get; set; }
+
+        /// <summary>
+        /// 聚合根状态后端配置项
+        /// </summary>
+        public AggregateRootStateBackendOptions StateBackendOptions { get; set; }
     }
 
     /// <summary>
@@ -57,7 +69,7 @@
     public class AggregateRootCacheOptions
     {
         /// <summary>
-        /// 缓存容量上限，默认：int.MaxValue。
+        /// 缓存容量上限，默认：物理内存的80%。
         /// </summary>
         public int MaxSize { get; set; } = int.MaxValue;
 

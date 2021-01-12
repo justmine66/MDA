@@ -20,6 +20,8 @@ namespace EBank.ApiServer
 {
     public class Startup
     {
+        private static readonly Assembly CurrentAssembly = Assembly.GetExecutingAssembly();
+
         public Startup(IConfiguration configuration, IWebHostEnvironment hostEnvironment)
         {
             Configuration = configuration;
@@ -36,13 +38,15 @@ namespace EBank.ApiServer
             services.AddApiVersionServices();
             services.AddControllerServices();
 
-            services.AddMdaServices(ctx =>
+            services.AddMda(ctx =>
             {
                 ctx.AddInfrastructure();
-                ctx.AddMessageBus(bus => bus.UseKafka(Configuration), Assembly.GetExecutingAssembly());
+                ctx.AddMessageBus(bus => bus.AddKafka(Configuration), CurrentAssembly);
+
                 ctx.AddApplication(app => app.UseMessageBus(MessageBusClientNames.Kafka, Configuration));
                 ctx.AddDomain(domain => domain.UseMessageBus(MessageBusClientNames.Kafka), Configuration);
-                ctx.AddStateBackend(state => state.UseMySql(Configuration));
+
+                ctx.AddStateBackend(state => state.AddMySql(Configuration));
             });
 
             // 4. 电子银行应用服务
@@ -65,6 +69,7 @@ namespace EBank.ApiServer
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapSwagger("{documentName}/api-docs");
             });
         }
     }

@@ -6,7 +6,7 @@ namespace MDA.Domain.Exceptions
     {
         /// <summary>
         /// 业务状态码。
-        /// 此机制允许服务器根据业务语义定义状态码，并传递给客户端处理，毕竟有的流程需要编排。
+        /// 此机制允许服务器根据业务语义定义状态码，并传递给客户端处理，以协调端到端的流程编排。
         /// </summary>
         public int? Code { get; set; }
 
