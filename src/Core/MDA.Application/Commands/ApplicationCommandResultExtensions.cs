@@ -2,13 +2,16 @@
 {
     public static class ApplicationCommandResultExtensions
     {
-        public static bool IsSuccessful(ApplicationCommandResult result) =>
+        public static bool Succeed(this ApplicationCommandResult result) =>
             result.Status == ApplicationCommandStatus.Succeed;
 
-        public static bool Failed(ApplicationCommandResult result) =>
+        public static bool Failed(this ApplicationCommandResult result) =>
             result.Status == ApplicationCommandStatus.Failed;
 
-        public static bool TimeOut(ApplicationCommandResult result) =>
+        public static bool TimeOuted(this ApplicationCommandResult result) =>
             result.Status == ApplicationCommandStatus.TimeOuted;
+
+        public static bool Canceled(this ApplicationCommandResult result) =>
+            result.Status == ApplicationCommandStatus.Canceled;
     }
 }

@@ -1,38 +1,103 @@
-﻿using System.Threading;
+﻿using MDA.Infrastructure.Utils;
+using MDA.MessageBus;
+using Microsoft.Extensions.Options;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MDA.Application.Commands
 {
     public class DefaultApplicationCommandExecutor : IApplicationCommandExecutor
     {
-        public ApplicationCommandResult ExecuteCommand(IApplicationCommand command)
+        private readonly ApplicationCommandOptions _options;
+        private readonly IMessagePublisher _messagePublisher;
+        private readonly IApplicationCommandResultProcessor _commandResultProcessor;
+
+        public DefaultApplicationCommandExecutor(
+            IMessagePublisher messagePublisher,
+            IOptions<ApplicationCommandOptions> options,
+            IApplicationCommandResultProcessor commandResultProcessor)
         {
-            throw new System.NotImplementedException();
+            _options = options.Value;
+            _messagePublisher = messagePublisher;
+            _commandResultProcessor = commandResultProcessor;
         }
 
-        public ApplicationCommandResult<TResult> ExecuteCommand<TResult>(IApplicationCommand command)
+        public ApplicationCommandResult ExecuteCommand(
+            IApplicationCommand command,
+            ApplicationCommandResultReturnSchemes returnScheme = ApplicationCommandResultReturnSchemes.OnDomainCommandHandled)
         {
-            throw new System.NotImplementedException();
+            command.ReturnScheme = returnScheme;
+
+            return ExecuteCommandAsync(command, returnScheme)
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
         }
 
-        public ApplicationCommandResult<TResult, TCommandId> ExecuteCommand<TResult, TCommandId>(IApplicationCommand<TCommandId> command)
+        public ApplicationCommandResult<TPayload> ExecuteCommand<TPayload>(IApplicationCommand command,
+            ApplicationCommandResultReturnSchemes returnScheme = ApplicationCommandResultReturnSchemes.OnDomainCommandHandled)
         {
-            throw new System.NotImplementedException();
+            command.ReturnScheme = returnScheme;
+
+            return ExecuteCommandAsync<TPayload>(command, returnScheme)
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
         }
 
-        public Task<ApplicationCommandResult> ExecuteCommandAsync(IApplicationCommand command, CancellationToken token = default)
+        public async Task<ApplicationCommandResult> ExecuteCommandAsync(IApplicationCommand command, CancellationToken token = default) 
+            => await ExecuteCommandAsync(command, ApplicationCommandResultReturnSchemes.OnDomainCommandHandled, token);
+
+        public async Task<ApplicationCommandResult> ExecuteCommandAsync(
+            IApplicationCommand command,
+            ApplicationCommandResultReturnSchemes returnScheme = ApplicationCommandResultReturnSchemes.OnDomainCommandHandled,
+            CancellationToken token = default)
         {
-            throw new System.NotImplementedException();
+            PreConditions.NotNull(command, nameof(command));
+
+            await PublishAsync(command, token);
+
+            command.ReturnScheme = returnScheme;
+
+            var promise = new ApplicationCommandExecutionPromise(command);
+
+            _commandResultProcessor.AddExecutionPromise(promise);
+
+            return await promise.Future.ConfigureAwait(false);
         }
 
-        public Task<ApplicationCommandResult<TResult>> ExecuteCommandAsync<TResult>(IApplicationCommand command, CancellationToken token = default)
+        public async Task<ApplicationCommandResult<TPayload>> ExecuteCommandAsync<TPayload>(IApplicationCommand command, CancellationToken token = default)
+            => await ExecuteCommandAsync<TPayload>(command, ApplicationCommandResultReturnSchemes.OnDomainCommandHandled, token);
+
+        public async Task<ApplicationCommandResult<TPayload>> ExecuteCommandAsync<TPayload>(IApplicationCommand command,
+            ApplicationCommandResultReturnSchemes returnScheme = ApplicationCommandResultReturnSchemes.OnDomainCommandHandled,
+            CancellationToken token = default)
         {
-            throw new System.NotImplementedException();
+            PreConditions.NotNull(command, nameof(command));
+
+            await PublishAsync(command, token);
+
+            command.ReturnScheme = returnScheme;
+
+            var promise = new ApplicationCommandExecutionPromise<TPayload>(command);
+
+            _commandResultProcessor.AddExecutionPromise(promise);
+
+            return await promise.Future.ConfigureAwait(false);
         }
 
-        public Task<ApplicationCommandResult<TResult, TCommandId>> ExecuteCommandAsync<TResult, TCommandId>(IApplicationCommand<TCommandId> command, CancellationToken token = default)
+        private void Publish(IApplicationCommand command)
         {
-            throw new System.NotImplementedException();
+            command.Topic = _options.Topic;
+
+            _messagePublisher.Publish(command);
+        }
+
+        private async Task PublishAsync(IApplicationCommand command, CancellationToken token = default)
+        {
+            command.Topic = _options.Topic;
+
+            await _messagePublisher.PublishAsync(command, token).ConfigureAwait(false);
         }
     }
 }

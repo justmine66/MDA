@@ -1,4 +1,5 @@
 ﻿using MDA.Domain.Events;
+using MDA.Domain.Exceptions;
 using MDA.Domain.Models;
 using MDA.Domain.Notifications;
 using MDA.Infrastructure.Utils;
@@ -18,27 +19,24 @@ namespace MDA.Domain.Commands
         IMessageHandler<DomainCommandTransportMessage<TAggregateRootId>>,
         IAsyncMessageHandler<DomainCommandTransportMessage<TAggregateRootId>>
     {
+        private readonly ILogger _logger;
+        private readonly IAggregateRootMemoryCache _cache;
         private readonly IServiceProvider _serviceProvider;
         private readonly IAggregateRootStateBackend _stateBackend;
-        private readonly IAggregateRootMemoryCache _cache;
-        private readonly ILogger _logger;
 
         public InBoundDomainCommandProcessor(
             IAggregateRootMemoryCache cache,
+            IServiceProvider serviceProvider,
             IAggregateRootStateBackend stateBackend,
-            ILogger<InBoundDomainCommandProcessor<TAggregateRootId>> logger,
-            IServiceProvider serviceProvider)
+            ILogger<InBoundDomainCommandProcessor<TAggregateRootId>> logger)
         {
             _cache = cache;
-            _stateBackend = stateBackend;
             _logger = logger;
+            _stateBackend = stateBackend;
             _serviceProvider = serviceProvider;
         }
 
-        public void Handle(DomainCommandTransportMessage<TAggregateRootId> message)
-        {
-            HandleAsync(message).GetAwaiter().GetResult();
-        }
+        public void Handle(DomainCommandTransportMessage<TAggregateRootId> message) => HandleAsync(message).GetAwaiter().GetResult();
 
         public async Task HandleAsync(DomainCommandTransportMessage<TAggregateRootId> message, CancellationToken token = default)
         {
@@ -54,8 +52,7 @@ namespace MDA.Domain.Commands
 
             if (aggregate == null)
             {
-                _logger.LogCritical(
-                    $"Failed to restore aggregate root: [Id: {aggregateRootStringId}, Type: {aggregateRootType.FullName}] for domain command: [Id: {commandId}, Type: {commandType.FullName}] from cache and state backend.");
+                _logger.LogCritical($"Failed to restore aggregate root: [Id: {aggregateRootStringId}, Type: {aggregateRootType.FullName}] for domain command: [Id: {commandId}, Type: {commandType.FullName}] from cache and state backend.");
 
                 return;
             }
@@ -72,6 +69,20 @@ namespace MDA.Domain.Commands
 
                     return;
                 }
+            }
+            catch (Exception e) when (e.InnerException is DomainException domainException)
+            {
+                var domainExceptionMessage = new DomainExceptionMessage()
+                {
+                    Message = domainException.Message,
+                    Code = (int)DomainStatusCodes.DomainCommandHandled
+                };
+
+                domainExceptionMessage.FillDomainCommandInfo(command);
+
+                await PublishDomainExceptionAsync(domainExceptionMessage, token);
+
+                return;
             }
             catch (Exception e)
             {
@@ -103,6 +114,8 @@ namespace MDA.Domain.Commands
                 _logger.LogWarning($"The domain command: [Id: {commandId}, Type: {commandType.FullName}] apply neither domain event nor generate domain notification for aggregate root: [Id: {aggregateRootStringId}, Type: {aggregateRootType.FullName}], please confirm whether the state will be lost.");
             }
         }
+
+        #region [ private methods ]
 
         private async Task ProcessMutatingDomainEventsAsync(
             IEnumerable<IDomainEvent> mutatingDomainEvents,
@@ -140,21 +153,42 @@ namespace MDA.Domain.Commands
             IDomainCommand command,
             CancellationToken token = default)
         {
-            var publisher = _serviceProvider.GetService<IDomainNotificationPublisher>();
-
             mutatingDomainNotifications.FillDomainCommandInfo(command);
+
+            foreach (var notification in mutatingDomainNotifications)
+            {
+                await PublishDomainNotificationAsync(notification, token);
+            }
+        }
+
+        private async Task PublishDomainNotificationAsync(IDomainNotification notification, CancellationToken token)
+        {
+            var publisher = _serviceProvider.GetService<IDomainNotificationPublisher>();
 
             try
             {
-                foreach (var notification in mutatingDomainNotifications)
-                {
-                    await publisher.PublishAsync(notification, token);
-                }
+                await publisher.PublishAsync(notification, token);
             }
             catch (Exception e)
             {
                 _logger.LogError($"Publishing domain notification has a exception: {LogFormatter.PrintException(e)}.");
             }
         }
+
+        private async Task PublishDomainExceptionAsync(IDomainExceptionMessage exception, CancellationToken token)
+        {
+            var publisher = _serviceProvider.GetService<IDomainExceptionPublisher>();
+
+            try
+            {
+                await publisher.PublishAsync(exception, token);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Publishing domain exception has a exception: {LogFormatter.PrintException(e)}.");
+            }
+        }
+
+        #endregion
     }
 }

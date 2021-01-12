@@ -11,6 +11,20 @@ namespace MDA.Domain.Commands
             PartitionKey = domainCommand.PartitionKey;
         }
 
+        public DomainCommandTransportMessage(string applicationCommandId, string applicationCommandType,
+            IDomainCommand domainCommand)
+        {
+            ApplicationCommandId = applicationCommandId;
+            ApplicationCommandType = applicationCommandType;
+            DomainCommand = domainCommand;
+            Topic = domainCommand.Topic;
+            PartitionKey = domainCommand.PartitionKey;
+        }
+
+        public string ApplicationCommandId { get; set; }
+
+        public string ApplicationCommandType { get; set; }
+
         public IDomainCommand DomainCommand { get; }
     }
 
@@ -19,6 +33,13 @@ namespace MDA.Domain.Commands
     {
         public DomainCommandTransportMessage(IDomainCommand<TAggregateRootId> domainCommand)
             : base(domainCommand)
+        {
+            DomainCommand = domainCommand;
+        }
+
+        public DomainCommandTransportMessage(string applicationCommandId, string applicationCommandType,
+            IDomainCommand<TAggregateRootId> domainCommand)
+            : base(applicationCommandId, applicationCommandType, domainCommand)
         {
             DomainCommand = domainCommand;
         }
@@ -35,6 +56,13 @@ namespace MDA.Domain.Commands
             DomainCommand = domainCommand;
         }
 
+        public DomainCommandTransportMessage(string applicationCommandId, string applicationCommandType,
+            IDomainCommand<TId, TAggregateRootId> domainCommand)
+            : base(applicationCommandId, applicationCommandType, domainCommand)
+        {
+            DomainCommand = domainCommand;
+        }
+
         public new IDomainCommand<TId, TAggregateRootId> DomainCommand { get; }
     }
 
@@ -43,6 +71,13 @@ namespace MDA.Domain.Commands
     {
         public DomainCommandTransportMessage(IDomainCommand<TApplicationCommandId, TId, TAggregateRootId> domainCommand)
             : base(domainCommand)
+        {
+            DomainCommand = domainCommand;
+        }
+
+        public DomainCommandTransportMessage(string applicationCommandId, string applicationCommandType,
+            IDomainCommand<TApplicationCommandId, TId, TAggregateRootId> domainCommand)
+            : base(applicationCommandId, applicationCommandType, domainCommand)
         {
             DomainCommand = domainCommand;
         }

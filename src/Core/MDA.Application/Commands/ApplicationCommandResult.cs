@@ -1,56 +1,130 @@
 ﻿namespace MDA.Application.Commands
 {
+    /// <summary>
+    /// 应用层命令结果
+    /// </summary>
     public class ApplicationCommandResult
     {
-        public ApplicationCommandResult(string commandId, ApplicationCommandStatus status, object result = null)
+        /// <summary>
+        /// 初始化 <see cref="ApplicationCommandResult"/> 对象。
+        /// </summary>
+        /// <param name="commandId">命令标识</param>
+        /// <param name="commandType">命令类型</param>
+        /// <param name="status">状态</param>
+        /// <param name="payload">内容载荷</param>
+        public ApplicationCommandResult(
+            string commandId,
+            string commandType,
+            ApplicationCommandStatus status,
+            object payload = null)
         {
             CommandId = commandId;
             Status = status;
-            Result = result;
+            CommandType = commandType;
+            Payload = payload;
         }
 
-        public string CommandId { get; private set; }
+        /// <summary>
+        /// 命令标识
+        /// </summary>
+        public string CommandId { get; }
 
-        public ApplicationCommandStatus Status { get; private set; }
+        /// <summary>
+        /// 命令类型
+        /// </summary>
+        public string CommandType { get; }
 
-        public object Result { get; private set; }
+        /// <summary>
+        /// 状态
+        /// </summary>
+        public ApplicationCommandStatus Status { get; }
 
-        public static ApplicationCommandResult Succeed(string commandId, object result = null) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.Succeed, result);
+        /// <summary>
+        /// 内容载荷
+        /// </summary>
+        public object Payload { get; }
 
-        public static ApplicationCommandResult Failed(string commandId, object result = null) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.Failed, result);
+        public static ApplicationCommandResult Succeed(string commandId, string commandType, object result = null)
+            => new ApplicationCommandResult(commandId, commandType, ApplicationCommandStatus.Succeed, result);
 
-        public static ApplicationCommandResult TimeOuted(string commandId, object result = null) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.TimeOuted, result);
+        public static ApplicationCommandResult Failed(string commandId, string commandType, object result = null)
+            => new ApplicationCommandResult(commandId, commandType, ApplicationCommandStatus.Failed, result);
 
-        public static ApplicationCommandResult Canceled(string commandId, object result = null) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.Canceled, result);
+        public static ApplicationCommandResult TimeOuted(string commandId, string commandType, object result = null)
+            => new ApplicationCommandResult(commandId, commandType, ApplicationCommandStatus.TimeOuted, result);
+
+        public static ApplicationCommandResult Canceled(string commandId, string commandType, object result = null)
+            => new ApplicationCommandResult(commandId, commandType, ApplicationCommandStatus.Canceled, result);
     }
 
-    public class ApplicationCommandResult<TResult> : ApplicationCommandResult
+    /// <summary>
+    /// 应用层命令结果
+    /// </summary>
+    /// <typeparam name="TPayload">内容载荷类型</typeparam>
+    public class ApplicationCommandResult<TPayload> : ApplicationCommandResult
     {
-        public ApplicationCommandResult(string commandId, ApplicationCommandStatus status, TResult result = default)
-            : base(commandId, status, result)
+        /// <summary>
+        /// 初始化 <see cref="ApplicationCommandResult{TPayload}"/> 对象。
+        /// </summary>
+        /// <param name="commandId">命令标识</param>
+        /// <param name="commandType">命令类型</param>
+        /// <param name="status">状态</param>
+        /// <param name="payload">内容载荷</param>
+        public ApplicationCommandResult(
+            string commandId,
+            string commandType,
+            ApplicationCommandStatus status,
+            TPayload payload = default)
+            : base(commandId, commandType, status, payload)
         {
-            Result = result;
+            Payload = payload;
         }
 
-        public new TResult Result { get; private set; }
+        /// <summary>
+        /// 内容载荷
+        /// </summary>
+        public new TPayload Payload { get; }
 
-        public static ApplicationCommandResult Succeed(string commandId, TResult result = default) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.Succeed, result);
+        public static ApplicationCommandResult Succeed(string commandId, string commandType, TPayload result = default)
+            => new ApplicationCommandResult(commandId, commandType, ApplicationCommandStatus.Succeed, result);
 
-        public static ApplicationCommandResult Failed(string commandId, TResult result = default) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.Failed, result);
+        public static ApplicationCommandResult Failed(string commandId, string commandType, TPayload result = default)
+            => new ApplicationCommandResult(commandId, commandType, ApplicationCommandStatus.Failed, result);
 
-        public static ApplicationCommandResult TimeOuted(string commandId, TResult result = default) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.TimeOuted, result);
+        public static ApplicationCommandResult TimeOuted(string commandId, string commandType, TPayload result = default)
+            => new ApplicationCommandResult(commandId, commandType, ApplicationCommandStatus.TimeOuted, result);
 
-        public static ApplicationCommandResult Canceled(string commandId, TResult result = default) => new ApplicationCommandResult(commandId, ApplicationCommandStatus.Canceled, result);
+        public static ApplicationCommandResult Canceled(string commandId, string commandType, TPayload result = default)
+            => new ApplicationCommandResult(commandId, commandType, ApplicationCommandStatus.Canceled, result);
     }
 
-    public class ApplicationCommandResult<TResult, TCommandId> : ApplicationCommandResult<TResult>
+    /// <summary>
+    /// 应用层命令结果
+    /// </summary>
+    /// <typeparam name="TPayload">内容载荷类型</typeparam>
+    /// <typeparam name="TCommandId">命令标识类型</typeparam>
+    public class ApplicationCommandResult<TPayload, TCommandId> : ApplicationCommandResult<TPayload>
     {
-        public ApplicationCommandResult(TCommandId commandId, ApplicationCommandStatus status, TResult result = default)
-            : base(commandId.ToString(), status, result)
+        /// <summary>
+        /// 初始化 <see cref="ApplicationCommandResult{TPayload, TCommandId}"/> 对象。
+        /// </summary>
+        /// <param name="commandId">命令标识</param>
+        /// <param name="commandType">命令类型</param>
+        /// <param name="status">状态</param>
+        /// <param name="payload">内容载荷</param>
+        public ApplicationCommandResult(
+            TCommandId commandId,
+            string commandType,
+            ApplicationCommandStatus status,
+            TPayload payload = default)
+            : base(commandId.ToString(), commandType, status, payload)
         {
             CommandId = commandId;
         }
 
+        /// <summary>
+        /// 命令标识
+        /// </summary>
         public new TCommandId CommandId { get; private set; }
     }
 }

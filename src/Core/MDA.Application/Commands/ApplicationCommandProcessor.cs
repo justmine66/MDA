@@ -1,9 +1,9 @@
-﻿using MDA.MessageBus;
+﻿using MDA.Infrastructure.Utils;
+using MDA.MessageBus;
+using MDA.MessageBus.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MDA.MessageBus.DependencyInjection;
 
 namespace MDA.Application.Commands
 {
@@ -18,33 +18,27 @@ namespace MDA.Application.Commands
         public ApplicationCommandProcessor(IApplicationCommandContext context)
             => _context = context;
 
-        public void Handle(TApplicationCommand message)
+        public void Handle(TApplicationCommand command)
         {
             using (var scope = _context.ServiceProvider.CreateScope())
             {
                 var handler = scope.ServiceProvider.GetService<IApplicationCommandHandler<TApplicationCommand>>();
 
-                if (handler == null)
-                {
-                    throw new ArgumentNullException(nameof(handler));
-                }
+                PreConditions.NotNull(handler,nameof(handler));
 
-                handler.OnApplicationCommand(_context, message);
+                handler.OnApplicationCommand(_context, command);
             }
         }
 
-        public async Task HandleAsync(TApplicationCommand message, CancellationToken token = default)
+        public async Task HandleAsync(TApplicationCommand command, CancellationToken token = default)
         {
             using (var scope = _context.ServiceProvider.CreateScope())
             {
                 var handler = scope.ServiceProvider.GetService<IAsyncApplicationCommandHandler<TApplicationCommand>>();
 
-                if (handler == null)
-                {
-                    throw new ArgumentNullException(nameof(handler));
-                }
+                PreConditions.NotNull(handler, nameof(handler));
 
-                await handler.OnApplicationCommandAsync(_context, message, token);
+                await handler.OnApplicationCommandAsync(_context, command, token);
             }
         }
     }

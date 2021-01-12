@@ -16,28 +16,44 @@ namespace MDA.Application.Commands
             _executor = executor;
         }
 
-        public void Publish(IApplicationCommand command) 
+        public void Publish(IApplicationCommand command)
             => _publisher.Publish(command);
 
-        public async Task PublishAsync(IApplicationCommand command, CancellationToken token = default) 
+        public async Task PublishAsync(IApplicationCommand command, CancellationToken token = default)
             => await _publisher.PublishAsync(command, token);
 
-        public ApplicationCommandResult ExecuteCommand(IApplicationCommand command) 
-            => _executor.ExecuteCommand(command);
+        public ApplicationCommandResult ExecuteCommand(
+            IApplicationCommand command,
+            ApplicationCommandResultReturnSchemes returnScheme = ApplicationCommandResultReturnSchemes.OnDomainCommandHandled)
+            => _executor.ExecuteCommand(command, returnScheme);
 
-        public ApplicationCommandResult<TResult> ExecuteCommand<TResult>(IApplicationCommand command)
-            => _executor.ExecuteCommand<TResult>(command);
-
-        public ApplicationCommandResult<TResult, TCommandId> ExecuteCommand<TResult, TCommandId>(IApplicationCommand<TCommandId> command)
-            => _executor.ExecuteCommand<TResult, TCommandId>(command);
+        public ApplicationCommandResult<TResult> ExecuteCommand<TResult>(
+            IApplicationCommand command,
+            ApplicationCommandResultReturnSchemes returnScheme = ApplicationCommandResultReturnSchemes.OnDomainCommandHandled)
+            => _executor.ExecuteCommand<TResult>(command, returnScheme);
 
         public async Task<ApplicationCommandResult> ExecuteCommandAsync(IApplicationCommand command, CancellationToken token = default)
-            => await _executor.ExecuteCommandAsync(command,token);
+        {
+            return await ExecuteCommandAsync(command, ApplicationCommandResultReturnSchemes.OnDomainCommandHandled, token)
+                .ConfigureAwait(false);
+        }
 
-        public async Task<ApplicationCommandResult<TResult>> ExecuteCommandAsync<TResult>(IApplicationCommand command, CancellationToken token = default)
-            => await _executor.ExecuteCommandAsync<TResult>(command, token);
+        public async Task<ApplicationCommandResult> ExecuteCommandAsync(
+            IApplicationCommand command,
+            ApplicationCommandResultReturnSchemes returnScheme = ApplicationCommandResultReturnSchemes.OnDomainCommandHandled,
+            CancellationToken token = default)
+            => await _executor.ExecuteCommandAsync(command, returnScheme, token);
 
-        public async Task<ApplicationCommandResult<TResult, TCommandId>> ExecuteCommandAsync<TResult, TCommandId>(IApplicationCommand<TCommandId> command, CancellationToken token = default)
-            => await _executor.ExecuteCommandAsync<TResult, TCommandId>(command, token);
+        public async Task<ApplicationCommandResult<TPayload>> ExecuteCommandAsync<TPayload>(IApplicationCommand command, CancellationToken token = default)
+        {
+            return await ExecuteCommandAsync<TPayload>(command, ApplicationCommandResultReturnSchemes.OnDomainCommandHandled, token)
+                .ConfigureAwait(false);
+        }
+
+        public async Task<ApplicationCommandResult<TResult>> ExecuteCommandAsync<TResult>(
+            IApplicationCommand command,
+            ApplicationCommandResultReturnSchemes returnScheme = ApplicationCommandResultReturnSchemes.OnDomainCommandHandled,
+            CancellationToken token = default)
+            => await _executor.ExecuteCommandAsync<TResult>(command, returnScheme, token);
     }
 }

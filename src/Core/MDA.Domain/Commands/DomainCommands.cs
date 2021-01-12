@@ -1,6 +1,6 @@
 ﻿using MDA.Domain.Models;
-using MDA.MessageBus;
 using MDA.Infrastructure.Hashes;
+using MDA.MessageBus;
 using System;
 
 namespace MDA.Domain.Commands
@@ -23,7 +23,7 @@ namespace MDA.Domain.Commands
         /// <summary>
         /// 应用层命令类型
         /// </summary>
-        Type ApplicationCommandType { get; set; }
+        string ApplicationCommandType { get; set; }
 
         /// <summary>
         /// 聚合根标识。
@@ -93,7 +93,7 @@ namespace MDA.Domain.Commands
 
         protected DomainCommand(
             string applicationCommandId,
-            Type applicationCommandType,
+            string applicationCommandType,
             string aggregateRootId,
             Type aggregateRootType,
             int version = 0) : this(aggregateRootId, aggregateRootType, version)
@@ -104,7 +104,7 @@ namespace MDA.Domain.Commands
 
         public long Version { get; set; }
         public string ApplicationCommandId { get; set; } = string.Empty;
-        public Type ApplicationCommandType { get; set; }
+        public string ApplicationCommandType { get; set; }
         public string AggregateRootId { get; set; }
         public Type AggregateRootType { get; set; }
 
@@ -146,7 +146,7 @@ namespace MDA.Domain.Commands
         }
         protected DomainCommand(
             string applicationCommandId,
-            Type applicationCommandType,
+            string applicationCommandType,
             TAggregateRootId aggregateRootId,
             Type aggregateRootType,
             int version = 0)
@@ -202,7 +202,7 @@ namespace MDA.Domain.Commands
 
         protected DomainCommand(
             string applicationCommandId,
-            Type applicationCommandType,
+            string applicationCommandType,
             TAggregateRootId aggregateRootId,
             int version = 0)
             : base(applicationCommandId,

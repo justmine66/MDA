@@ -11,9 +11,9 @@ namespace MDA.Application.Commands
             IDomainCommandPublisher commandPublisher,
             IApplicationNotificationPublisher notificationPublisher)
         {
-            ServiceProvider = serviceProvider;
-            DomainCommandPublisher = commandPublisher;
-            ApplicationNotificationPublisher = notificationPublisher;
+            ServiceProvider = serviceProvider ?? throw new ArgumentNullException();
+            DomainCommandPublisher = commandPublisher ?? throw new ArgumentNullException();
+            ApplicationNotificationPublisher = notificationPublisher ?? throw new ArgumentNullException();
         }
 
 

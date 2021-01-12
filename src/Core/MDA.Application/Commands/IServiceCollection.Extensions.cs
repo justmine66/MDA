@@ -17,6 +17,7 @@ namespace MDA.Application.Commands
             services.AddSingleton<IApplicationCommandExecutor, DefaultApplicationCommandExecutor>();
             services.AddSingleton<IApplicationCommandContext, DefaultApplicationCommandContext>();
             services.AddSingleton<IApplicationCommandService, DefaultApplicationCommandService>();
+            services.AddSingleton<IApplicationCommandResultProcessor, DefaultApplicationResultProcessor>();
 
             services.AddApplicationCommandHandlers(assemblies);
 
