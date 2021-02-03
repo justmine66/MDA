@@ -6,50 +6,33 @@ using System.Reflection;
 
 namespace MDA.MessageBus.DependencyInjection
 {
-    internal static class MessageHandlerLoader
+    public static class MessageHandlerLoader
     {
         private static readonly List<Type[]> AddedProxies = new List<Type[]>();
         private static readonly List<Type[]> AddedAsyncProxies = new List<Type[]>();
 
         public static void LoadMessageHandlers(IServiceCollection services, params Assembly[] assemblies)
         {
-            var assemblyList = new List<Assembly>();
-            assemblyList.AddRange(assemblies);
-
-            var types = assemblyList
+            var assemblyList = new List<Assembly>(assemblies);
+            var implementationTypes = assemblyList
                 .SelectMany(assembly => assembly.GetTypes()
-                    .Where(it => !it.IsInterface && !it.IsAbstract));
+                    .Where(it => !it.IsInterface &&
+                                 !it.IsAbstract &&
+                                 !it.IgnoreMessageHandler()));
 
-            var messageHandlerType = typeof(IMessageHandler<>);
-            var asyncMessageHandlerType = typeof(IAsyncMessageHandler<>);
-
-            foreach (var type in types)
+            foreach (var implementationType in implementationTypes)
             {
-                if (type.IgnoreMessageHandler())
+                foreach (var serviceType in implementationType.GetInterfaces())
                 {
-                    continue;
-                }
+                    if (!serviceType.IsMessageHandlerType()) continue;
 
-                foreach (var serviceType in type.GetInterfaces())
-                {
-                    if (!serviceType.IsGenericType)
-                    {
-                        continue;
-                    }
-
-                    var genericTypeDefinition = serviceType.GetGenericTypeDefinition();
+                    var genericType = serviceType.GetGenericTypeDefinition();
                     var genericArguments = serviceType.GetGenericArguments();
 
-                    if (genericTypeDefinition != messageHandlerType &&
-                        genericTypeDefinition != asyncMessageHandlerType)
-                    {
-                        continue;
-                    }
-
-                    services.AddScoped(serviceType, type);
+                    services.AddScoped(serviceType, implementationType);
 
                     if (TryAddProxy(genericArguments,
-                        genericTypeDefinition == asyncMessageHandlerType,
+                        genericType == typeof(IAsyncMessageHandler<>),
                         out var proxyServiceType,
                         out var proxyImplType))
                     {
@@ -68,7 +51,7 @@ namespace MDA.MessageBus.DependencyInjection
             proxyServiceType = default;
             proxyImplType = default;
 
-            if (!IsMdaMessageType(genericArguments))
+            if (!IsMessageType(genericArguments))
             {
                 return false;
             }
@@ -107,10 +90,19 @@ namespace MDA.MessageBus.DependencyInjection
             return true;
         }
 
-        private static bool IsMdaMessageType(IEnumerable<Type> arguments)
+        public static bool IsMessageType(IEnumerable<Type> arguments)
             => arguments.All(argument => typeof(IMessage).IsAssignableFrom(argument));
 
-        private static bool IgnoreMessageHandler(this Type serviceType)
-            => serviceType.GetCustomAttributes(typeof(IgnoreMessageHandlerForDependencyInjection)).Any();
+        public static bool IsMessageHandlerType(this Type type)
+        {
+            if (!type.IsGenericType) return false;
+
+            var genericType = type.GetGenericTypeDefinition();
+
+            return genericType == typeof(IMessageHandler<>) || genericType == typeof(IAsyncMessageHandler<>);
+        }
+
+        public static bool IgnoreMessageHandler(this Type type)
+            => type.GetCustomAttributes(typeof(IgnoreMessageHandlerForDependencyInjection)).Any();
     }
 }

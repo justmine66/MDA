@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MDA.Application.Commands
+namespace MDA.Domain
 {
     /// <summary>
     /// 应用层命令执行结果的返回方案

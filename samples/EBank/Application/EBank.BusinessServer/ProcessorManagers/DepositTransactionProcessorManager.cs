@@ -38,7 +38,16 @@ namespace EBank.BusinessServer.ProcessorManagers
         /// <param name="event">存款交易已发起的领域事件</param>
         public void Handle(DepositTransactionStartedDomainEvent @event)
         {
-            var command = new ValidateDepositTransactionDomainCommand(@event.AggregateRootId, @event.AccountId, @event.AccountName, @event.Bank, @event.Amount);
+            var command = new ValidateDepositTransactionDomainCommand()
+            {
+                TransactionId = @event.AggregateRootId,
+                AggregateRootId = @event.AccountId,
+                AccountName = @event.AccountName,
+                Bank = @event.Bank,
+                Amount = @event.Amount
+            };
+
+            command.WithContext(@event);
 
             _domainCommandPublisher.Publish(command);
         }
@@ -54,6 +63,8 @@ namespace EBank.BusinessServer.ProcessorManagers
                 AggregateRootId = @event.TransactionId
             };
 
+            command.WithContext(@event);
+
             _domainCommandPublisher.Publish(command);
         }
 
@@ -65,8 +76,11 @@ namespace EBank.BusinessServer.ProcessorManagers
         {
             var command = new CancelDepositTransactionDomainCommand()
             {
-                AggregateRootId = notification.TransactionId
+                AggregateRootId = notification.TransactionId,
+                Message = notification.Message
             };
+
+            command.WithContext(notification);
 
             _domainCommandPublisher.Publish(command);
         }
@@ -78,6 +92,8 @@ namespace EBank.BusinessServer.ProcessorManagers
         public void Handle(DepositTransactionReadiedDomainEvent @event)
         {
             var command = new SubmitDepositTransactionDomainCommand(@event.AggregateRootId, @event.AccountId);
+
+            command.WithContext(@event);
 
             _domainCommandPublisher.Publish(command);
         }
@@ -92,6 +108,8 @@ namespace EBank.BusinessServer.ProcessorManagers
             {
                 AggregateRootId = @event.TransactionId
             };
+
+            command.WithContext(@event);
 
             _domainCommandPublisher.Publish(command);
         }

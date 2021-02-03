@@ -26,6 +26,11 @@ namespace MDA.Domain.Commands
         string ApplicationCommandType { get; set; }
 
         /// <summary>
+        /// 应用层命令返回方案
+        /// </summary>
+        ApplicationCommandResultReturnSchemes ApplicationCommandReturnScheme { get; set; }
+
+        /// <summary>
         /// 聚合根标识。
         /// </summary>
         string AggregateRootId { get; set; }
@@ -105,6 +110,7 @@ namespace MDA.Domain.Commands
         public long Version { get; set; }
         public string ApplicationCommandId { get; set; } = string.Empty;
         public string ApplicationCommandType { get; set; }
+        public ApplicationCommandResultReturnSchemes ApplicationCommandReturnScheme { get; set; }
         public string AggregateRootId { get; set; }
         public Type AggregateRootType { get; set; }
 

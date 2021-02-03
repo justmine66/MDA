@@ -1,6 +1,7 @@
 ﻿using MDA.Application.Commands;
 using MDA.Application.Notifications;
 using MDA.Domain.Exceptions;
+using MDA.Domain.Saga;
 using MDA.MessageBus;
 using MDA.MessageBus.DependencyInjection;
 using Microsoft.Extensions.Configuration;
@@ -15,20 +16,24 @@ namespace MDA.Application.DependencyInjection
             MessageBusClientNames name,
             IConfiguration configuration = null)
         {
-            context.Services.AddTypedMessagePublisher<IApplicationCommandPublisher, DefaultApplicationCommandPublisher>(name);
-            context.Services.AddTypedMessagePublisher<IApplicationCommandPublisher, DefaultApplicationCommandPublisher>(name);
-            context.Services.AddTypedMessagePublisher<IApplicationNotificationPublisher, DefaultApplicationNotificationPublisher>(name);
+            var services = context.Services;
 
-            context.Services.AddMessageHandler<DomainExceptionMessage, DefaultApplicationResultProcessor>();
-            context.Services.AddAsyncMessageHandler<DomainExceptionMessage, DefaultApplicationResultProcessor>();
+            services.AddTypedMessagePublisher<IApplicationCommandPublisher, DefaultApplicationCommandPublisher>(name);
+            services.AddTypedMessagePublisher<IApplicationCommandPublisher, DefaultApplicationCommandPublisher>(name);
+            services.AddTypedMessagePublisher<IApplicationNotificationPublisher, DefaultApplicationNotificationPublisher>(name);
 
-            context.Services.Configure<ApplicationCommandOptions>(_ => { });
+            services.AddMessageHandler<DomainExceptionMessage, ApplicationCommandResultProcessor>();
+            services.AddAsyncMessageHandler<DomainExceptionMessage, ApplicationCommandResultProcessor>();
+            services.AddMessageHandler<SagaTransactionDomainNotification, ApplicationCommandResultProcessor>();
+            services.AddAsyncMessageHandler<SagaTransactionDomainNotification, ApplicationCommandResultProcessor>();
+
+            services.Configure<ApplicationCommandOptions>(_ => { });
 
             if (configuration == null) return context;
 
             var applicationOptions = configuration.GetSection("MDA").GetSection("ApplicationOptions");
 
-            context.Services.Configure<ApplicationCommandOptions>(applicationOptions.GetSection("CommandOptions"));
+            services.Configure<ApplicationCommandOptions>(applicationOptions.GetSection("CommandOptions"));
 
             return context;
         }

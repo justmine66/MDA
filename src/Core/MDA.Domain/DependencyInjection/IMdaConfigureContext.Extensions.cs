@@ -1,9 +1,11 @@
 ﻿using MDA.Domain.Commands;
 using MDA.Domain.Events;
+using MDA.Domain.Exceptions;
 using MDA.Domain.Models;
 using MDA.Infrastructure.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Reflection;
 
 namespace MDA.Domain.DependencyInjection
 {
@@ -12,7 +14,8 @@ namespace MDA.Domain.DependencyInjection
         public static IMdaConfigureContext AddDomain(
             this IMdaConfigureContext context,
             Action<IDomainConfigureContext> configure,
-            IConfiguration configuration)
+            IConfiguration configuration, 
+            params Assembly[] assemblies)
         {
             context.Services.AddDomainCommandCore();
             context.Services.AddDomainModelCore(configuration); 

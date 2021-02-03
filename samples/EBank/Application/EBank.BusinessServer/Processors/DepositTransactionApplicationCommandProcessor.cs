@@ -18,8 +18,9 @@ namespace EBank.BusinessServer.Processors
                 appCommand.AccountName,
                 appCommand.Amount, appCommand.Bank)
             {
-                ApplicationCommandId = appCommand.Id, 
-                ApplicationCommandType = appCommand.GetType().FullName
+                ApplicationCommandId = appCommand.Id,
+                ApplicationCommandType = appCommand.GetType().FullName,
+                ApplicationCommandReturnScheme = appCommand.ReturnScheme
             };
 
             context.DomainCommandPublisher.Publish(domainCommand);

@@ -12,11 +12,11 @@ namespace EBank.BusinessServer.Processors
         IAsyncApplicationCommandHandler<OpenBankAccountApplicationCommand>,
         IApplicationCommandHandler<ChangeAccountNameApplicationCommand>
     {
-        private readonly IBankAccountRepository _accountIndex;
+        private readonly IBankAccountRepository _accountRepository;
 
         public BankAccountApplicationCommandProcessor(IBankAccountRepository repository)
         {
-            _accountIndex = repository;
+            _accountRepository = repository;
         }
 
         public async Task OnApplicationCommandAsync(
@@ -24,7 +24,7 @@ namespace EBank.BusinessServer.Processors
             OpenBankAccountApplicationCommand appCommand,
             CancellationToken token = default)
         {
-            var hadAccountName = await _accountIndex.HadAccountNameAsync(appCommand.AccountName).ConfigureAwait(false);
+            var hadAccountName = await _accountRepository.HadAccountNameAsync(appCommand.AccountName).ConfigureAwait(false);
             if (hadAccountName)
             {
                 throw new BankAccountDomainException("账户名已经存在。");
@@ -34,10 +34,11 @@ namespace EBank.BusinessServer.Processors
                 appCommand.AccountId,
                 appCommand.AccountName,
                 appCommand.Bank,
-                appCommand.InitialBalance ?? 0)
+                appCommand.InitialBalance)
             {
                 ApplicationCommandId = appCommand.Id,
-                ApplicationCommandType = appCommand.GetType().FullName
+                ApplicationCommandType = appCommand.GetType().FullName,
+                ApplicationCommandReturnScheme = appCommand.ReturnScheme
             };
 
             context.DomainCommandPublisher.Publish(domainCommand);

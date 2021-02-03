@@ -22,21 +22,23 @@ namespace MDA.Domain.DependencyInjection
             MessageBusClientNames name,
             IConfiguration configuration = null)
         {
-            context.Services.AddTypedMessagePublisher<IDomainEventPublisher, DefaultDomainEventPublisher>(name);
-            context.Services.AddTypedMessagePublisher<IDomainNotificationPublisher, DefaultDomainNotificationPublisher>(name);
-            context.Services.AddTypedMessagePublisher<IDomainExceptionPublisher, DefaultDomainExceptionPublisher>(name);
+            var services = context.Services;
 
-            context.Services.Configure<DomainEventOptions>(_ => { });
-            context.Services.Configure<DomainNotificationOptions>(_ => { });
-            context.Services.Configure<DomainExceptionOptions>(_ => { });
+            services.AddTypedMessagePublisher<IDomainEventPublisher, DefaultDomainEventPublisher>(name);
+            services.AddTypedMessagePublisher<IDomainNotificationPublisher, DefaultDomainNotificationPublisher>(name);
+            services.AddTypedMessagePublisher<IDomainExceptionMessagePublisher, DefaultDomainExceptionMessagePublisher>(name);
+
+            services.Configure<DomainEventOptions>(_ => { });
+            services.Configure<DomainNotificationOptions>(_ => { });
+            services.Configure<DomainExceptionOptions>(_ => { });
 
             if (configuration == null) return context;
 
             var domainOptions = configuration.GetSection("MDA").GetSection("DomainOptions");
 
-            context.Services.Configure<DomainEventOptions>(domainOptions.GetSection("EventOptions"));
-            context.Services.Configure<DomainNotificationOptions>(domainOptions.GetSection("NotificationOptions"));
-            context.Services.Configure<DomainExceptionOptions>(domainOptions.GetSection("ExceptionOptions"));
+            services.Configure<DomainEventOptions>(domainOptions.GetSection("EventOptions"));
+            services.Configure<DomainNotificationOptions>(domainOptions.GetSection("NotificationOptions"));
+            services.Configure<DomainExceptionOptions>(domainOptions.GetSection("ExceptionOptions"));
 
             return context;
         }

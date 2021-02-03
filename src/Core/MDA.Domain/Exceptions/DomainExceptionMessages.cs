@@ -19,6 +19,11 @@ namespace MDA.Domain.Exceptions
         string ApplicationCommandType { get; set; }
 
         /// <summary>
+        /// 应用层命令返回方案
+        /// </summary>
+        ApplicationCommandResultReturnSchemes ApplicationCommandReturnScheme { get; set; }
+
+        /// <summary>
         /// 领域命令标识
         /// </summary>
         string DomainCommandId { get; set; }
@@ -54,7 +59,10 @@ namespace MDA.Domain.Exceptions
     {
         public DomainExceptionMessage()
         {
+            Id = Guid.NewGuid().ToString("N");
+            Topic = DomainDefaults.Topics.Exception;
             Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            ApplicationCommandReturnScheme = ApplicationCommandResultReturnSchemes.None;
         }
 
         public string Id { get; set; }
@@ -63,6 +71,7 @@ namespace MDA.Domain.Exceptions
         public int PartitionKey { get; set; }
         public string ApplicationCommandId { get; set; }
         public string ApplicationCommandType { get; set; }
+        public ApplicationCommandResultReturnSchemes ApplicationCommandReturnScheme { get; set; }
         public string DomainCommandId { get; set; }
         public string DomainCommandType { get; set; }
         public string AggregateRootId { get; set; }

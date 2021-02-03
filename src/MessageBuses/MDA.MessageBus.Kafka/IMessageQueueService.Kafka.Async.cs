@@ -110,7 +110,7 @@ namespace MDA.MessageBus.Kafka
             var typeResolver = _serviceProvider.GetService<ITypeResolver>();
             if (!typeResolver.TryResolveType(messageTypeFullName, out var messageType))
             {
-                _logger.LogError($"The Consume Group: {_consumer.Group} received kafka message, cannot resolve type: {messageTypeFullName}.");
+                _logger.LogError($"The Consume Group: {_consumer.Group} received kafka message from topic: {eventArgs.Topic}, but cannot resolve type: {messageTypeFullName}.");
 
                 return;
             };
@@ -118,7 +118,7 @@ namespace MDA.MessageBus.Kafka
             var payload = _serializer.Deserialize(eventArgs.Message.Value, messageType);
             if (!(payload is IMessage message))
             {
-                _logger.LogError($"The Consume Group: {_consumer.Group} deserialized kafka message, incorrect message type, expected: {messageTypeFullName}, actual: {payload.GetType().FullName}.");
+                _logger.LogError($"The Consume Group: {_consumer.Group} deserialized kafka message from topic: {eventArgs.Topic}, but incorrect message type, expected: {messageTypeFullName}, actual: {payload.GetType().FullName}.");
 
                 return;
             };
@@ -148,7 +148,7 @@ namespace MDA.MessageBus.Kafka
 
                 if (!hasHandler)
                 {
-                    _logger.LogError($"No message handler found for {messageTypeFullName}, the consume group: {_consumer.Group}.");
+                    _logger.LogError($"No message handler found for {messageTypeFullName}, the consume group: {_consumer.Group}, topic: {eventArgs.Topic}.");
                 }
             }
         }

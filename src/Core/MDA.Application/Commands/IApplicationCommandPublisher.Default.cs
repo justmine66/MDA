@@ -1,4 +1,5 @@
-﻿using MDA.Infrastructure.Utils;
+﻿using MDA.Domain;
+using MDA.Infrastructure.Utils;
 using MDA.MessageBus;
 using Microsoft.Extensions.Options;
 using System.Threading;

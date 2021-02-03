@@ -2,6 +2,6 @@
 {
     public class DomainExceptionOptions
     {
-        public string Topic { get; set; } = "MDA.Domain.Exceptions";
+        public string Topic { get; set; } = DomainDefaults.Topics.Exception;
     }
 }

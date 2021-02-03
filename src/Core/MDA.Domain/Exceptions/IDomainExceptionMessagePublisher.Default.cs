@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace MDA.Domain.Exceptions
 {
-    public class DefaultDomainExceptionPublisher : IDomainExceptionPublisher
+    public class DefaultDomainExceptionMessagePublisher : IDomainExceptionMessagePublisher
     {
         private readonly DomainExceptionOptions _options;
         private readonly IMessagePublisher _messagePublisher;
 
-        public DefaultDomainExceptionPublisher(
+        public DefaultDomainExceptionMessagePublisher(
             IMessagePublisher messagePublisher,
             IOptions<DomainExceptionOptions> options)
         {

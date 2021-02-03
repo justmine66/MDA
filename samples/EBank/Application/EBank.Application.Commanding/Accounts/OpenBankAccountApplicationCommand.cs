@@ -26,6 +26,6 @@ namespace EBank.Application.Commanding.Accounts
         /// <summary>
         /// 初始余额
         /// </summary>
-        public decimal? InitialBalance { get; set; }
+        public decimal InitialBalance { get; set; }
     }
 }

@@ -36,7 +36,7 @@ namespace MDA.MessageBus.Disruptor
                     if (asyncHandlerProxies.IsNotEmpty())
                     {
                         hasHandler = true;
-                        MessageHandlerUtils.DynamicInvokeAsyncHandle(asyncHandlerProxies, data.Message, logger);
+                        MessageHandlerUtils.DynamicInvokeAsyncHandle(asyncHandlerProxies, data.Message, logger).Wait();
                     }
 
                     if (!hasHandler)

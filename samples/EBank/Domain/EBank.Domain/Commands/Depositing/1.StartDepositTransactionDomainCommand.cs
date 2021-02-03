@@ -1,12 +1,12 @@
 ﻿using EBank.Domain.Models.Depositing;
-using MDA.Domain.Commands;
+using MDA.Domain.Saga;
 
 namespace EBank.Domain.Commands.Depositing
 {
     /// <summary>
     /// 发起存款交易的领域命令
     /// </summary>
-    public class StartDepositTransactionDomainCommand : DomainCommand<DepositTransaction, long>
+    public class StartDepositTransactionDomainCommand : BeginSubTransactionDomainCommand<DepositTransaction, long>
     {
         public StartDepositTransactionDomainCommand(
             long transactionId,

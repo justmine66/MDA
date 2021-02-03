@@ -18,7 +18,7 @@ namespace MDA.Domain.Events
             return $"DomainCommandId: {@event?.DomainCommandId}, DomainCommandType: {@event?.DomainCommandType.FullName}, AggregateRootId: {@event?.AggregateRootId}, AggregateRootType: {@event?.AggregateRootType.FullName}, AggregateRootVersion: {@event?.AggregateRootVersion}, DomainEventId: {@event?.Id}";
         }
 
-        public static void FillDomainCommandInfo(this IEnumerable<IDomainEvent> domainEvents, IDomainCommand command)
+        public static void FillFrom(this IEnumerable<IDomainEvent> domainEvents, IDomainCommand command)
         {
             foreach (var domainEvent in domainEvents)
             {
@@ -26,6 +26,9 @@ namespace MDA.Domain.Events
                 domainEvent.DomainCommandType = command.GetType();
                 domainEvent.Topic = command.Topic;
                 domainEvent.PartitionKey = command.PartitionKey;
+                domainEvent.ApplicationCommandId = command.ApplicationCommandId;
+                domainEvent.ApplicationCommandType = command.ApplicationCommandType;
+                domainEvent.ApplicationCommandReturnScheme = command.ApplicationCommandReturnScheme;
             }
         }
     }

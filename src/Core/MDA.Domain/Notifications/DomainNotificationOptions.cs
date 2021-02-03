@@ -2,6 +2,6 @@
 {
     public class DomainNotificationOptions
     {
-        public string Topic { get; set; } = "MDA.Domain.Notifications";
+        public string Topic { get; set; } = DomainDefaults.Topics.Notification;
     }
 }

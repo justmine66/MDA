@@ -82,7 +82,7 @@ namespace MDA.Domain.Models
         {
             // 1. 填充领域通知信息
             notification.AggregateRootId = Id;
-            notification.AggregateRootType = AggregateRootType;
+            notification.AggregateRootType = AggregateRootType.FullName;
 
             // 2. 添加到当前变更领域通知列表
             if (MutatingDomainNotifications == null)

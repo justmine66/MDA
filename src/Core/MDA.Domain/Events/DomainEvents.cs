@@ -15,6 +15,21 @@ namespace MDA.Domain.Events
         long Version { get; set; }
 
         /// <summary>
+        /// 应用层命令标识
+        /// </summary>
+        string ApplicationCommandId { get; set; }
+
+        /// <summary>
+        /// 应用层命令类型
+        /// </summary>
+        string ApplicationCommandType { get; set; }
+
+        /// <summary>
+        /// 应用层命令返回方案
+        /// </summary>
+        ApplicationCommandResultReturnSchemes ApplicationCommandReturnScheme { get; set; }
+
+        /// <summary>
         /// 领域命令标识
         /// </summary>
         string DomainCommandId { get; set; }
@@ -111,7 +126,7 @@ namespace MDA.Domain.Events
             AggregateRootVersion = aggregateRootVersion;
             AggregateRootGeneration = aggregateRootGeneration;
         }
-
+        
         public string DomainCommandId { get; set; } = string.Empty;
         public Type DomainCommandType { get; set; }
         public long DomainCommandVersion { get; set; }
@@ -122,6 +137,10 @@ namespace MDA.Domain.Events
         public int AggregateRootGeneration { get; set; }
 
         public long Version { get; set; }
+
+        public string ApplicationCommandId { get; set; }
+        public string ApplicationCommandType { get; set; }
+        public ApplicationCommandResultReturnSchemes ApplicationCommandReturnScheme { get; set; }
     }
 
     /// <summary>

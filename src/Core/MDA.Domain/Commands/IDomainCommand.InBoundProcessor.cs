@@ -2,6 +2,7 @@
 using MDA.Domain.Exceptions;
 using MDA.Domain.Models;
 using MDA.Domain.Notifications;
+using MDA.Domain.Saga;
 using MDA.Infrastructure.Utils;
 using MDA.MessageBus;
 using MDA.MessageBus.DependencyInjection;
@@ -36,23 +37,24 @@ namespace MDA.Domain.Commands
             _serviceProvider = serviceProvider;
         }
 
-        public void Handle(DomainCommandTransportMessage<TAggregateRootId> message) => HandleAsync(message).GetAwaiter().GetResult();
+        public void Handle(DomainCommandTransportMessage<TAggregateRootId> message) => HandleAsync(message).ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task HandleAsync(DomainCommandTransportMessage<TAggregateRootId> message, CancellationToken token = default)
         {
             var command = message.DomainCommand;
             var commandId = command.Id;
-            var commandType = command.GetType();
+            var commandType = command.GetType().FullName;
             var aggregateRootId = command.AggregateRootId;
-            var aggregateRootStringId = command.AggregateRootId.ToString();
             var aggregateRootType = command.AggregateRootType;
+            var aggregateRootTypeFullName = aggregateRootType.FullName;
+            var aggregateRootStringId = command.AggregateRootId.ToString();
 
             var aggregate = _cache.Get(aggregateRootStringId, aggregateRootType) ??
                             await _stateBackend.GetAsync(aggregateRootId, aggregateRootType, token);
 
             if (aggregate == null)
             {
-                _logger.LogCritical($"Failed to restore aggregate root: [Id: {aggregateRootStringId}, Type: {aggregateRootType.FullName}] for domain command: [Id: {commandId}, Type: {commandType.FullName}] from cache and state backend.");
+                _logger.LogCritical($"Failed to restore aggregate root: [Id: {aggregateRootStringId}, Type: {aggregateRootTypeFullName}] for domain command: [Id: {commandId}, Type: {commandType}] from cache and state backend.");
 
                 return;
             }
@@ -65,31 +67,25 @@ namespace MDA.Domain.Commands
                 var result = aggregate.HandleDomainCommand(command);
                 if (!result.Succeed())
                 {
-                    _logger.LogError($"Handler domain command: [Id: {commandId}, Type: {commandType.FullName}] has a error: {result.Message}.");
+                    _logger.LogError($"Handling domain command: [Id: {commandId}, Type: {commandType}] has a error: {result.Message}.");
 
                     return;
                 }
             }
             catch (Exception e) when (e.InnerException is DomainException domainException)
             {
-                var domainExceptionMessage = new DomainExceptionMessage()
-                {
-                    Message = domainException.Message,
-                    Code = (int)DomainStatusCodes.DomainCommandHandled
-                };
-
-                domainExceptionMessage.FillDomainCommandInfo(command);
-
-                await PublishDomainExceptionAsync(domainExceptionMessage, token);
+                await ProcessDomainExceptionAsync(command, domainException, token);
 
                 return;
             }
             catch (Exception e)
             {
-                _logger.LogError($"Handler domain command has a unknown exception, Id: {commandId}, Type: {commandType.FullName}, Exception: {e}.");
+                await ProcessUnKnownExceptionAsync(command, e, token);
 
                 return;
             }
+
+            await ReplyApplicationCommandAsync(command, token);
 
             var hasDomainEvent = false;
             var mutatingDomainEvents = aggregate.MutatingDomainEvents;
@@ -106,23 +102,67 @@ namespace MDA.Domain.Commands
             {
                 hasDomainNotification = true;
 
-                await PublishMutatingDomainNotificationsAsync(mutatingDomainNotifications, command, token);
+                await ProcessMutatingDomainNotificationsAsync(mutatingDomainNotifications, command, token);
             }
 
             if (!hasDomainEvent && !hasDomainNotification)
             {
-                _logger.LogWarning($"The domain command: [Id: {commandId}, Type: {commandType.FullName}] apply neither domain event nor generate domain notification for aggregate root: [Id: {aggregateRootStringId}, Type: {aggregateRootType.FullName}], please confirm whether the state will be lost.");
+                _logger.LogWarning($"The domain command: [Id: {commandId}, Type: {commandType}] apply neither domain event nor generate domain notification for aggregate root: [Id: {aggregateRootStringId}, Type: {aggregateRootTypeFullName}], please confirm whether the state will be lost.");
             }
         }
 
         #region [ private methods ]
 
-        private async Task ProcessMutatingDomainEventsAsync(
-            IEnumerable<IDomainEvent> mutatingDomainEvents,
-            IDomainCommand command,
-            CancellationToken token = default)
+        private async Task ProcessUnKnownExceptionAsync(IDomainCommand command, Exception exception, CancellationToken token)
         {
-            mutatingDomainEvents.FillDomainCommandInfo(command);
+            var commandId = command.Id;
+            var commandType = command.GetType().FullName;
+            var canReturnOnDomainCommandHandled = command.ApplicationCommandReturnScheme == ApplicationCommandResultReturnSchemes.OnDomainCommandHandled;
+
+            if (!canReturnOnDomainCommandHandled)
+            {
+                _logger.LogError($"Handling domain command has a unknown exception, Id: {commandId}, Type: {commandType}, Exception: {LogFormatter.PrintException(exception)}.");
+
+                return;
+            }
+
+            var domainExceptionMessage = new DomainExceptionMessage()
+            {
+                Message = exception.Message
+            };
+
+            domainExceptionMessage.FillFrom(command);
+
+            await PublishDomainExceptionAsync(domainExceptionMessage, token);
+        }
+
+        private async Task ProcessDomainExceptionAsync(IDomainCommand command, DomainException domainException, CancellationToken token)
+        {
+            var commandId = command.Id;
+            var commandType = command.GetType().FullName;
+            var canReturnOnDomainCommandHandled = command.ApplicationCommandReturnScheme == ApplicationCommandResultReturnSchemes.OnDomainCommandHandled;
+
+            if (!canReturnOnDomainCommandHandled)
+            {
+                _logger.LogError($"Handling domain command has a domain exception, Id: {commandId}, Type: {commandType}, Exception: {LogFormatter.PrintException(domainException)}.");
+
+                return;
+            }
+
+            var domainExceptionMessage = new DomainExceptionMessage()
+            {
+                Message = domainException.Message,
+                Code = domainException.Code
+            };
+
+            domainExceptionMessage.FillFrom(command);
+
+            await PublishDomainExceptionAsync(domainExceptionMessage, token);
+        }
+
+        private async Task ProcessMutatingDomainEventsAsync(IEnumerable<IDomainEvent> mutatingDomainEvents, IDomainCommand command, CancellationToken token = default)
+        {
+            mutatingDomainEvents.FillFrom(command);
 
             IEnumerable<DomainEventResult> appendResults;
             try
@@ -148,17 +188,62 @@ namespace MDA.Domain.Commands
             }
         }
 
-        private async Task PublishMutatingDomainNotificationsAsync(
-            IEnumerable<IDomainNotification> mutatingDomainNotifications,
-            IDomainCommand command,
-            CancellationToken token = default)
+        private async Task ProcessMutatingDomainNotificationsAsync(IEnumerable<IDomainNotification> mutatingDomainNotifications, IDomainCommand command, CancellationToken token = default)
         {
-            mutatingDomainNotifications.FillDomainCommandInfo(command);
-
             foreach (var notification in mutatingDomainNotifications)
             {
+                notification.FillFrom(command);
+
                 await PublishDomainNotificationAsync(notification, token);
+
+                if (notification is IEndSubTransactionDomainNotification endNotification)
+                {
+                    await ReplyApplicationCommandAsync(endNotification, token);
+                }
             }
+        }
+
+        private async Task ReplyApplicationCommandAsync(IDomainCommand command, CancellationToken token)
+        {
+            if (command is IEndSubTransactionDomainCommand endCommand)
+            {
+                var commandId = endCommand.Id;
+                var commandType = endCommand.GetType().FullName;
+                var canReturnOnDomainCommandHandled = endCommand.ApplicationCommandReturnScheme == ApplicationCommandResultReturnSchemes.OnDomainCommandHandled;
+
+                if (!canReturnOnDomainCommandHandled)
+                {
+                    _logger.LogError($"Found the end sub-transaction domain command, Id: {commandId}, Type: {commandType}, but return schema mis match, expected:{ApplicationCommandResultReturnSchemes.OnDomainCommandHandled}, actual:{command.ApplicationCommandReturnScheme}.");
+
+                    return;
+                }
+
+                var reply = new SagaTransactionDomainNotification(endCommand.Message, true);
+
+                reply.FillFrom(command);
+
+                await PublishDomainNotificationAsync(reply, token);
+            }
+        }
+
+        private async Task ReplyApplicationCommandAsync(IEndSubTransactionDomainNotification notification, CancellationToken token)
+        {
+            var notificationId = notification.Id;
+            var notificationType = notification.GetType().FullName;
+            var canReturnOnDomainCommandHandled = notification.ApplicationCommandReturnScheme == ApplicationCommandResultReturnSchemes.OnDomainCommandHandled;
+
+            if (!canReturnOnDomainCommandHandled)
+            {
+                _logger.LogError($"Found the end sub-transaction domain notification, Id: {notificationId}, Type: {notificationType}, Message: {notification.Message}, but return schema mis match, expected: {ApplicationCommandResultReturnSchemes.OnDomainCommandHandled}, actual: {notification.ApplicationCommandReturnScheme}.");
+
+                return;
+            }
+
+            var reply = new SagaTransactionDomainNotification(notification.Message);
+
+            reply.FillFrom(notification);
+
+            await PublishDomainNotificationAsync(reply, token);
         }
 
         private async Task PublishDomainNotificationAsync(IDomainNotification notification, CancellationToken token)
@@ -177,7 +262,7 @@ namespace MDA.Domain.Commands
 
         private async Task PublishDomainExceptionAsync(IDomainExceptionMessage exception, CancellationToken token)
         {
-            var publisher = _serviceProvider.GetService<IDomainExceptionPublisher>();
+            var publisher = _serviceProvider.GetService<IDomainExceptionMessagePublisher>();
 
             try
             {

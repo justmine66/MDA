@@ -8,38 +8,24 @@ namespace EBank.Domain.Commands.Accounts
     /// </summary>
     public class ValidateDepositTransactionDomainCommand : DomainCommand<BankAccount, long>
     {
-        public ValidateDepositTransactionDomainCommand(
-            long transactionId, 
-            long accountId,
-            string accountName, 
-            string bank, 
-            decimal amount)
-        {
-            TransactionId = transactionId;
-            AggregateRootId = accountId;
-            AccountName = accountName;
-            Bank = bank;
-            Amount = amount;
-        }
-
         /// <summary>
         /// 交易标识
         /// </summary>
-        public long TransactionId { get;  }
+        public long TransactionId { get; set; }
 
         /// <summary>
         /// 账户名
         /// </summary>
-        public string AccountName { get;  }
+        public string AccountName { get; set; }
 
         /// <summary>
         /// 开户行
         /// </summary>
-        public string Bank { get;  }
+        public string Bank { get; set; }
 
         /// <summary>
         /// 金额
         /// </summary>
-        public decimal Amount { get;  }
+        public decimal Amount { get; set; }
     }
 }

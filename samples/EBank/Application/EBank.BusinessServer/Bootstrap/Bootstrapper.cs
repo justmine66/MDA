@@ -16,19 +16,21 @@ namespace EBank.BusinessServer.Bootstrap
 {
     public class Bootstrapper
     {
-        private static readonly Assembly CurrentAssembly = Assembly.GetExecutingAssembly();
+        private static readonly Assembly[] Assemblies = { Assembly.GetExecutingAssembly() };
 
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
+            var configuration = context.Configuration;
+
             services.AddMda(ctx =>
             {
                 ctx.AddInfrastructure();
-                ctx.AddMessageBus(bus => bus.AddDisruptor().AddKafka(context.Configuration), CurrentAssembly);
+                ctx.AddMessageBus(configure => configure.AddDisruptor().AddKafka(configuration), Assemblies);
 
-                ctx.AddApplication(app => app.UseMessageBus(MessageBusClientNames.Kafka), CurrentAssembly);
-                ctx.AddDomain(domain => domain.UseMessageBus(MessageBusClientNames.Kafka, context.Configuration), context.Configuration);
+                ctx.AddApplication(app => app.UseMessageBus(MessageBusClientNames.Kafka), Assemblies);
+                ctx.AddDomain(domain => domain.UseMessageBus(MessageBusClientNames.Kafka, configuration), configuration, Assemblies);
 
-                ctx.AddStateBackend(state => state.AddMySql(context.Configuration));
+                ctx.AddStateBackend(state => state.AddMySql(configuration));
             });
 
             services.AddSingleton<IBankAccountRepository, MySqlBankAccountRepository>();

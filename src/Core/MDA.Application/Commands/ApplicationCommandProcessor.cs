@@ -24,7 +24,7 @@ namespace MDA.Application.Commands
             {
                 var handler = scope.ServiceProvider.GetService<IApplicationCommandHandler<TApplicationCommand>>();
 
-                PreConditions.NotNull(handler,nameof(handler));
+                PreConditions.NotNull(handler, nameof(handler));
 
                 handler.OnApplicationCommand(_context, command);
             }

@@ -17,7 +17,7 @@ namespace MDA.Application.Commands
             services.AddSingleton<IApplicationCommandExecutor, DefaultApplicationCommandExecutor>();
             services.AddSingleton<IApplicationCommandContext, DefaultApplicationCommandContext>();
             services.AddSingleton<IApplicationCommandService, DefaultApplicationCommandService>();
-            services.AddSingleton<IApplicationCommandResultProcessor, DefaultApplicationResultProcessor>();
+            services.AddSingleton<IApplicationCommandResultListener, ApplicationCommandResultProcessor>();
 
             services.AddApplicationCommandHandlers(assemblies);
 
@@ -26,9 +26,7 @@ namespace MDA.Application.Commands
 
         public static IServiceCollection AddApplicationCommandHandlers(this IServiceCollection services, params Assembly[] assemblies)
         {
-            var assemblyList = new List<Assembly>();
-            assemblyList.AddRange(assemblies);
-
+            var assemblyList = new List<Assembly>(assemblies);
             var types = assemblyList
                 .SelectMany(assembly => assembly.GetTypes()
                     .Where(it => !it.IsInterface && !it.IsAbstract));
@@ -36,32 +34,36 @@ namespace MDA.Application.Commands
             var commandHandlerType = typeof(IApplicationCommandHandler<>);
             var asyncCommandHandlerType = typeof(IAsyncApplicationCommandHandler<>);
 
-            foreach (var type in types)
+            foreach (var implementationType in types)
             {
-                foreach (var serviceType in type.GetInterfaces())
+                foreach (var serviceType in implementationType.GetInterfaces())
                 {
                     if (!serviceType.IsGenericType)
                     {
                         continue;
                     }
 
-                    var genericTypeDefinition = serviceType.GetGenericTypeDefinition();
-                    var genericArguments = serviceType.GetGenericArguments();
-
-                    if (genericTypeDefinition != commandHandlerType &&
-                        genericTypeDefinition != asyncCommandHandlerType)
+                    var genericType = serviceType.GetGenericTypeDefinition();
+                    if (genericType != commandHandlerType &&
+                        genericType != asyncCommandHandlerType)
                     {
                         continue;
                     }
 
-                    var isAsync = genericTypeDefinition == asyncCommandHandlerType;
+                    var isAsync = genericType == asyncCommandHandlerType;
+                    var genericArguments = serviceType.GetGenericArguments();
 
-                    services.AddScoped(serviceType, type);
-                    services.AddScoped(
-                        isAsync
-                            ? typeof(IAsyncMessageHandler<>).MakeGenericType(genericArguments)
-                            : typeof(IMessageHandler<>).MakeGenericType(genericArguments),
-                        typeof(ApplicationCommandProcessor<>).MakeGenericType(genericArguments));
+                    // 1. 注册命令处理者
+                    services.AddScoped(serviceType, implementationType);
+
+                    // 2. 注册消息处理者
+                    var messageHandlerServiceType = isAsync
+                        ? typeof(IAsyncMessageHandler<>).MakeGenericType(genericArguments)
+                        : typeof(IMessageHandler<>).MakeGenericType(genericArguments);
+                    var messageHandlerImplementationType = typeof(ApplicationCommandProcessor<>).MakeGenericType(genericArguments);
+
+                    services.AddScoped(messageHandlerServiceType, messageHandlerImplementationType);
+
                     if (TryAddProxy(genericArguments, isAsync,
                         out var proxyServiceType,
                         out var proxyImplType))

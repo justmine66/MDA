@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace MDA.Domain.Exceptions
 {
-    public interface IDomainExceptionPublisher
+    public interface IDomainExceptionMessagePublisher
     {
         void Publish(IDomainExceptionMessage exception);
 

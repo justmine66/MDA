@@ -2,11 +2,11 @@
 using EBank.Domain.Events.Accounts;
 using EBank.Domain.Models.Transferring;
 using EBank.Domain.Notifications;
+using MDA.Domain.Exceptions;
 using MDA.Domain.Models;
 using MDA.Domain.Shared;
 using System.Collections.Generic;
 using System.Linq;
-using MDA.Domain.Exceptions;
 
 namespace EBank.Domain.Models.Accounts
 {

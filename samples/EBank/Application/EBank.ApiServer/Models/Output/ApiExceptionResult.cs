@@ -8,7 +8,7 @@ namespace EBank.ApiServer.Models.Output
     public class ApiExceptionResult : ApiErrorResult
     {
         /// <summary>
-        /// 开发者消息
+        /// 开发者消息, 即在开发环境，给开发者看的消息。
         /// </summary>
         public object DeveloperMessages { get; set; }
 

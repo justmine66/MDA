@@ -1,5 +1,6 @@
-﻿using MDA.MessageBus;
-using System;
+﻿using MDA.Domain.Models;
+using MDA.Infrastructure.Hashes;
+using MDA.MessageBus;
 
 namespace MDA.Domain.Notifications
 {
@@ -19,6 +20,11 @@ namespace MDA.Domain.Notifications
         string ApplicationCommandType { get; set; }
 
         /// <summary>
+        /// 应用层命令返回方案
+        /// </summary>
+        ApplicationCommandResultReturnSchemes ApplicationCommandReturnScheme { get; set; }
+
+        /// <summary>
         /// 领域命令标识
         /// </summary>
         string DomainCommandId { get; set; }
@@ -26,7 +32,7 @@ namespace MDA.Domain.Notifications
         /// <summary>
         /// 领域命令类型完全限定名称。
         /// </summary>
-        Type DomainCommandType { get; set; }
+        string DomainCommandType { get; set; }
 
         /// <summary>
         /// 聚合根标识
@@ -36,7 +42,7 @@ namespace MDA.Domain.Notifications
         /// <summary>
         /// 聚合根类型完全限定名称
         /// </summary>
-        Type AggregateRootType { get; set; }
+        string AggregateRootType { get; set; }
 
         /// <summary>
         /// 版本
@@ -61,34 +67,30 @@ namespace MDA.Domain.Notifications
     /// </summary>
     public abstract class DomainNotification : Message, IDomainNotification
     {
-        protected DomainNotification() { }
-        protected DomainNotification(
-            string applicationCommandId, string applicationCommandType,
-            string domainCommandId, Type domainCommandType,
-            string aggregateRootId, Type aggregateRootType,
-            int version = 0)
-        {
-            Id = Guid.NewGuid().ToString("N");
-            Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            ApplicationCommandId = applicationCommandId;
-            ApplicationCommandType = applicationCommandType;
-            DomainCommandId = domainCommandId;
-            DomainCommandType = domainCommandType;
-            AggregateRootId = aggregateRootId;
-            AggregateRootType = aggregateRootType;
-            Version = version;
-        }
+        private bool _initialized;
+        protected DomainNotification() => Initialize();
 
         public string ApplicationCommandId { get; set; }
         public string ApplicationCommandType { get; set; }
+        public ApplicationCommandResultReturnSchemes ApplicationCommandReturnScheme { get; set; }
 
         public string DomainCommandId { get; set; }
-        public Type DomainCommandType { get; set; }
+        public string DomainCommandType { get; set; }
 
         public string AggregateRootId { get; set; }
-        public Type AggregateRootType { get; set; }
+        public string AggregateRootType { get; set; }
 
         public int Version { get; set; }
+
+        protected void Initialize()
+        {
+            if (AggregateRootType == null || _initialized) return;
+
+            Topic = AggregateRootType;
+            PartitionKey = MurMurHash3.Hash(AggregateRootType);
+
+            _initialized = true;
+        }
     }
 
     /// <summary>
@@ -99,20 +101,27 @@ namespace MDA.Domain.Notifications
         DomainNotification,
         IDomainNotification<TAggregateRootId>
     {
-        protected DomainNotification() { }
-        protected DomainNotification(
-            string applicationCommandId, string applicationCommandType,
-            string domainCommandId, Type domainCommandType,
-            TAggregateRootId aggregateRootId, Type aggregateRootType,
-            int version = 0)
-            : base(applicationCommandId, applicationCommandType,
-                domainCommandId, domainCommandType,
-            string.Empty, aggregateRootType, 
-                version)
+        protected DomainNotification()
         {
-            AggregateRootId = aggregateRootId;
+            base.AggregateRootId = AggregateRootId?.ToString();
+            Initialize();
         }
 
         public new TAggregateRootId AggregateRootId { get; set; }
+    }
+
+    /// <summary>
+    /// 领域通知基类
+    /// </summary>
+    /// <typeparam name="TAggregateRoot">聚合根类型</typeparam>
+    /// <typeparam name="TAggregateRootId">聚合根标识类型</typeparam>
+    public abstract class DomainNotification<TAggregateRoot, TAggregateRootId> : DomainNotification<TAggregateRootId>
+        where TAggregateRoot : IEventSourcedAggregateRoot
+    {
+        protected DomainNotification()
+        {
+            AggregateRootType = typeof(TAggregateRoot).FullName;
+            Initialize();
+        }
     }
 }

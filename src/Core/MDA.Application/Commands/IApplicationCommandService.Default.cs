@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using MDA.Domain;
 
 namespace MDA.Application.Commands
 {

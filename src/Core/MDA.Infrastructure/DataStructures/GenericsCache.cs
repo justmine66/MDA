@@ -18,6 +18,10 @@ namespace MDA.Infrastructure.DataStructures
         }
     }
 
+    /// <summary>
+    /// 泛型缓存
+    /// </summary>
+    /// <typeparam name="TModel">模型类型</typeparam>
     public class GenericCache<TModel> : GenericCacheBase where TModel : class
     {
         private static TModel CacheData { get; set; }

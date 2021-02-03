@@ -1,19 +1,10 @@
 ﻿using MDA.Domain.Commands;
-using System.Collections.Generic;
 
 namespace MDA.Domain.Exceptions
 {
     public static class DomainExceptionExtensions
     {
-        public static IEnumerable<IDomainExceptionMessage> FillDomainCommandInfo(this IEnumerable<IDomainExceptionMessage> exceptions, IDomainCommand command)
-        {
-            foreach (var notification in exceptions)
-            {
-                yield return FillDomainCommandInfo(notification, command);
-            }
-        }
-
-        public static IDomainExceptionMessage FillDomainCommandInfo(this IDomainExceptionMessage exception, IDomainCommand command)
+        public static IDomainExceptionMessage FillFrom(this IDomainExceptionMessage exception, IDomainCommand command)
         {
             exception.AggregateRootType = command.AggregateRootType.FullName;
             exception.AggregateRootId = command.AggregateRootId;
@@ -23,6 +14,7 @@ namespace MDA.Domain.Exceptions
             exception.PartitionKey = command.PartitionKey;
             exception.ApplicationCommandId = command.ApplicationCommandId;
             exception.ApplicationCommandType = command.ApplicationCommandType;
+            exception.ApplicationCommandReturnScheme = command.ApplicationCommandReturnScheme;
 
             return exception;
         }
