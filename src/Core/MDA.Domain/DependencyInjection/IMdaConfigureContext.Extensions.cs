@@ -1,6 +1,5 @@
 ﻿using MDA.Domain.Commands;
 using MDA.Domain.Events;
-using MDA.Domain.Exceptions;
 using MDA.Domain.Models;
 using MDA.Infrastructure.DependencyInjection;
 using Microsoft.Extensions.Configuration;
@@ -17,7 +16,7 @@ namespace MDA.Domain.DependencyInjection
             IConfiguration configuration, 
             params Assembly[] assemblies)
         {
-            context.Services.AddDomainCommandCore();
+            context.Services.AddDomainCommandCore(assemblies);
             context.Services.AddDomainModelCore(configuration); 
             context.Services.AddDomainEventCore();
 
