@@ -1,4 +1,6 @@
 ﻿using EBank.Domain.Models.Accounts;
+using EBank.Domain.Models.Accounts.Primitives;
+using EBank.Domain.Models.Primitives;
 using MDA.Domain.Commands;
 
 namespace EBank.Domain.Commands.Accounts
@@ -6,13 +8,13 @@ namespace EBank.Domain.Commands.Accounts
     /// <summary>
     /// 开户命令
     /// </summary>
-    public class OpenAccountDomainCommand : DomainCommand<BankAccount, long>
+    public class OpenAccountDomainCommand : DomainCommand<BankAccount, BankAccountId>
     {
         public OpenAccountDomainCommand(
-            long accountId,
-            string accountName,
-            string bank,
-            decimal initialBalance)
+            BankAccountId accountId,
+            BankAccountName accountName,
+            BankName bank,
+            Money initialBalance)
         {
             AggregateRootId = accountId;
             AccountName = accountName;
@@ -23,16 +25,16 @@ namespace EBank.Domain.Commands.Accounts
         /// <summary>
         /// 账户名
         /// </summary>
-        public string AccountName { get; set; }
+        public BankAccountName AccountName { get; set; }
 
         /// <summary>
         /// 开户行
         /// </summary>
-        public string Bank { get; set; }
+        public BankName Bank { get; set; }
 
         /// <summary>
         /// 初始余额
         /// </summary>
-        public decimal InitialBalance { get; set; }
+        public Money InitialBalance { get; set; }
     }
 }

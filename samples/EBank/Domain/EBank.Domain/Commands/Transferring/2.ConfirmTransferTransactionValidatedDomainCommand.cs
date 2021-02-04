@@ -1,17 +1,17 @@
 ﻿using EBank.Domain.Models.Transferring;
+using EBank.Domain.Models.Transferring.Primitives;
 using MDA.Domain.Commands;
-using TransferAccountType = EBank.Domain.Models.Transferring.TransferAccountType;
 
 namespace EBank.Domain.Commands.Transferring
 {
-    public class ConfirmTransferTransactionValidatedDomainCommand : DomainCommand<TransferTransaction, long>
+    public class ConfirmTransferTransactionValidatedDomainCommand : DomainCommand<TransferTransaction, TransferTransactionId>
     {
-        public ConfirmTransferTransactionValidatedDomainCommand(long transactionId, TransferAccountType accountType)
+        public ConfirmTransferTransactionValidatedDomainCommand(TransferTransactionId transactionId, TransferAccountType accountType)
         {
             AggregateRootId = transactionId;
             AccountType = accountType;
         }
 
-        public TransferAccountType AccountType { get; private set; }
+        public TransferAccountType AccountType { get; }
     }
 }

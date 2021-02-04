@@ -1,11 +1,12 @@
 ﻿using EBank.Domain.Models.Accounts;
+using EBank.Domain.Models.Accounts.Primitives;
 using MDA.Domain.Commands;
 
 namespace EBank.Domain.Commands.Accounts
 {
-    public class ChangeAccountNameDomainCommand : DomainCommand<BankAccount, long>
+    public class ChangeAccountNameDomainCommand : DomainCommand<BankAccount, BankAccountId>
     {
-        public ChangeAccountNameDomainCommand(long accountId, string accountName) 
+        public ChangeAccountNameDomainCommand(BankAccountId accountId, BankAccountName accountName) 
             : base(accountId)
         {
             AccountName = accountName;
@@ -14,6 +15,6 @@ namespace EBank.Domain.Commands.Accounts
         /// <summary>
         /// 账户名
         /// </summary>
-        public string AccountName { get; }
+        public BankAccountName AccountName { get; }
     }
 }

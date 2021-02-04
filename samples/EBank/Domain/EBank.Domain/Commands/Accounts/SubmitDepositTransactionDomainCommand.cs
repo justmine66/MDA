@@ -1,4 +1,6 @@
 ﻿using EBank.Domain.Models.Accounts;
+using EBank.Domain.Models.Accounts.Primitives;
+using EBank.Domain.Models.Depositing.Primitives;
 using MDA.Domain.Commands;
 
 namespace EBank.Domain.Commands.Accounts
@@ -6,11 +8,11 @@ namespace EBank.Domain.Commands.Accounts
     /// <summary>
     /// 提交存款交易的领域命令
     /// </summary>
-    public class SubmitDepositTransactionDomainCommand : DomainCommand<BankAccount, long>
+    public class SubmitDepositTransactionDomainCommand : DomainCommand<BankAccount, BankAccountId>
     {
         public SubmitDepositTransactionDomainCommand(
-            long transactionId, 
-            long accountId)
+            DepositTransactionId transactionId,
+            BankAccountId accountId)
         {
             AggregateRootId = accountId;
             TransactionId = transactionId;
@@ -19,6 +21,6 @@ namespace EBank.Domain.Commands.Accounts
         /// <summary>
         /// 交易标识
         /// </summary>
-        public long TransactionId { get; }
+        public DepositTransactionId TransactionId { get; }
     }
 }

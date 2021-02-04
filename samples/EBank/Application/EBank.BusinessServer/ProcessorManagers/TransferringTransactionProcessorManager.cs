@@ -21,7 +21,7 @@ namespace EBank.BusinessServer.ProcessorManagers
         IDomainEventHandler<TransferTransactionValidatedDomainEvent>,
         // 2.2 从银行账户聚合根，收到转账交易信息验证失败的通知，通知转账交易聚合根，取消交易。
         IDomainNotificationHandler<TransferTransactionValidateFailedDomainNotification>,
-        // 3. 从转账交易聚合根，收到交易信息已准备就绪的领域事件，向银行账户聚合根，向银行账户提交转账交易。
+        // 3. 从转账交易聚合根，收到交易信息已准备就绪的领域事件，向银行账户提交转账交易。
         IDomainEventHandler<TransferTransactionReadiedDomainEvent>,
         // 4 从银行账户聚合根，收到转账交易已提交的领域事件，通知转账交易聚合根确认。
         IDomainEventHandler<TransferTransactionSubmittedDomainEvent>
@@ -43,8 +43,7 @@ namespace EBank.BusinessServer.ProcessorManagers
                 AggregateRootId = @event.SourceAccount.Id,
                 TransactionId = @event.AggregateRootId,
                 Account = @event.SourceAccount,
-                Amount = @event.Amount,
-                AccountType = TransferAccountType.Source
+                Amount = @event.Amount
             };
 
             _domainCommandPublisher.Publish(validateSource);
@@ -55,8 +54,7 @@ namespace EBank.BusinessServer.ProcessorManagers
                 AggregateRootId = @event.SinkAccount.Id,
                 TransactionId = @event.AggregateRootId,
                 Account = @event.SinkAccount,
-                Amount = @event.Amount,
-                AccountType = TransferAccountType.Sink
+                Amount = @event.Amount
             };
 
             _domainCommandPublisher.Publish(validateSink);

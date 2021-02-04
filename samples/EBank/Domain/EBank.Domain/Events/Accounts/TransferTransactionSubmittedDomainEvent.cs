@@ -1,16 +1,19 @@
-﻿using MDA.Domain.Events;
-using TransferAccountType = EBank.Domain.Models.Transferring.TransferAccountType;
+﻿using EBank.Domain.Models.Accounts.Primitives;
+using EBank.Domain.Models.Primitives;
+using EBank.Domain.Models.Transferring;
+using EBank.Domain.Models.Transferring.Primitives;
+using MDA.Domain.Events;
 
 namespace EBank.Domain.Events.Accounts
 {
     /// <summary>
     /// 转账交易已提交的领域事件
     /// </summary>
-    public class TransferTransactionSubmittedDomainEvent : DomainEvent<long>
+    public class TransferTransactionSubmittedDomainEvent : DomainEvent<BankAccountId>
     {
         public TransferTransactionSubmittedDomainEvent(
-            long transactionId, 
-            decimal amount, 
+            TransferTransactionId transactionId, 
+            Money amount, 
             TransferAccountType accountType)
         {
             TransactionId = transactionId;
@@ -21,12 +24,12 @@ namespace EBank.Domain.Events.Accounts
         /// <summary>
         /// 交易标识
         /// </summary>
-        public long TransactionId { get; }
+        public TransferTransactionId TransactionId { get; }
 
         /// <summary>
         /// 交易金额
         /// </summary>
-        public decimal Amount { get; }
+        public Money Amount { get; }
 
         /// <summary>
         /// 账户类型

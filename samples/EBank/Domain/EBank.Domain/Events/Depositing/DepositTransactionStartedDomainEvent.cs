@@ -1,14 +1,17 @@
-﻿using MDA.Domain.Events;
+﻿using EBank.Domain.Models.Accounts.Primitives;
+using EBank.Domain.Models.Depositing.Primitives;
+using EBank.Domain.Models.Primitives;
+using MDA.Domain.Events;
 
 namespace EBank.Domain.Events.Depositing
 {
-    public class DepositTransactionStartedDomainEvent : DomainEvent<long>
+    public class DepositTransactionStartedDomainEvent : DomainEvent<DepositTransactionId>
     {
         public DepositTransactionStartedDomainEvent(
-            long accountId,
-            string accountName,
-            string bank,
-            decimal amount)
+            BankAccountId accountId,
+            BankAccountName accountName,
+            BankName bank,
+            Money amount)
         {
             AccountId = accountId;
             AccountName = accountName;
@@ -19,21 +22,21 @@ namespace EBank.Domain.Events.Depositing
         /// <summary>
         /// 账户号
         /// </summary>
-        public long AccountId { get; private set; }
+        public BankAccountId AccountId { get; }
 
         /// <summary>
         /// 账户名
         /// </summary>
-        public string AccountName { get; private set; }
+        public BankAccountName AccountName { get; }
 
         /// <summary>
         /// 开户行
         /// </summary>
-        public string Bank { get; private set; }
+        public BankName Bank { get; }
 
         /// <summary>
         /// 金额
         /// </summary>
-        public decimal Amount { get; private set; }
+        public Money Amount { get; }
     }
 }

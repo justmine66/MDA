@@ -1,26 +1,22 @@
-﻿using MDA.Domain.Notifications;
+﻿using EBank.Domain.Models.Withdrawing.Primitives;
+using MDA.Domain.Saga;
 
 namespace EBank.Domain.Notifications
 {
     /// <summary>
     /// 取款交易验证失败的领域通知
     /// </summary>
-    public class WithdrawTransactionValidateFailedDomainNotification : DomainNotification<long>
+    public class WithdrawTransactionValidateFailedDomainNotification : EndSubTransactionDomainNotification<WithdrawTransactionId>
     {
-        public WithdrawTransactionValidateFailedDomainNotification(long transactionId, string reason)
+        public WithdrawTransactionValidateFailedDomainNotification(WithdrawTransactionId transactionId, string reason)
         {
             TransactionId = transactionId;
-            Reason = reason;
+            Message = reason;
         }
 
         /// <summary>
         /// 交易标识
         /// </summary>
-        public long TransactionId { get; }
-
-        /// <summary>
-        /// 原因
-        /// </summary>
-        public string Reason { get; }
+        public WithdrawTransactionId TransactionId { get; }
     }
 }

@@ -1,4 +1,7 @@
 ﻿using EBank.Domain.Models.Accounts;
+using EBank.Domain.Models.Accounts.Primitives;
+using EBank.Domain.Models.Primitives;
+using EBank.Domain.Models.Withdrawing.Primitives;
 using MDA.Domain.Commands;
 
 namespace EBank.Domain.Commands.Accounts
@@ -6,14 +9,14 @@ namespace EBank.Domain.Commands.Accounts
     /// <summary>
     /// 验证取款交易的领域命令
     /// </summary>
-    public class ValidateWithdrawTransactionDomainCommand : DomainCommand<BankAccount, long>
+    public class ValidateWithdrawTransactionDomainCommand : DomainCommand<BankAccount, BankAccountId>
     {
         public ValidateWithdrawTransactionDomainCommand(
-            long transactionId,
-            long accountId,
-            string accountName,
-            string bank,
-            decimal amount)
+            WithdrawTransactionId transactionId,
+            BankAccountId accountId,
+            BankAccountName accountName,
+            BankName bank,
+            Money amount)
         {
             TransactionId = transactionId;
             AggregateRootId = accountId;
@@ -25,21 +28,21 @@ namespace EBank.Domain.Commands.Accounts
         /// <summary>
         /// 交易标识
         /// </summary>
-        public long TransactionId { get; }
+        public WithdrawTransactionId TransactionId { get; }
 
         /// <summary>
         /// 账户名
         /// </summary>
-        public string AccountName { get; }
+        public BankAccountName AccountName { get; }
 
         /// <summary>
         /// 开户行
         /// </summary>
-        public string Bank { get; }
+        public BankName Bank { get; }
 
         /// <summary>
         /// 金额
         /// </summary>
-        public decimal Amount { get; }
+        public Money Amount { get; }
     }
 }

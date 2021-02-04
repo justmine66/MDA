@@ -1,4 +1,6 @@
-﻿using EBank.Domain.Models.Withdrawing;
+﻿using EBank.Domain.Models.Accounts.Primitives;
+using EBank.Domain.Models.Withdrawing;
+using EBank.Domain.Models.Withdrawing.Primitives;
 using MDA.Domain.Events;
 
 namespace EBank.Domain.Events.Withdrawing
@@ -6,10 +8,10 @@ namespace EBank.Domain.Events.Withdrawing
     /// <summary>
     /// 取款交易已准备就绪的领域事件
     /// </summary>
-    public class WithdrawTransactionReadiedDomainEvent : DomainEvent<long>
+    public class WithdrawTransactionReadiedDomainEvent : DomainEvent<WithdrawTransactionId>
     {
         public WithdrawTransactionReadiedDomainEvent(
-            long accountId, 
+            BankAccountId accountId, 
             WithdrawTransactionStatus status)
         {
             AccountId = accountId;
@@ -19,11 +21,11 @@ namespace EBank.Domain.Events.Withdrawing
         /// <summary>
         /// 账户号
         /// </summary>
-        public long AccountId { get; private set; }
+        public BankAccountId AccountId { get; }
 
         /// <summary>
         /// 状态
         /// </summary>
-        public WithdrawTransactionStatus Status { get; private set; }
+        public WithdrawTransactionStatus Status { get; }
     }
 }

@@ -1,5 +1,8 @@
 ﻿using EBank.Domain.Commands.Depositing;
 using EBank.Domain.Events.Depositing;
+using EBank.Domain.Models.Accounts.Primitives;
+using EBank.Domain.Models.Depositing.Primitives;
+using EBank.Domain.Models.Primitives;
 using MDA.Domain.Models;
 
 namespace EBank.Domain.Models.Depositing
@@ -13,22 +16,22 @@ namespace EBank.Domain.Models.Depositing
         /// <summary>
         /// 账户号
         /// </summary>
-        public long AccountId { get; private set; }
+        public BankAccountId AccountId { get; private set; }
 
         /// <summary>
         /// 账户名
         /// </summary>
-        public string AccountName { get; private set; }
+        public BankAccountName AccountName { get; private set; }
 
         /// <summary>
         /// 开户行
         /// </summary>
-        public string Bank { get; private set; }
+        public BankName Bank { get; private set; }
 
         /// <summary>
         /// 金额
         /// </summary>
-        public decimal Amount { get; private set; }
+        public Money Amount { get; private set; }
 
         /// <summary>
         /// 状态
@@ -39,7 +42,7 @@ namespace EBank.Domain.Models.Depositing
     /// <summary>
     /// 表示一笔存款交易，处理业务。
     /// </summary>
-    public partial class DepositTransaction : EventSourcedAggregateRoot<long>
+    public partial class DepositTransaction : EventSourcedAggregateRoot<DepositTransactionId>
     {
         #region [ Handler Domain Commands ]
 

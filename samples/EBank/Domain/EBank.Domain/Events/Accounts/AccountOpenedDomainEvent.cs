@@ -1,16 +1,18 @@
-﻿using MDA.Domain.Events;
+﻿using EBank.Domain.Models.Accounts.Primitives;
+using EBank.Domain.Models.Primitives;
+using MDA.Domain.Events;
 
 namespace EBank.Domain.Events.Accounts
 {
     /// <summary>
     /// 已开户的领域事件
     /// </summary>
-    public class AccountOpenedDomainEvent : DomainEvent<long>
+    public class AccountOpenedDomainEvent : DomainEvent<BankAccountId>
     {
         public AccountOpenedDomainEvent(
-            string accountName,
-            string bank,
-            decimal initialBalance)
+            BankAccountName accountName,
+            BankName bank,
+            Money initialBalance)
         {
             AccountName = accountName;
             Bank = bank;
@@ -20,16 +22,16 @@ namespace EBank.Domain.Events.Accounts
         /// <summary>
         /// 账户名
         /// </summary>
-        public string AccountName { get; private set; }
+        public BankAccountName AccountName { get; }
 
         /// <summary>
         /// 开户行
         /// </summary>
-        public string Bank { get; private set; }
+        public BankName Bank { get; }
 
         /// <summary>
         /// 初始余额
         /// </summary>
-        public decimal InitialBalance { get; private set; }
+        public Money InitialBalance { get; }
     }
 }

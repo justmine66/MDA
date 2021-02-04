@@ -1,7 +1,9 @@
 ﻿using EBank.Domain.Commands.Withdrawing;
 using EBank.Domain.Events.Withdrawing;
+using EBank.Domain.Models.Accounts.Primitives;
+using EBank.Domain.Models.Primitives;
+using EBank.Domain.Models.Withdrawing.Primitives;
 using MDA.Domain.Models;
-using MDA.Domain.Shared;
 
 namespace EBank.Domain.Models.Withdrawing
 {
@@ -28,22 +30,22 @@ namespace EBank.Domain.Models.Withdrawing
         /// <summary>
         /// 账户号
         /// </summary>
-        public long AccountId { get; private set; }
+        public BankAccountId AccountId { get; private set; }
 
         /// <summary>
         /// 账户名
         /// </summary>
-        public string AccountName { get; private set; }
+        public BankAccountName AccountName { get; private set; }
 
         /// <summary>
         /// 开户行
         /// </summary>
-        public string Bank { get; private set; }
+        public BankName Bank { get; private set; }
 
         /// <summary>
         /// 金额
         /// </summary>
-        public decimal Amount { get; private set; }
+        public Money Amount { get; private set; }
 
         /// <summary>
         /// 状态
@@ -54,17 +56,12 @@ namespace EBank.Domain.Models.Withdrawing
     /// <summary>
     /// 表示一笔取款交易，处理业务。
     /// </summary>
-    public partial class WithdrawTransaction : EventSourcedAggregateRoot<long>
+    public partial class WithdrawTransaction : EventSourcedAggregateRoot<WithdrawTransactionId>
     {
         #region [ Handler Domain Commands ]
 
         public void OnDomainCommand(StartWithdrawTransactionDomainCommand command)
         {
-            PreConditions.GreaterThan(nameof(command.AccountId), command.AccountId, 0);
-            PreConditions.NotNullOrWhiteSpace(nameof(command.AccountName), command.AccountName);
-            PreConditions.NotNullOrWhiteSpace(nameof(command.Bank), command.Bank);
-            PreConditions.GreaterThan(nameof(command.Amount), command.Amount, 0);
-
             var @event = new WithdrawTransactionStartedDomainEvent(command.AccountId, command.AccountName, command.Bank, command.Amount);
 
             ApplyDomainEvent(@event);

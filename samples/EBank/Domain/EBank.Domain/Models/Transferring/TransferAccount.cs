@@ -1,31 +1,39 @@
-﻿namespace EBank.Domain.Models.Transferring
+﻿using EBank.Domain.Models.Accounts.Primitives;
+
+namespace EBank.Domain.Models.Transferring
 {
     /// <summary>
-    /// 转账账户信息，值对象
+    /// 转账账户
     /// </summary>
-    public class TransferAccountInfo
+    public class TransferAccount
     {
-        public TransferAccountInfo(long id, string name, string bank)
+        public TransferAccount(BankAccountId id, BankAccountName name, BankName bank, TransferAccountType accountType)
         {
             Id = id;
             Name = name;
             Bank = bank;
+            AccountType = accountType;
         }
+
+        /// <summary>
+        /// 账户类型
+        /// </summary>
+        public TransferAccountType AccountType { get; }
 
         /// <summary>
         /// 账户号
         /// </summary>
-        public long Id { get; }
+        public BankAccountId Id { get; }
 
         /// <summary>
         /// 账户名
         /// </summary>
-        public string Name { get; }
+        public BankAccountName Name { get; }
 
         /// <summary>
         /// 开户行
         /// </summary>
-        public string Bank { get; }
+        public BankName Bank { get; }
 
         /// <summary>
         /// 已验证

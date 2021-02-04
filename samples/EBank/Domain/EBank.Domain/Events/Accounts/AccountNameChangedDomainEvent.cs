@@ -1,13 +1,14 @@
-﻿using MDA.Domain.Events;
+﻿using EBank.Domain.Models.Accounts.Primitives;
+using MDA.Domain.Events;
 
 namespace EBank.Domain.Events.Accounts
 {
     /// <summary>
     /// 账户名已改变的领域事件
     /// </summary>
-    public class AccountNameChangedDomainEvent : DomainEvent<long>
+    public class AccountNameChangedDomainEvent : DomainEvent<BankAccountId>
     {
-        public AccountNameChangedDomainEvent(string accountName)
+        public AccountNameChangedDomainEvent(BankAccountName accountName)
         {
             AccountName = accountName;
         }
@@ -15,6 +16,6 @@ namespace EBank.Domain.Events.Accounts
         /// <summary>
         /// 账户名
         /// </summary>
-        public string AccountName { get; }
+        public BankAccountName AccountName { get; }
     }
 }

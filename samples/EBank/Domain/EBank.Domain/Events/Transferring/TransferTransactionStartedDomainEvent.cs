@@ -1,14 +1,19 @@
-﻿using EBank.Domain.Models.Transferring;
+﻿using EBank.Domain.Models.Primitives;
+using EBank.Domain.Models.Transferring;
+using EBank.Domain.Models.Transferring.Primitives;
 using MDA.Domain.Events;
 
 namespace EBank.Domain.Events.Transferring
 {
-    public class TransferTransactionStartedDomainEvent : DomainEvent<long>
+    /// <summary>
+    /// 转账交易已发起的领域事件
+    /// </summary>
+    public class TransferTransactionStartedDomainEvent : DomainEvent<TransferTransactionId>
     {
         public TransferTransactionStartedDomainEvent(
-            TransferAccountInfo sourceAccount, 
-            TransferAccountInfo sinkAccount, 
-            decimal amount, 
+            TransferAccount sourceAccount,
+            TransferAccount sinkAccount,
+            Money amount,
             TransferTransactionStatus status)
         {
             SourceAccount = sourceAccount;
@@ -20,21 +25,21 @@ namespace EBank.Domain.Events.Transferring
         /// <summary>
         /// 源账户信息
         /// </summary>
-        public TransferAccountInfo SourceAccount { get; private set; }
+        public TransferAccount SourceAccount { get; }
 
         /// <summary>
         /// 目标账户信息
         /// </summary>
-        public TransferAccountInfo SinkAccount { get; private set; }
+        public TransferAccount SinkAccount { get; }
 
         /// <summary>
         /// 转账金额
         /// </summary>
-        public decimal Amount { get; private set; }
+        public Money Amount { get; }
 
         /// <summary>
         /// 交易状态
         /// </summary>
-        public TransferTransactionStatus Status { get; private set; }
+        public TransferTransactionStatus Status { get; }
     }
 }

@@ -1,13 +1,16 @@
-﻿using MDA.Domain.Events;
+﻿using EBank.Domain.Models.Accounts.Primitives;
+using EBank.Domain.Models.Primitives;
+using EBank.Domain.Models.Withdrawing.Primitives;
+using MDA.Domain.Events;
 
 namespace EBank.Domain.Events.Accounts
 {
     /// <summary>
     /// 取款账户交易已提交的领域事件
     /// </summary>
-    public class WithdrawTransactionSubmittedDomainEvent : DomainEvent<long>
+    public class WithdrawTransactionSubmittedDomainEvent : DomainEvent<BankAccountId>
     {
-        public WithdrawTransactionSubmittedDomainEvent(long transactionId, decimal amount)
+        public WithdrawTransactionSubmittedDomainEvent(WithdrawTransactionId transactionId, Money amount)
         {
             TransactionId = transactionId;
             Amount = amount;
@@ -16,11 +19,11 @@ namespace EBank.Domain.Events.Accounts
         /// <summary>
         /// 交易标识
         /// </summary>
-        public long TransactionId { get; private set; }
+        public WithdrawTransactionId TransactionId { get; }
 
         /// <summary>
         /// 金额
         /// </summary>
-        public decimal Amount { get; private set; }
+        public Money Amount { get; }
     }
 }

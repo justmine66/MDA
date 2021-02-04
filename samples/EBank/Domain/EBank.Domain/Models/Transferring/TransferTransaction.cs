@@ -1,5 +1,7 @@
 ﻿using EBank.Domain.Commands.Transferring;
 using EBank.Domain.Events.Transferring;
+using EBank.Domain.Models.Primitives;
+using EBank.Domain.Models.Transferring.Primitives;
 using MDA.Domain.Models;
 
 namespace EBank.Domain.Models.Transferring
@@ -12,17 +14,17 @@ namespace EBank.Domain.Models.Transferring
         /// <summary>
         /// 源账户信息
         /// </summary>
-        public TransferAccountInfo SourceAccount { get; private set; }
+        public TransferAccount SourceAccount { get; private set; }
 
         /// <summary>
         /// 目标账户信息
         /// </summary>
-        public TransferAccountInfo SinkAccount { get; private set; }
+        public TransferAccount SinkAccount { get; private set; }
 
         /// <summary>
         /// 转账金额
         /// </summary>
-        public decimal Amount { get; private set; }
+        public Money Amount { get; private set; }
 
         /// <summary>
         /// 交易状态
@@ -38,7 +40,7 @@ namespace EBank.Domain.Models.Transferring
     /// <summary>
     /// 表示一笔转账交易，处理业务
     /// </summary>
-    public partial class TransferTransaction : EventSourcedAggregateRoot<long>
+    public partial class TransferTransaction : EventSourcedAggregateRoot<TransferTransactionId>
     {
         #region [ Handler Domain Commands ]
 
