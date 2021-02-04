@@ -1,8 +1,7 @@
-﻿using MDA.Domain.Shared;
+﻿using MDA.Infrastructure.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MDA.Infrastructure.Utils;
 
 namespace MDA.Domain.Models
 {
