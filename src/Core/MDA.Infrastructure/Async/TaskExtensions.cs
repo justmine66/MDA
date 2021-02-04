@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +18,6 @@ namespace MDA.Infrastructure.Async
         /// This will prevent the escalation of this exception to the .NET finalizer thread.
         /// </summary>
         /// <param name="task">The task to be ignored.</param>
-        [SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "ignored")]
         public static void Ignore(this Task task)
         {
             if (task.IsCompleted)
@@ -35,5 +33,7 @@ namespace MDA.Infrastructure.Async
                     TaskScheduler.Default);
             }
         }
+
+        public static void SyncRun(this Task task) => task.ConfigureAwait(false).GetAwaiter().GetResult();
     }
 }
