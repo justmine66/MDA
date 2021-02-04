@@ -3,6 +3,7 @@ using MDA.Domain.Exceptions;
 using MDA.Domain.Models;
 using MDA.Domain.Notifications;
 using MDA.Domain.Saga;
+using MDA.Infrastructure.Async;
 using MDA.Infrastructure.Utils;
 using MDA.MessageBus;
 using MDA.MessageBus.DependencyInjection;
@@ -37,7 +38,7 @@ namespace MDA.Domain.Commands
             _serviceProvider = serviceProvider;
         }
 
-        public void Handle(DomainCommandTransportMessage<TAggregateRootId> message) => HandleAsync(message).ConfigureAwait(false).GetAwaiter().GetResult();
+        public void Handle(DomainCommandTransportMessage<TAggregateRootId> message) => HandleAsync(message).SyncRun();
 
         public async Task HandleAsync(DomainCommandTransportMessage<TAggregateRootId> message, CancellationToken token = default)
         {
@@ -85,7 +86,10 @@ namespace MDA.Domain.Commands
                 return;
             }
 
-            await ReplyApplicationCommandAsync(command, token);
+            if (command.NeedReplyApplicationCommand())
+            {
+                await ReplyApplicationCommandAsync(command, token);
+            }
 
             var hasDomainEvent = false;
             var mutatingDomainEvents = aggregate.MutatingDomainEvents;
@@ -205,25 +209,21 @@ namespace MDA.Domain.Commands
 
         private async Task ReplyApplicationCommandAsync(IDomainCommand command, CancellationToken token)
         {
-            if (command is IEndSubTransactionDomainCommand endCommand)
+            IDomainNotification notification;
+
+            switch (command)
             {
-                var commandId = endCommand.Id;
-                var commandType = endCommand.GetType().FullName;
-                var canReturnOnDomainCommandHandled = endCommand.ApplicationCommandReturnScheme == ApplicationCommandResultReturnSchemes.OnDomainCommandHandled;
-
-                if (!canReturnOnDomainCommandHandled)
-                {
-                    _logger.LogError($"Found the end sub-transaction domain command, Id: {commandId}, Type: {commandType}, but return schema mis match, expected:{ApplicationCommandResultReturnSchemes.OnDomainCommandHandled}, actual:{command.ApplicationCommandReturnScheme}.");
-
+                case IEndSubTransactionDomainCommand endCommand:
+                    notification = new SagaTransactionDomainNotification(endCommand.Message, true);
                     return;
-                }
-
-                var reply = new SagaTransactionDomainNotification(endCommand.Message, true);
-
-                reply.FillFrom(command);
-
-                await PublishDomainNotificationAsync(reply, token);
+                default:
+                    notification = new DomainCommandHandledNotification();
+                    break;
             }
+
+            notification.FillFrom(command);
+
+            await PublishDomainNotificationAsync(notification, token);
         }
 
         private async Task ReplyApplicationCommandAsync(IEndSubTransactionDomainNotification notification, CancellationToken token)

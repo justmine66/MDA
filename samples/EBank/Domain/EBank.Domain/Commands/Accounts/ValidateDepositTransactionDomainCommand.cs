@@ -2,14 +2,14 @@
 using EBank.Domain.Models.Accounts.Primitives;
 using EBank.Domain.Models.Depositing.Primitives;
 using EBank.Domain.Models.Primitives;
-using MDA.Domain.Commands;
+using MDA.Domain.Saga;
 
 namespace EBank.Domain.Commands.Accounts
 {
     /// <summary>
     /// 验证存款交易信息的领域命令
     /// </summary>
-    public class ValidateDepositTransactionDomainCommand : DomainCommand<BankAccount, BankAccountId>
+    public class ValidateDepositTransactionDomainCommand : SubTransactionDomainCommand<BankAccount, BankAccountId>
     {
         /// <summary>
         /// 交易标识

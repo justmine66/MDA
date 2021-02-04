@@ -1,14 +1,14 @@
 ﻿using EBank.Domain.Models.Accounts;
 using EBank.Domain.Models.Accounts.Primitives;
 using EBank.Domain.Models.Depositing.Primitives;
-using MDA.Domain.Commands;
+using MDA.Domain.Saga;
 
 namespace EBank.Domain.Commands.Accounts
 {
     /// <summary>
     /// 提交存款交易的领域命令
     /// </summary>
-    public class SubmitDepositTransactionDomainCommand : DomainCommand<BankAccount, BankAccountId>
+    public class SubmitDepositTransactionDomainCommand : SubTransactionDomainCommand<BankAccount, BankAccountId>
     {
         public SubmitDepositTransactionDomainCommand(
             DepositTransactionId transactionId,

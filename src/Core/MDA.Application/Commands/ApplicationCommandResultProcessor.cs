@@ -1,5 +1,7 @@
 ﻿using MDA.Domain;
+using MDA.Domain.Commands;
 using MDA.Domain.Exceptions;
+using MDA.Domain.Notifications;
 using MDA.Domain.Saga;
 using MDA.Infrastructure.Scheduling;
 using MDA.MessageBus;
@@ -18,7 +20,9 @@ namespace MDA.Application.Commands
         IMessageHandler<DomainExceptionMessage>,
         IAsyncMessageHandler<DomainExceptionMessage>,
         IMessageHandler<SagaTransactionDomainNotification>,
-        IAsyncMessageHandler<SagaTransactionDomainNotification>
+        IAsyncMessageHandler<SagaTransactionDomainNotification>,
+        IMessageHandler<DomainCommandHandledNotification>,
+        IAsyncMessageHandler<DomainCommandHandledNotification>
     {
         private static readonly ConcurrentDictionary<string, ApplicationCommandExecutionPromise> ExecutingPromiseDict = new ConcurrentDictionary<string, ApplicationCommandExecutionPromise>();
 
@@ -86,6 +90,18 @@ namespace MDA.Application.Commands
             await Task.CompletedTask;
         }
 
+        public void Handle(DomainCommandHandledNotification notification)
+        {
+            SetApplicationCommandResult(notification);
+        }
+
+        public async Task HandleAsync(DomainCommandHandledNotification notification, CancellationToken token = default)
+        {
+            SetApplicationCommandResult(notification);
+
+            await Task.CompletedTask;
+        }
+
         #region [ private methods ]
 
         private void SetApplicationCommandResult(DomainExceptionMessage exception)
@@ -93,9 +109,11 @@ namespace MDA.Application.Commands
             var applicationCommandId = exception.ApplicationCommandId;
             var applicationCommandType = exception.ApplicationCommandType;
 
+            const string prefix = "Received the execution notification of application Command";
+
             if (!ExecutingPromiseDict.TryRemove(applicationCommandId, out var executionPromise))
             {
-                _logger.LogWarning(FormatReplyMessage(exception, "but task source does not exist"));
+                _logger.LogWarning(FormatReplyMessage(exception, prefix, "but task source does not exist"));
 
                 return;
             }
@@ -105,7 +123,7 @@ namespace MDA.Application.Commands
             switch (returnScheme)
             {
                 case ApplicationCommandResultReturnSchemes.None:
-                    _logger.LogWarning(FormatReplyMessage(exception, $"but the return schema is {returnScheme}"));
+                    _logger.LogWarning(FormatReplyMessage(exception, prefix, $"but the return schema is {returnScheme}"));
                     break;
                 case ApplicationCommandResultReturnSchemes.OnDomainCommandHandled:
 
@@ -113,22 +131,22 @@ namespace MDA.Application.Commands
 
                     if (returnScheme != returnSchemeReceived)
                     {
-                        _logger.LogWarning(FormatReplyMessage(exception, $"but return schema mis match, expected: {returnScheme}, actual: {returnSchemeReceived}"));
+                        _logger.LogWarning(FormatReplyMessage(exception, prefix, $"but return schema mis match, expected: {returnScheme}, actual: {returnSchemeReceived}"));
                     }
 
                     var result = ApplicationCommandResult.Failed(applicationCommandId, applicationCommandType, exception.Message);
 
                     if (!executionPromise.TrySetResult(result))
                     {
-                        _logger.LogError(FormatReplyMessage(exception, "Failed to set the execution exception of application Command", $"ReturnScheme:{returnScheme}, result:{result}"));
+                        _logger.LogError(FormatReplyMessage(exception, "Failed to set the domain exception of application Command", $"ReturnScheme:{returnScheme}, result:{result}"));
                     }
 
                     break;
                 case ApplicationCommandResultReturnSchemes.OnDomainEventHandled:
-                    _logger.LogWarning(FormatReplyMessage(exception, $"but the return schema:{returnScheme} not supported"));
+                    _logger.LogWarning(FormatReplyMessage(exception, prefix, $"but the return schema:{returnScheme} not supported"));
                     break;
                 default:
-                    _logger.LogWarning(FormatReplyMessage(exception, $"but the return schema:{returnScheme} not supported"));
+                    _logger.LogWarning(FormatReplyMessage(exception, prefix, $"but the return schema:{returnScheme} not supported"));
                     break;
             }
         }
@@ -138,9 +156,11 @@ namespace MDA.Application.Commands
             var applicationCommandId = notification.ApplicationCommandId;
             var applicationCommandType = notification.ApplicationCommandType;
 
+            const string prefix = "Received the saga domain notification of application Command";
+
             if (!ExecutingPromiseDict.TryRemove(applicationCommandId, out var executionPromise))
             {
-                _logger.LogWarning(FormatReplyMessage(notification, "but task source does not exist"));
+                _logger.LogWarning(FormatReplyMessage(notification, prefix, "but task source does not exist"));
 
                 return;
             }
@@ -150,7 +170,7 @@ namespace MDA.Application.Commands
             switch (returnScheme)
             {
                 case ApplicationCommandResultReturnSchemes.None:
-                    _logger.LogWarning(FormatReplyMessage(notification, $"but the return schema is {returnScheme}"));
+                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema is {returnScheme}"));
                     break;
 
                 case ApplicationCommandResultReturnSchemes.OnDomainCommandHandled:
@@ -159,28 +179,77 @@ namespace MDA.Application.Commands
 
                     if (returnScheme != returnSchemeReceived)
                     {
-                        _logger.LogWarning(FormatReplyMessage(notification, $"but return schema mis match, expected: {returnScheme}, actual: {returnSchemeReceived}"));
+                        _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but return schema mis match, expected: {returnScheme}, actual: {returnSchemeReceived}"));
                     }
 
                     var status = notification.IsCompleted
                         ? ApplicationCommandStatus.Succeed
                         : ApplicationCommandStatus.Failed;
-
                     var result = new ApplicationCommandResult<string>(applicationCommandId, applicationCommandType, status, notification.Message);
 
                     if (!executionPromise.TrySetResult(result))
                     {
-                        _logger.LogError(FormatReplyMessage(notification, "Failed to set the execution notification of application Command", $"ReturnScheme:{returnScheme}, message:{notification.Message}"));
+                        _logger.LogError(FormatReplyMessage(notification, "Failed to set the saga domain notification of application Command", $"ReturnScheme:{returnScheme}, message:{notification.Message}"));
                     }
 
                     break;
 
                 case ApplicationCommandResultReturnSchemes.OnDomainEventHandled:
-                    _logger.LogWarning(FormatReplyMessage(notification, $"but the return schema:{returnScheme} not supported"));
+                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema:{returnScheme} not supported"));
                     break;
 
                 default:
-                    _logger.LogWarning(FormatReplyMessage(notification, $"but the return schema:{returnScheme} not supported"));
+                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema:{returnScheme} not supported"));
+                    break;
+            }
+        }
+
+        private void SetApplicationCommandResult(DomainCommandHandledNotification notification)
+        {
+            var applicationCommandId = notification.ApplicationCommandId;
+            var applicationCommandType = notification.ApplicationCommandType;
+
+            const string prefix = "Received the domain command handled notification of application Command";
+
+            if (!ExecutingPromiseDict.TryRemove(applicationCommandId, out var executionPromise))
+            {
+                _logger.LogWarning(FormatReplyMessage(notification, prefix, "but task source does not exist"));
+
+                return;
+            }
+
+            var returnScheme = executionPromise.ApplicationCommand.ReturnScheme;
+
+            switch (returnScheme)
+            {
+                case ApplicationCommandResultReturnSchemes.None:
+                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema is {returnScheme}"));
+                    break;
+
+                case ApplicationCommandResultReturnSchemes.OnDomainCommandHandled:
+
+                    var returnSchemeReceived = notification.ApplicationCommandReturnScheme;
+
+                    if (returnScheme != returnSchemeReceived)
+                    {
+                        _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but return schema mis match, expected: {returnScheme}, actual: {returnSchemeReceived}"));
+                    }
+
+                    var result = ApplicationCommandResult.Succeed(applicationCommandId, applicationCommandType);
+
+                    if (!executionPromise.TrySetResult(result))
+                    {
+                        _logger.LogError(FormatReplyMessage(notification, "Failed to set the domain command handled notification of application Command", $"ReturnScheme:{returnScheme}"));
+                    }
+
+                    break;
+
+                case ApplicationCommandResultReturnSchemes.OnDomainEventHandled:
+                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema:{returnScheme} not supported"));
+                    break;
+
+                default:
+                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema:{returnScheme} not supported"));
                     break;
             }
         }
@@ -206,7 +275,7 @@ namespace MDA.Application.Commands
                 : $"Over execution timeout upper limit: {delay} seconds, Failed to cancel application Command, Id:{commandId}, Type:{commandType}, ReturnScheme:{returnScheme}.");
         }
 
-        private string FormatReplyMessage(DomainExceptionMessage exception, string reason)
+        private string FormatReplyMessage(DomainExceptionMessage exception, string prefix, string reason)
         {
             var applicationCommandId = exception.ApplicationCommandId;
             var applicationCommandType = exception.ApplicationCommandType;
@@ -215,34 +284,10 @@ namespace MDA.Application.Commands
             var aggregateRootId = exception.AggregateRootId;
             var aggregateRootType = exception.AggregateRootType;
 
-            return $"Received the execution exception of application Command[Id:{applicationCommandId}, Type:{applicationCommandType}], domain command[Id:{domainCommandId}, Type:{domainCommandType}], aggregate root[Id:{aggregateRootId}, Type:{aggregateRootType}], {reason}.";
+            return $"{prefix}[Id:{applicationCommandId}, Type:{applicationCommandType}], domain command[Id:{domainCommandId}, Type:{domainCommandType}], aggregate root[Id:{aggregateRootId}, Type:{aggregateRootType}], {reason}.";
         }
 
-        private string FormatReplyMessage(DomainExceptionMessage exception, string prefix, string postfix)
-        {
-            var applicationCommandId = exception.ApplicationCommandId;
-            var applicationCommandType = exception.ApplicationCommandType;
-            var domainCommandId = exception.DomainCommandId;
-            var domainCommandType = exception.DomainCommandType;
-            var aggregateRootId = exception.AggregateRootId;
-            var aggregateRootType = exception.AggregateRootType;
-
-            return $"{prefix}[Id:{applicationCommandId}, Type:{applicationCommandType}], domain command[Id:{domainCommandId}, Type:{domainCommandType}], aggregate root[Id:{aggregateRootId}, Type:{aggregateRootType}], {postfix}.";
-        }
-
-        private string FormatReplyMessage(SagaTransactionDomainNotification notification, string reason)
-        {
-            var applicationCommandId = notification.ApplicationCommandId;
-            var applicationCommandType = notification.ApplicationCommandType;
-            var domainCommandId = notification.DomainCommandId;
-            var domainCommandType = notification.DomainCommandType;
-            var aggregateRootId = notification.AggregateRootId;
-            var aggregateRootType = notification.AggregateRootType;
-
-            return $"Received the execution notification of application Command[Id:{applicationCommandId}, Type:{applicationCommandType}], domain command[Id:{domainCommandId}, Type:{domainCommandType}], aggregate root[Id:{aggregateRootId}, Type:{aggregateRootType}], {reason}.";
-        }
-
-        private string FormatReplyMessage(SagaTransactionDomainNotification notification, string prefix, string postfix)
+        private string FormatReplyMessage(DomainNotification notification, string prefix, string postfix)
         {
             var applicationCommandId = notification.ApplicationCommandId;
             var applicationCommandType = notification.ApplicationCommandType;
