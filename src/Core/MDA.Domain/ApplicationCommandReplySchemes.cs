@@ -3,10 +3,10 @@
 namespace MDA.Domain
 {
     /// <summary>
-    /// 应用层命令执行结果的返回方案
+    /// 应用层命令回复方案
     /// </summary>
     [Flags]
-    public enum ApplicationCommandResultReturnSchemes
+    public enum ApplicationCommandReplySchemes
     {
         /// <summary>
         /// 不返回结果。

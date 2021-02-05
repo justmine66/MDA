@@ -9,9 +9,9 @@ namespace MDA.Application.Commands
     public interface IApplicationCommand : IMessage
     {
         /// <summary>
-        /// 返回方案，默认：当应用层命令被发送后，返回执行结果，即应用层不关系。
+        /// 回复方案，默认：当应用层命令被发送后，返回执行结果，即应用层不关系。
         /// </summary>
-        ApplicationCommandResultReturnSchemes ReturnScheme { get; set; }
+        ApplicationCommandReplySchemes ReplyScheme { get; set; }
     }
 
     /// <summary>
@@ -26,8 +26,8 @@ namespace MDA.Application.Commands
     public abstract class ApplicationCommand : Message, IApplicationCommand
     {
         /// <summary>
-        /// 返回方案，默认：当应用层命令被发送后，返回执行结果，即应用层不关系。
+        /// 回复方案，默认：当应用层命令被发送后，返回执行结果，即应用层不关系。
         /// </summary>
-        public ApplicationCommandResultReturnSchemes ReturnScheme { get; set; } = ApplicationCommandResultReturnSchemes.None;
+        public ApplicationCommandReplySchemes ReplyScheme { get; set; } = ApplicationCommandReplySchemes.None;
     }
 }

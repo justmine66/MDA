@@ -20,7 +20,7 @@ namespace EBank.BusinessServer.Processors
             {
                 ApplicationCommandId = appCommand.Id,
                 ApplicationCommandType = appCommand.GetType().FullName,
-                ApplicationCommandReturnScheme = appCommand.ReturnScheme
+                ApplicationCommandReplyScheme = appCommand.ReplyScheme
             };
 
             context.DomainCommandPublisher.Publish(domainCommand);

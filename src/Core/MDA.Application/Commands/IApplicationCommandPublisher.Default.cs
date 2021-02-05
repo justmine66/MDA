@@ -25,7 +25,7 @@ namespace MDA.Application.Commands
             PreConditions.NotNull(command, nameof(command));
 
             command.Topic = _options.Topic;
-            command.ReturnScheme = ApplicationCommandResultReturnSchemes.None;
+            command.ReplyScheme = ApplicationCommandReplySchemes.None;
 
             _messagePublisher.Publish(command);
         }
@@ -35,7 +35,7 @@ namespace MDA.Application.Commands
             PreConditions.NotNull(command, nameof(command));
 
             command.Topic = _options.Topic;
-            command.ReturnScheme = ApplicationCommandResultReturnSchemes.None;
+            command.ReplyScheme = ApplicationCommandReplySchemes.None;
 
             await _messagePublisher.PublishAsync(command, token);
         }

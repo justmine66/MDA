@@ -25,34 +25,34 @@ namespace MDA.Application.Commands
 
         public ApplicationCommandResult ExecuteCommand(
             IApplicationCommand command,
-            ApplicationCommandResultReturnSchemes returnScheme = ApplicationCommandResultReturnSchemes.OnDomainCommandHandled)
+            ApplicationCommandReplySchemes replyScheme = ApplicationCommandReplySchemes.OnDomainCommandHandled)
         {
-            return ExecuteCommandAsync(command, returnScheme)
+            return ExecuteCommandAsync(command, replyScheme)
                 .ConfigureAwait(false)
                 .GetAwaiter()
                 .GetResult();
         }
 
         public ApplicationCommandResult<TPayload> ExecuteCommand<TPayload>(IApplicationCommand command,
-            ApplicationCommandResultReturnSchemes returnScheme = ApplicationCommandResultReturnSchemes.OnDomainCommandHandled)
+            ApplicationCommandReplySchemes replyScheme = ApplicationCommandReplySchemes.OnDomainCommandHandled)
         {
-            return ExecuteCommandAsync<TPayload>(command, returnScheme)
+            return ExecuteCommandAsync<TPayload>(command, replyScheme)
                 .ConfigureAwait(false)
                 .GetAwaiter()
                 .GetResult();
         }
 
         public async Task<ApplicationCommandResult> ExecuteCommandAsync(IApplicationCommand command, CancellationToken token = default)
-            => await ExecuteCommandAsync(command, ApplicationCommandResultReturnSchemes.OnDomainCommandHandled, token);
+            => await ExecuteCommandAsync(command, ApplicationCommandReplySchemes.OnDomainCommandHandled, token);
 
         public async Task<ApplicationCommandResult> ExecuteCommandAsync(
             IApplicationCommand command,
-            ApplicationCommandResultReturnSchemes returnScheme = ApplicationCommandResultReturnSchemes.OnDomainCommandHandled,
+            ApplicationCommandReplySchemes replyScheme = ApplicationCommandReplySchemes.OnDomainCommandHandled,
             CancellationToken token = default)
         {
             PreConditions.NotNull(command, nameof(command));
 
-            await PublishAsync(command, returnScheme, token);
+            await PublishAsync(command, replyScheme, token);
 
             var promise = new ApplicationCommandExecutionPromise(command);
 
@@ -62,15 +62,15 @@ namespace MDA.Application.Commands
         }
 
         public async Task<ApplicationCommandResult<TPayload>> ExecuteCommandAsync<TPayload>(IApplicationCommand command, CancellationToken token = default)
-            => await ExecuteCommandAsync<TPayload>(command, ApplicationCommandResultReturnSchemes.OnDomainCommandHandled, token);
+            => await ExecuteCommandAsync<TPayload>(command, ApplicationCommandReplySchemes.OnDomainCommandHandled, token);
 
         public async Task<ApplicationCommandResult<TPayload>> ExecuteCommandAsync<TPayload>(IApplicationCommand command,
-            ApplicationCommandResultReturnSchemes returnScheme = ApplicationCommandResultReturnSchemes.OnDomainCommandHandled,
+            ApplicationCommandReplySchemes replyScheme = ApplicationCommandReplySchemes.OnDomainCommandHandled,
             CancellationToken token = default)
         {
             PreConditions.NotNull(command, nameof(command));
 
-            await PublishAsync(command, returnScheme, token);
+            await PublishAsync(command, replyScheme, token);
 
             var promise = new ApplicationCommandExecutionPromise<TPayload>(command);
 
@@ -79,9 +79,9 @@ namespace MDA.Application.Commands
             return await promise.Future.ConfigureAwait(false);
         }
 
-        private async Task PublishAsync(IApplicationCommand command, ApplicationCommandResultReturnSchemes returnScheme, CancellationToken token = default)
+        private async Task PublishAsync(IApplicationCommand command, ApplicationCommandReplySchemes replyScheme, CancellationToken token = default)
         {
-            command.ReturnScheme = returnScheme;
+            command.ReplyScheme = replyScheme;
             command.Topic = _options.Topic;
 
             await _messagePublisher.PublishAsync(command, token).ConfigureAwait(false);

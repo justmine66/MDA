@@ -7,7 +7,7 @@ namespace MDA.Domain.Notifications
     {
         public static bool NeedReplyApplicationCommand(this IDomainNotification notification, out IEndSubTransactionDomainNotification ensDomainNotification)
         {
-            if (notification.ApplicationCommandReturnScheme == ApplicationCommandResultReturnSchemes.OnDomainCommandHandled && 
+            if (notification.ApplicationCommandReplyScheme == ApplicationCommandReplySchemes.OnDomainCommandHandled && 
                 notification is IEndSubTransactionDomainNotification endSubTransactionDomainNotification)
             {
                 ensDomainNotification = endSubTransactionDomainNotification;
@@ -29,7 +29,7 @@ namespace MDA.Domain.Notifications
             notification.PartitionKey = command.PartitionKey;
             notification.ApplicationCommandId = command.ApplicationCommandId;
             notification.ApplicationCommandType = command.ApplicationCommandType;
-            notification.ApplicationCommandReturnScheme = command.ApplicationCommandReturnScheme;
+            notification.ApplicationCommandReplyScheme = command.ApplicationCommandReplyScheme;
 
             return notification;
         }
@@ -44,7 +44,7 @@ namespace MDA.Domain.Notifications
             sink.PartitionKey = source.PartitionKey;
             sink.ApplicationCommandId = source.ApplicationCommandId;
             sink.ApplicationCommandType = source.ApplicationCommandType;
-            sink.ApplicationCommandReturnScheme = source.ApplicationCommandReturnScheme;
+            sink.ApplicationCommandReplyScheme = source.ApplicationCommandReplyScheme;
 
             return sink;
         }

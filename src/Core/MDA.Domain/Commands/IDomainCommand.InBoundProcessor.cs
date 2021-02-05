@@ -121,7 +121,7 @@ namespace MDA.Domain.Commands
         {
             var commandId = command.Id;
             var commandType = command.GetType().FullName;
-            var canReturnOnDomainCommandHandled = command.ApplicationCommandReturnScheme == ApplicationCommandResultReturnSchemes.OnDomainCommandHandled;
+            var canReturnOnDomainCommandHandled = command.ApplicationCommandReplyScheme == ApplicationCommandReplySchemes.OnDomainCommandHandled;
 
             if (!canReturnOnDomainCommandHandled)
             {
@@ -144,7 +144,7 @@ namespace MDA.Domain.Commands
         {
             var commandId = command.Id;
             var commandType = command.GetType().FullName;
-            var canReturnOnDomainCommandHandled = command.ApplicationCommandReturnScheme == ApplicationCommandResultReturnSchemes.OnDomainCommandHandled;
+            var canReturnOnDomainCommandHandled = command.ApplicationCommandReplyScheme == ApplicationCommandReplySchemes.OnDomainCommandHandled;
 
             if (!canReturnOnDomainCommandHandled)
             {
@@ -230,11 +230,11 @@ namespace MDA.Domain.Commands
         {
             var notificationId = notification.Id;
             var notificationType = notification.GetType().FullName;
-            var canReturnOnDomainCommandHandled = notification.ApplicationCommandReturnScheme == ApplicationCommandResultReturnSchemes.OnDomainCommandHandled;
+            var canReturnOnDomainCommandHandled = notification.ApplicationCommandReplyScheme == ApplicationCommandReplySchemes.OnDomainCommandHandled;
 
             if (!canReturnOnDomainCommandHandled)
             {
-                _logger.LogError($"Found the end sub-transaction domain notification, Id: {notificationId}, Type: {notificationType}, Message: {notification.Message}, but return schema mis match, expected: {ApplicationCommandResultReturnSchemes.OnDomainCommandHandled}, actual: {notification.ApplicationCommandReturnScheme}.");
+                _logger.LogError($"Found the end sub-transaction domain notification, Id: {notificationId}, Type: {notificationType}, Message: {notification.Message}, but return schema mis match, expected: {ApplicationCommandReplySchemes.OnDomainCommandHandled}, actual: {notification.ApplicationCommandReplyScheme}.");
 
                 return;
             }

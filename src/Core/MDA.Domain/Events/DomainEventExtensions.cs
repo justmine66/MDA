@@ -28,7 +28,7 @@ namespace MDA.Domain.Events
                 domainEvent.PartitionKey = command.PartitionKey;
                 domainEvent.ApplicationCommandId = command.ApplicationCommandId;
                 domainEvent.ApplicationCommandType = command.ApplicationCommandType;
-                domainEvent.ApplicationCommandReturnScheme = command.ApplicationCommandReturnScheme;
+                domainEvent.ApplicationCommandReplyScheme = command.ApplicationCommandReplyScheme;
             }
         }
     }

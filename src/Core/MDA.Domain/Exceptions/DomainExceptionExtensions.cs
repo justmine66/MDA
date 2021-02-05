@@ -14,7 +14,7 @@ namespace MDA.Domain.Exceptions
             exception.PartitionKey = command.PartitionKey;
             exception.ApplicationCommandId = command.ApplicationCommandId;
             exception.ApplicationCommandType = command.ApplicationCommandType;
-            exception.ApplicationCommandReturnScheme = command.ApplicationCommandReturnScheme;
+            exception.ApplicationCommandReplyScheme = command.ApplicationCommandReplyScheme;
 
             return exception;
         }

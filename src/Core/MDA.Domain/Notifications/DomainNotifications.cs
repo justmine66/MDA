@@ -20,9 +20,9 @@ namespace MDA.Domain.Notifications
         string ApplicationCommandType { get; set; }
 
         /// <summary>
-        /// 应用层命令返回方案
+        /// 应用层命令回复方案
         /// </summary>
-        ApplicationCommandResultReturnSchemes ApplicationCommandReturnScheme { get; set; }
+        ApplicationCommandReplySchemes ApplicationCommandReplyScheme { get; set; }
 
         /// <summary>
         /// 领域命令标识
@@ -72,7 +72,7 @@ namespace MDA.Domain.Notifications
 
         public string ApplicationCommandId { get; set; }
         public string ApplicationCommandType { get; set; }
-        public ApplicationCommandResultReturnSchemes ApplicationCommandReturnScheme { get; set; }
+        public ApplicationCommandReplySchemes ApplicationCommandReplyScheme { get; set; }
 
         public string DomainCommandId { get; set; }
         public string DomainCommandType { get; set; }

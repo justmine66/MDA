@@ -8,7 +8,7 @@ namespace MDA.Domain.Commands
     {
         public static bool NeedReplyApplicationCommand(this IDomainCommand command)
         {
-            var needReply = command.ApplicationCommandReturnScheme == ApplicationCommandResultReturnSchemes.OnDomainCommandHandled;
+            var needReply = command.ApplicationCommandReplyScheme == ApplicationCommandReplySchemes.OnDomainCommandHandled;
             if (!needReply)
             {
                 return false;
@@ -33,7 +33,7 @@ namespace MDA.Domain.Commands
         {
             command.ApplicationCommandId = @event.ApplicationCommandId;
             command.ApplicationCommandType = @event.ApplicationCommandType;
-            command.ApplicationCommandReturnScheme = @event.ApplicationCommandReturnScheme;
+            command.ApplicationCommandReplyScheme = @event.ApplicationCommandReplyScheme;
 
             return command;
         }
@@ -42,7 +42,7 @@ namespace MDA.Domain.Commands
         {
             command.ApplicationCommandId = @event.ApplicationCommandId;
             command.ApplicationCommandType = @event.ApplicationCommandType;
-            command.ApplicationCommandReturnScheme = @event.ApplicationCommandReturnScheme;
+            command.ApplicationCommandReplyScheme = @event.ApplicationCommandReplyScheme;
 
             return command;
         }
@@ -51,7 +51,7 @@ namespace MDA.Domain.Commands
         {
             command.ApplicationCommandId = notification.ApplicationCommandId;
             command.ApplicationCommandType = notification.ApplicationCommandType;
-            command.ApplicationCommandReturnScheme = notification.ApplicationCommandReturnScheme;
+            command.ApplicationCommandReplyScheme = notification.ApplicationCommandReplyScheme;
 
             return command;
         }
@@ -60,7 +60,7 @@ namespace MDA.Domain.Commands
         {
             command.ApplicationCommandId = notification.ApplicationCommandId;
             command.ApplicationCommandType = notification.ApplicationCommandType;
-            command.ApplicationCommandReturnScheme = notification.ApplicationCommandReturnScheme;
+            command.ApplicationCommandReplyScheme = notification.ApplicationCommandReplyScheme;
 
             return command;
         }

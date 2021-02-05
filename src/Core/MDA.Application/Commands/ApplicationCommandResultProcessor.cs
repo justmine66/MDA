@@ -47,7 +47,7 @@ namespace MDA.Application.Commands
             }
             else
             {
-                _logger.LogWarning($"The application command registered，Id:{command.Id}, Type:{command.GetType().FullName}, ReturnScheme:{command.ReturnScheme}.");
+                _logger.LogWarning($"The application command registered，Id:{command.Id}, Type:{command.GetType().FullName}, ReplyScheme:{command.ReplyScheme}.");
             }
         }
 
@@ -63,7 +63,7 @@ namespace MDA.Application.Commands
             }
             else
             {
-                _logger.LogWarning($"The application command registered，Id:{command.Id}, Type:{command.GetType().FullName}, ReturnScheme:{command.ReturnScheme}.");
+                _logger.LogWarning($"The application command registered，Id:{command.Id}, Type:{command.GetType().FullName}, ReplyScheme:{command.ReplyScheme}.");
             }
         }
 
@@ -89,35 +89,35 @@ namespace MDA.Application.Commands
                 return;
             }
 
-            var returnScheme = executionPromise.ApplicationCommand.ReturnScheme;
+            var replyScheme = executionPromise.ApplicationCommand.ReplyScheme;
 
-            switch (returnScheme)
+            switch (replyScheme)
             {
-                case ApplicationCommandResultReturnSchemes.None:
-                    _logger.LogWarning(FormatReplyMessage(exception, prefix, $"but the return schema is {returnScheme}"));
+                case ApplicationCommandReplySchemes.None:
+                    _logger.LogWarning(FormatReplyMessage(exception, prefix, $"but the return schema is {replyScheme}"));
                     break;
-                case ApplicationCommandResultReturnSchemes.OnDomainCommandHandled:
+                case ApplicationCommandReplySchemes.OnDomainCommandHandled:
 
-                    var returnSchemeReceived = exception.ApplicationCommandReturnScheme;
+                    var replySchemeReceived = exception.ApplicationCommandReplyScheme;
 
-                    if (returnScheme != returnSchemeReceived)
+                    if (replyScheme != replySchemeReceived)
                     {
-                        _logger.LogWarning(FormatReplyMessage(exception, prefix, $"but return schema mis match, expected: {returnScheme}, actual: {returnSchemeReceived}"));
+                        _logger.LogWarning(FormatReplyMessage(exception, prefix, $"but return schema mis match, expected: {replyScheme}, actual: {replySchemeReceived}"));
                     }
 
                     var result = ApplicationCommandResult.Failed(applicationCommandId, applicationCommandType, exception.Message);
 
                     if (!executionPromise.TrySetResult(result))
                     {
-                        _logger.LogError(FormatReplyMessage(exception, "Failed to set the domain exception of application Command", $"ReturnScheme:{returnScheme}, result:{result}"));
+                        _logger.LogError(FormatReplyMessage(exception, "Failed to set the domain exception of application Command", $"ReplyScheme:{replyScheme}, result:{result}"));
                     }
 
                     break;
-                case ApplicationCommandResultReturnSchemes.OnDomainEventHandled:
-                    _logger.LogWarning(FormatReplyMessage(exception, prefix, $"but the return schema:{returnScheme} not supported"));
+                case ApplicationCommandReplySchemes.OnDomainEventHandled:
+                    _logger.LogWarning(FormatReplyMessage(exception, prefix, $"but the return schema:{replyScheme} not supported"));
                     break;
                 default:
-                    _logger.LogWarning(FormatReplyMessage(exception, prefix, $"but the return schema:{returnScheme} not supported"));
+                    _logger.LogWarning(FormatReplyMessage(exception, prefix, $"but the return schema:{replyScheme} not supported"));
                     break;
             }
         }
@@ -136,21 +136,21 @@ namespace MDA.Application.Commands
                 return;
             }
 
-            var returnScheme = executionPromise.ApplicationCommand.ReturnScheme;
+            var replyScheme = executionPromise.ApplicationCommand.ReplyScheme;
 
-            switch (returnScheme)
+            switch (replyScheme)
             {
-                case ApplicationCommandResultReturnSchemes.None:
-                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema is {returnScheme}"));
+                case ApplicationCommandReplySchemes.None:
+                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema is {replyScheme}"));
                     break;
 
-                case ApplicationCommandResultReturnSchemes.OnDomainCommandHandled:
+                case ApplicationCommandReplySchemes.OnDomainCommandHandled:
 
-                    var returnSchemeReceived = notification.ApplicationCommandReturnScheme;
+                    var replySchemeReceived = notification.ApplicationCommandReplyScheme;
 
-                    if (returnScheme != returnSchemeReceived)
+                    if (replyScheme != replySchemeReceived)
                     {
-                        _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but return schema mis match, expected: {returnScheme}, actual: {returnSchemeReceived}"));
+                        _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but return schema mis match, expected: {replyScheme}, actual: {replySchemeReceived}"));
                     }
 
                     var status = notification.IsCompleted
@@ -160,17 +160,17 @@ namespace MDA.Application.Commands
 
                     if (!executionPromise.TrySetResult(result))
                     {
-                        _logger.LogError(FormatReplyMessage(notification, "Failed to set the saga domain notification of application Command", $"ReturnScheme:{returnScheme}, message:{notification.Message}"));
+                        _logger.LogError(FormatReplyMessage(notification, "Failed to set the saga domain notification of application Command", $"ReplyScheme:{replyScheme}, message:{notification.Message}"));
                     }
 
                     break;
 
-                case ApplicationCommandResultReturnSchemes.OnDomainEventHandled:
-                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema:{returnScheme} not supported"));
+                case ApplicationCommandReplySchemes.OnDomainEventHandled:
+                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema:{replyScheme} not supported"));
                     break;
 
                 default:
-                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema:{returnScheme} not supported"));
+                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema:{replyScheme} not supported"));
                     break;
             }
         }
@@ -189,38 +189,38 @@ namespace MDA.Application.Commands
                 return;
             }
 
-            var returnScheme = executionPromise.ApplicationCommand.ReturnScheme;
+            var replyScheme = executionPromise.ApplicationCommand.ReplyScheme;
 
-            switch (returnScheme)
+            switch (replyScheme)
             {
-                case ApplicationCommandResultReturnSchemes.None:
-                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema is {returnScheme}"));
+                case ApplicationCommandReplySchemes.None:
+                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema is {replyScheme}"));
                     break;
 
-                case ApplicationCommandResultReturnSchemes.OnDomainCommandHandled:
+                case ApplicationCommandReplySchemes.OnDomainCommandHandled:
 
-                    var returnSchemeReceived = notification.ApplicationCommandReturnScheme;
+                    var replySchemeReceived = notification.ApplicationCommandReplyScheme;
 
-                    if (returnScheme != returnSchemeReceived)
+                    if (replyScheme != replySchemeReceived)
                     {
-                        _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but return schema mis match, expected: {returnScheme}, actual: {returnSchemeReceived}"));
+                        _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but return schema mis match, expected: {replyScheme}, actual: {replySchemeReceived}"));
                     }
 
                     var result = ApplicationCommandResult.Succeed(applicationCommandId, applicationCommandType);
 
                     if (!executionPromise.TrySetResult(result))
                     {
-                        _logger.LogError(FormatReplyMessage(notification, "Failed to set the domain command handled notification of application Command", $"ReturnScheme:{returnScheme}"));
+                        _logger.LogError(FormatReplyMessage(notification, "Failed to set the domain command handled notification of application Command", $"ReplyScheme:{replyScheme}"));
                     }
 
                     break;
 
-                case ApplicationCommandResultReturnSchemes.OnDomainEventHandled:
-                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema:{returnScheme} not supported"));
+                case ApplicationCommandReplySchemes.OnDomainEventHandled:
+                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema:{replyScheme} not supported"));
                     break;
 
                 default:
-                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema:{returnScheme} not supported"));
+                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema:{replyScheme} not supported"));
                     break;
             }
         }
@@ -238,12 +238,12 @@ namespace MDA.Application.Commands
                 return;
             }
 
-            var returnScheme = command.ReturnScheme;
+            var replyScheme = command.ReplyScheme;
             var result = ApplicationCommandResult.TimeOuted(commandId, commandType, "The execution of application command timeout, please try again.");
 
             _logger.LogWarning(executionPromise.TrySetResult(result)
-                ? $"Over execution timeout upper limit: {delay} seconds, cancelled application Command, Id:{commandId}, Type:{commandType}, ReturnScheme:{returnScheme}."
-                : $"Over execution timeout upper limit: {delay} seconds, Failed to cancel application Command, Id:{commandId}, Type:{commandType}, ReturnScheme:{returnScheme}.");
+                ? $"Over execution timeout upper limit: {delay} seconds, cancelled application Command, Id:{commandId}, Type:{commandType}, ReplyScheme:{replyScheme}."
+                : $"Over execution timeout upper limit: {delay} seconds, Failed to cancel application Command, Id:{commandId}, Type:{commandType}, ReplyScheme:{replyScheme}.");
         }
 
         private string FormatReplyMessage(DomainExceptionMessage exception, string prefix, string reason)
