@@ -200,7 +200,7 @@ namespace MDA.Domain.Commands
 
                 await PublishDomainNotificationAsync(notification, token);
 
-                if (notification is IEndSubTransactionDomainNotification endNotification)
+                if (notification.NeedReplyApplicationCommand(out var endNotification))
                 {
                     await ReplyApplicationCommandAsync(endNotification, token);
                 }
@@ -215,7 +215,7 @@ namespace MDA.Domain.Commands
             {
                 case IEndSubTransactionDomainCommand endCommand:
                     notification = new SagaTransactionDomainNotification(endCommand.Message, true);
-                    return;
+                    break;
                 default:
                     notification = new DomainCommandHandledNotification();
                     break;

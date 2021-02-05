@@ -1,9 +1,24 @@
 ﻿using MDA.Domain.Commands;
+using MDA.Domain.Saga;
 
 namespace MDA.Domain.Notifications
 {
     public static class DomainNotificationExtensions
     {
+        public static bool NeedReplyApplicationCommand(this IDomainNotification notification, out IEndSubTransactionDomainNotification ensDomainNotification)
+        {
+            if (notification.ApplicationCommandReturnScheme == ApplicationCommandResultReturnSchemes.OnDomainCommandHandled && 
+                notification is IEndSubTransactionDomainNotification endSubTransactionDomainNotification)
+            {
+                ensDomainNotification = endSubTransactionDomainNotification;
+
+                return true;
+            }
+
+            ensDomainNotification = null;
+            return false;
+        }
+
         public static IDomainNotification FillFrom(this IDomainNotification notification, IDomainCommand command)
         {
             notification.AggregateRootType = command.AggregateRootType.FullName;

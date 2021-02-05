@@ -8,7 +8,25 @@ namespace MDA.Domain.Commands
     {
         public static bool NeedReplyApplicationCommand(this IDomainCommand command)
         {
-            return !(command is ISubTransactionDomainCommand) && command.ApplicationCommandReturnScheme == ApplicationCommandResultReturnSchemes.OnDomainCommandHandled;
+            var needReply = command.ApplicationCommandReturnScheme == ApplicationCommandResultReturnSchemes.OnDomainCommandHandled;
+            if (!needReply)
+            {
+                return false;
+            }
+
+            var isEnd = command is IEndSubTransactionDomainCommand;
+            if (isEnd)
+            {
+                return true;
+            }
+
+            var isBegin = command is IBeginSubTransactionDomainCommand;
+            if (isBegin)
+            {
+                return false;
+            }
+
+            return !(command is ISubTransactionDomainCommand);
         }
 
         public static IDomainCommand WithContext(this IDomainCommand command, IDomainEvent @event)

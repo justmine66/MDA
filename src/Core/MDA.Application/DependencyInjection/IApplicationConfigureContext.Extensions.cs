@@ -24,11 +24,8 @@ namespace MDA.Application.DependencyInjection
             services.AddTypedMessagePublisher<IApplicationNotificationPublisher, DefaultApplicationNotificationPublisher>(name);
 
             services.AddMessageHandler<DomainExceptionMessage, ApplicationCommandResultProcessor>();
-            services.AddAsyncMessageHandler<DomainExceptionMessage, ApplicationCommandResultProcessor>();
             services.AddMessageHandler<SagaTransactionDomainNotification, ApplicationCommandResultProcessor>();
-            services.AddAsyncMessageHandler<SagaTransactionDomainNotification, ApplicationCommandResultProcessor>();
             services.AddMessageHandler<DomainCommandHandledNotification, ApplicationCommandResultProcessor>();
-            services.AddAsyncMessageHandler<DomainCommandHandledNotification, ApplicationCommandResultProcessor>();
 
             services.Configure<ApplicationCommandOptions>(_ => { });
 

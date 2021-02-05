@@ -10,19 +10,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace MDA.Application.Commands
 {
     [IgnoreMessageHandlerForDependencyInjection]
     public class ApplicationCommandResultProcessor : IApplicationCommandResultListener,
         IMessageHandler<DomainExceptionMessage>,
-        IAsyncMessageHandler<DomainExceptionMessage>,
         IMessageHandler<SagaTransactionDomainNotification>,
-        IAsyncMessageHandler<SagaTransactionDomainNotification>,
-        IMessageHandler<DomainCommandHandledNotification>,
-        IAsyncMessageHandler<DomainCommandHandledNotification>
+        IMessageHandler<DomainCommandHandledNotification>
     {
         private static readonly ConcurrentDictionary<string, ApplicationCommandExecutionPromise> ExecutingPromiseDict = new ConcurrentDictionary<string, ApplicationCommandExecutionPromise>();
 
@@ -74,33 +69,9 @@ namespace MDA.Application.Commands
 
         public void Handle(DomainExceptionMessage exception) => SetApplicationCommandResult(exception);
 
-        public async Task HandleAsync(DomainExceptionMessage exception, CancellationToken token = default)
-        {
-            SetApplicationCommandResult(exception);
-
-            await Task.CompletedTask;
-        }
-
         public void Handle(SagaTransactionDomainNotification notification) => SetApplicationCommandResult(notification);
 
-        public async Task HandleAsync(SagaTransactionDomainNotification notification, CancellationToken token = default)
-        {
-            SetApplicationCommandResult(notification);
-
-            await Task.CompletedTask;
-        }
-
-        public void Handle(DomainCommandHandledNotification notification)
-        {
-            SetApplicationCommandResult(notification);
-        }
-
-        public async Task HandleAsync(DomainCommandHandledNotification notification, CancellationToken token = default)
-        {
-            SetApplicationCommandResult(notification);
-
-            await Task.CompletedTask;
-        }
+        public void Handle(DomainCommandHandledNotification notification) => SetApplicationCommandResult(notification);
 
         #region [ private methods ]
 
