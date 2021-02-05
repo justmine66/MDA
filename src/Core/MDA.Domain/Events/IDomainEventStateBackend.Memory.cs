@@ -10,11 +10,9 @@ namespace MDA.Domain.Events
     public class MemoryDomainEventStateBackend : IDomainEventStateBackend
     {
         private readonly ConcurrentDictionary<string, List<IDomainEvent>> _dict;
-        private readonly IDomainEventPublisher _eventPublisher;
 
-        public MemoryDomainEventStateBackend(IDomainEventPublisher eventPublisher)
+        public MemoryDomainEventStateBackend()
         {
-            _eventPublisher = eventPublisher;
             _dict = new ConcurrentDictionary<string, List<IDomainEvent>>();
         }
 
@@ -31,8 +29,6 @@ namespace MDA.Domain.Events
                     oldValue.Add(@event);
                     return oldValue;
                 });
-
-            await _eventPublisher.PublishAsync(@event, token);
 
             return await Task.FromResult(DomainEventResult.StorageSucceed(@event.Id));
         }
@@ -56,8 +52,6 @@ namespace MDA.Domain.Events
                     });
 
                 results.Add(DomainEventResult.StorageSucceed(@event.Id));
-
-                await _eventPublisher.PublishAsync(@event, token);
             }
 
             return await Task.FromResult(results);

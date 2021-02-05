@@ -19,7 +19,6 @@ namespace MDA.StateBackend.MySql
     {
         private readonly ILogger _logger;
         private readonly IRelationalDbStorage _db;
-        private readonly IDomainEventPublisher _eventPublisher;
         private readonly IBinarySerializer _binarySerializer;
         private readonly ITypeResolver _typeResolver;
         private readonly MySqlStateBackendOptions _options;
@@ -29,14 +28,12 @@ namespace MDA.StateBackend.MySql
             ILogger<MySqlDomainEventStateBackend> logger,
             ITypeResolver typeResolver,
             IOptions<MySqlStateBackendOptions> options,
-            IBinarySerializer binarySerializer,
-            IDomainEventPublisher eventPublisher)
+            IBinarySerializer binarySerializer)
         {
             _logger = logger;
             _db = factory.CreateRelationalDbStorage(DatabaseScheme.StateDb);
             _typeResolver = typeResolver;
             _binarySerializer = binarySerializer;
-            _eventPublisher = eventPublisher;
             _options = options.Value;
         }
 
@@ -85,8 +82,6 @@ namespace MDA.StateBackend.MySql
             if (affectedRows != expectedRows)
                 return DomainEventResult.StorageFailed(@event.Id,
                     $"The affected rows returned MySql state backend is incorrect, expected: {expectedRows}, actual: {affectedRows}.");
-
-            await _eventPublisher.PublishAsync(@event, token);
 
             return DomainEventResult.StorageSucceed(@event.Id);
         }

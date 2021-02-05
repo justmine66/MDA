@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -164,7 +165,7 @@ namespace MDA.Domain.Commands
             await PublishDomainExceptionAsync(domainExceptionMessage, token);
         }
 
-        private async Task ProcessMutatingDomainEventsAsync(IEnumerable<IDomainEvent> mutatingDomainEvents, IDomainCommand command, CancellationToken token = default)
+        private async Task ProcessMutatingDomainEventsAsync(IEnumerable<IDomainEvent> mutatingDomainEvents, IDomainCommand command, CancellationToken token)
         {
             mutatingDomainEvents.FillFrom(command);
 
@@ -189,10 +190,16 @@ namespace MDA.Domain.Commands
                 {
                     _logger.LogError($"Append domain event has a error: {result.Message}.");
                 }
+                else
+                {
+                    var @event = mutatingDomainEvents.Single(it => it.Id == result.EventId);
+
+                    await PublishDomainEventAsync(@event, token);
+                }
             }
         }
 
-        private async Task ProcessMutatingDomainNotificationsAsync(IEnumerable<IDomainNotification> mutatingDomainNotifications, IDomainCommand command, CancellationToken token = default)
+        private async Task ProcessMutatingDomainNotificationsAsync(IEnumerable<IDomainNotification> mutatingDomainNotifications, IDomainCommand command, CancellationToken token)
         {
             foreach (var notification in mutatingDomainNotifications)
             {
@@ -228,17 +235,6 @@ namespace MDA.Domain.Commands
 
         private async Task ReplyApplicationCommandAsync(IEndSubTransactionDomainNotification notification, CancellationToken token)
         {
-            var notificationId = notification.Id;
-            var notificationType = notification.GetType().FullName;
-            var canReturnOnDomainCommandHandled = notification.ApplicationCommandReplyScheme == ApplicationCommandReplySchemes.OnDomainCommandHandled;
-
-            if (!canReturnOnDomainCommandHandled)
-            {
-                _logger.LogError($"Found the end sub-transaction domain notification, Id: {notificationId}, Type: {notificationType}, Message: {notification.Message}, but return schema mis match, expected: {ApplicationCommandReplySchemes.OnDomainCommandHandled}, actual: {notification.ApplicationCommandReplyScheme}.");
-
-                return;
-            }
-
             var reply = new SagaTransactionDomainNotification(notification.Message);
 
             reply.FillFrom(notification);
@@ -257,6 +253,20 @@ namespace MDA.Domain.Commands
             catch (Exception e)
             {
                 _logger.LogError($"Publishing domain notification has a exception: {LogFormatter.PrintException(e)}.");
+            }
+        }
+
+        private async Task PublishDomainEventAsync(IDomainEvent @event, CancellationToken token)
+        {
+            var publisher = _serviceProvider.GetService<IDomainEventPublisher>();
+
+            try
+            {
+                await publisher.PublishAsync(@event, token);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Publishing domain event has a exception: {LogFormatter.PrintException(e)}.");
             }
         }
 
