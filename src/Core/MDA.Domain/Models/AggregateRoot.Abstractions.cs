@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace MDA.Domain.Models
 {
     /// <summary>
-    /// 聚合根，封装对象的业务规则。
+    /// 聚合根
     /// </summary>
     public interface IAggregateRoot : ISerializationMetadataProvider
     {
@@ -33,7 +33,7 @@ namespace MDA.Domain.Models
     }
 
     /// <summary>
-    /// 聚合根，封装业务对象的不变性。
+    /// 聚合根
     /// </summary>
     /// <typeparam name="TId">标识类型</typeparam>
     public interface IAggregateRoot<TId> : IAggregateRoot, IEquatable<IAggregateRoot<TId>>
@@ -53,7 +53,7 @@ namespace MDA.Domain.Models
     }
 
     /// <summary>
-    /// 聚合根，封装业务对象的不变性。
+    /// 聚合根
     /// </summary>
     public interface IEventSourcedAggregateRoot : IAggregateRoot
     {
@@ -74,21 +74,6 @@ namespace MDA.Domain.Models
         void ReplayDomainEvents(IEnumerable<IDomainEvent> events);
 
         /// <summary>
-        /// 应用领域事件。
-        /// 1. 填充事件信息到聚合根。
-        /// 2. 添加到当前变更领域事件列表。
-        /// </summary>
-        /// <param name="@event">领域事件</param>
-        void ApplyDomainEvent(IDomainEvent @event);
-
-        /// <summary>
-        /// 发布领域通知。
-        /// 应用场景：允许领域命令以非异常的方式发送预检结果。
-        /// </summary>
-        /// <param name="notification">领域通知</param>
-        void PublishDomainNotification(IDomainNotification notification);
-
-        /// <summary>
         /// 处理领域命令
         /// </summary>
         /// <param name="command">领域命令</param>
@@ -103,9 +88,9 @@ namespace MDA.Domain.Models
     }
 
     /// <summary>
-    /// 聚合根，封装业务对象的不变性。
+    /// 聚合根
     /// </summary>
-    /// <typeparam name="TId"></typeparam>
+    /// <typeparam name="TId">标识类型</typeparam>
     public interface IEventSourcedAggregateRoot<TId> :
         IEventSourcedAggregateRoot,
         IAggregateRoot<TId>
@@ -120,9 +105,9 @@ namespace MDA.Domain.Models
     }
 
     /// <summary>
-    /// 聚合根，封装业务对象的不变性。
+    /// 聚合根
     /// </summary>
-    /// <typeparam name="TId"></typeparam>
+    /// <typeparam name="TId">标识类型</typeparam>
     public interface IEventSourcedAggregateRootWithCompositeId<TId> :
         IEventSourcedAggregateRoot<TId>,
         IAggregateRootWithCompositeId<TId>
