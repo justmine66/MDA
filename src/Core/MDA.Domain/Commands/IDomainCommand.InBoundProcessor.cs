@@ -207,9 +207,9 @@ namespace MDA.Domain.Commands
 
                 await PublishDomainNotificationAsync(notification, token);
 
-                if (notification.NeedReplyApplicationCommand(out var endNotification))
+                if (notification.NeedReplyApplicationCommand(out var needRepliedNotification))
                 {
-                    await ReplyApplicationCommandAsync(endNotification, token);
+                    await ReplyApplicationCommandAsync(needRepliedNotification, token);
                 }
             }
         }

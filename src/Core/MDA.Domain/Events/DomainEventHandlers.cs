@@ -1,18 +1,15 @@
-﻿using MDA.MessageBus;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
 namespace MDA.Domain.Events
 {
-    public interface IDomainEventHandler<in TDomainEvent> : IMessageHandler<TDomainEvent>
-        where TDomainEvent : IDomainEvent
+    public interface IDomainEventHandler<in TDomainEvent> where TDomainEvent : IDomainEvent
     {
-        new void Handle(TDomainEvent @event);
+        void OnDomainEvent(IDomainEventHandlingContext context, TDomainEvent @event);
     }
 
-    public interface IAsyncDomainEventHandler<in TDomainEvent> : IAsyncMessageHandler<TDomainEvent>
-        where TDomainEvent : IDomainEvent
+    public interface IAsyncDomainEventHandler<in TDomainEvent> where TDomainEvent : IDomainEvent
     {
-        new Task HandleAsync(TDomainEvent @event, CancellationToken token = default);
+        Task OnDomainEventAsync(IDomainEventHandlingContext context, TDomainEvent @event, CancellationToken token = default);
     }
 }

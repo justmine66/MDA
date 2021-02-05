@@ -2,7 +2,6 @@
 using EBank.Domain.Commands.Transferring;
 using EBank.Domain.Events.Accounts;
 using EBank.Domain.Events.Transferring;
-using EBank.Domain.Models.Transferring;
 using EBank.Domain.Notifications;
 using MDA.Domain.Commands;
 using MDA.Domain.Events;
@@ -34,8 +33,9 @@ namespace EBank.BusinessServer.ProcessorManagers
         /// <summary>
         /// 1. 从转账交易聚合根，收到交易已发起的领域事件，向银行账户聚合根发起交易信息验证。
         /// </summary>
+        /// <param name="context">事件处理上下文</param>
         /// <param name="event"></param>
-        public void Handle(TransferTransactionStartedDomainEvent @event)
+        public void OnDomainEvent(IDomainEventHandlingContext context, TransferTransactionStartedDomainEvent @event)
         {
             // 1. 验证源账户
             var validateSource = new ValidateTransferTransactionDomainCommand()
@@ -46,7 +46,7 @@ namespace EBank.BusinessServer.ProcessorManagers
                 Money = @event.Money
             };
 
-            _domainCommandPublisher.Publish(validateSource);
+            context.DomainCommandPublisher.Publish(validateSource);
 
             // 2. 验证目标账户
             var validateSink = new ValidateTransferTransactionDomainCommand()
@@ -57,18 +57,19 @@ namespace EBank.BusinessServer.ProcessorManagers
                 Money = @event.Money
             };
 
-            _domainCommandPublisher.Publish(validateSink);
+            context.DomainCommandPublisher.Publish(validateSink);
         }
 
         /// <summary>
         /// 2.1 从银行账户聚合根，收到转账交易已验证的领域事件，通知转账交易聚合根确认。
         /// </summary>
+        /// <param name="context">事件处理上下文</param>
         /// <param name="event"></param>
-        public void Handle(TransferTransactionValidatedDomainEvent @event)
+        public void OnDomainEvent(IDomainEventHandlingContext context, TransferTransactionValidatedDomainEvent @event)
         {
             var command = new ConfirmTransferTransactionValidatedDomainCommand(@event.TransactionId, @event.AccountType);
 
-            _domainCommandPublisher.Publish(command);
+            context.DomainCommandPublisher.Publish(command);
         }
 
         /// <summary>
@@ -88,32 +89,34 @@ namespace EBank.BusinessServer.ProcessorManagers
         /// <summary>
         /// 3. 从转账交易聚合根，收到交易信息已准备就绪的领域事件，向银行账户聚合根，向银行账户提交转账交易。
         /// </summary>
+        /// <param name="context">事件处理上下文</param>
         /// <param name="event"></param>
-        public void Handle(TransferTransactionReadiedDomainEvent @event)
+        public void OnDomainEvent(IDomainEventHandlingContext context, TransferTransactionReadiedDomainEvent @event)
         {
             // 1. 从源账户取款
             var withdraw = new SubmitTransferTransactionDomainCommand(@event.AggregateRootId, @event.SourceAccountId);
 
-            _domainCommandPublisher.Publish(withdraw);
+            context.DomainCommandPublisher.Publish(withdraw);
 
             // 2. 存到目标账户
             var deposit = new SubmitTransferTransactionDomainCommand(@event.AggregateRootId, @event.SinkAccountId);
 
-            _domainCommandPublisher.Publish(deposit);
+            context.DomainCommandPublisher.Publish(deposit);
         }
 
         /// <summary>
         /// 4 从银行账户聚合根，收到转账交易已提交的领域事件，通知转账交易聚合根确认。
         /// </summary>
+        /// <param name="context">事件处理上下文</param>
         /// <param name="event"></param>
-        public void Handle(TransferTransactionSubmittedDomainEvent @event)
+        public void OnDomainEvent(IDomainEventHandlingContext context, TransferTransactionSubmittedDomainEvent @event)
         {
             var command = new ConfirmTransferTransactionSubmittedDomainCommand()
             {
                 AggregateRootId = @event.TransactionId
             };
 
-            _domainCommandPublisher.Publish(command);
+            context.DomainCommandPublisher.Publish(command);
         }
     }
 }

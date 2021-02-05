@@ -1,4 +1,5 @@
 ﻿using MDA.Domain.Commands;
+using MDA.Domain.Saga;
 using System.Collections.Generic;
 
 namespace MDA.Domain.Events
@@ -30,6 +31,29 @@ namespace MDA.Domain.Events
                 domainEvent.ApplicationCommandType = command.ApplicationCommandType;
                 domainEvent.ApplicationCommandReplyScheme = command.ApplicationCommandReplyScheme;
             }
+        }
+
+        public static bool NeedReplyApplicationCommand(this IDomainEvent @event)
+        {
+            var needReply = @event.ApplicationCommandReplyScheme == ApplicationCommandReplySchemes.OnDomainEventHandled;
+            if (!needReply)
+            {
+                return false;
+            }
+
+            var isEnd = @event is IEndSubTransactionDomainEvent;
+            if (isEnd)
+            {
+                return true;
+            }
+
+            var isBegin = @event is IBeginSubTransactionDomainEvent;
+            if (isBegin)
+            {
+                return false;
+            }
+
+            return !(@event is ISubTransactionDomainEvent);
         }
     }
 }

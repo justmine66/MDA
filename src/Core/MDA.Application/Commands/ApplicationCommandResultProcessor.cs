@@ -1,5 +1,6 @@
 ﻿using MDA.Domain;
 using MDA.Domain.Commands;
+using MDA.Domain.Events;
 using MDA.Domain.Exceptions;
 using MDA.Domain.Notifications;
 using MDA.Domain.Saga;
@@ -17,7 +18,8 @@ namespace MDA.Application.Commands
     public class ApplicationCommandResultProcessor : IApplicationCommandResultListener,
         IMessageHandler<DomainExceptionMessage>,
         IMessageHandler<SagaTransactionDomainNotification>,
-        IMessageHandler<DomainCommandHandledNotification>
+        IMessageHandler<DomainCommandHandledNotification>,
+        IMessageHandler<DomainEventHandledNotification>
     {
         private static readonly ConcurrentDictionary<string, ApplicationCommandExecutionPromise> ExecutingPromiseDict = new ConcurrentDictionary<string, ApplicationCommandExecutionPromise>();
 
@@ -73,6 +75,8 @@ namespace MDA.Application.Commands
 
         public void Handle(DomainCommandHandledNotification notification) => SetApplicationCommandResult(notification);
 
+        public void Handle(DomainEventHandledNotification notification) => SetApplicationCommandResult(notification);
+
         #region [ private methods ]
 
         private void SetApplicationCommandResult(DomainExceptionMessage exception)
@@ -114,7 +118,7 @@ namespace MDA.Application.Commands
 
                     break;
                 case ApplicationCommandReplySchemes.OnDomainEventHandled:
-                    _logger.LogWarning(FormatReplyMessage(exception, prefix, $"but the return schema:{replyScheme} not supported"));
+                    _logger.LogWarning(FormatReplyMessage(exception, prefix, $"but the return schema:{replyScheme} mis-match"));
                     break;
                 default:
                     _logger.LogWarning(FormatReplyMessage(exception, prefix, $"but the return schema:{replyScheme} not supported"));
@@ -166,7 +170,7 @@ namespace MDA.Application.Commands
                     break;
 
                 case ApplicationCommandReplySchemes.OnDomainEventHandled:
-                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema:{replyScheme} not supported"));
+                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema:{replyScheme} mis-match"));
                     break;
 
                 default:
@@ -216,7 +220,55 @@ namespace MDA.Application.Commands
                     break;
 
                 case ApplicationCommandReplySchemes.OnDomainEventHandled:
+                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema:{replyScheme} mis-match"));
+                    break;
+
+                default:
                     _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema:{replyScheme} not supported"));
+                    break;
+            }
+        }
+
+        private void SetApplicationCommandResult(DomainEventHandledNotification notification)
+        {
+            var applicationCommandId = notification.ApplicationCommandId;
+            var applicationCommandType = notification.ApplicationCommandType;
+
+            const string prefix = "Received the domain event handled notification of application Command";
+
+            if (!ExecutingPromiseDict.TryRemove(applicationCommandId, out var executionPromise))
+            {
+                _logger.LogWarning(FormatReplyMessage(notification, prefix, "but task source does not exist"));
+
+                return;
+            }
+
+            var replyScheme = executionPromise.ApplicationCommand.ReplyScheme;
+
+            switch (replyScheme)
+            {
+                case ApplicationCommandReplySchemes.None:
+                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema is {replyScheme}"));
+                    break;
+
+                case ApplicationCommandReplySchemes.OnDomainCommandHandled:
+                    _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but the return schema:{replyScheme} mis-match"));
+                    break;
+
+                case ApplicationCommandReplySchemes.OnDomainEventHandled:
+                    var replySchemeReceived = notification.ApplicationCommandReplyScheme;
+
+                    if (replyScheme != replySchemeReceived)
+                    {
+                        _logger.LogWarning(FormatReplyMessage(notification, prefix, $"but return schema mis match, expected: {replyScheme}, actual: {replySchemeReceived}"));
+                    }
+
+                    var result = ApplicationCommandResult.Succeed(applicationCommandId, applicationCommandType);
+
+                    if (!executionPromise.TrySetResult(result))
+                    {
+                        _logger.LogError(FormatReplyMessage(notification, "Failed to set the domain command handled notification of application Command", $"ReplyScheme:{replyScheme}"));
+                    }
                     break;
 
                 default:

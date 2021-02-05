@@ -4,6 +4,7 @@ using EBank.Application.Commanding.Depositing;
 using EBank.Application.Commanding.Transferring;
 using EBank.Application.Commanding.Withdrawing;
 using MDA.Application.Commands;
+using MDA.Domain;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,7 +24,7 @@ namespace EBank.ApiServer.Application.Business
         /// <param name="token"></param>
         public async Task<ApplicationCommandResult> OpenAccountAsync(OpenBankAccountApplicationCommand command, CancellationToken token = default)
         {
-           return await _commandService.ExecuteCommandAsync(command, token);
+            return await _commandService.ExecuteCommandAsync(command, token);
         }
 
         /// <summary>
@@ -34,7 +35,11 @@ namespace EBank.ApiServer.Application.Business
         /// <returns></returns>
         public async Task ChangeAccountNameAsync(ChangeAccountNameApplicationCommand command, CancellationToken token = default)
         {
-            await _commandService.PublishAsync(command, token);
+            var result = await _commandService.ExecuteCommandAsync(command, ApplicationCommandReplySchemes.OnDomainEventHandled, token);
+            if (!result.Succeed())
+            {
+                throw new ApiDomainException(result);
+            }
         }
 
         /// <summary>

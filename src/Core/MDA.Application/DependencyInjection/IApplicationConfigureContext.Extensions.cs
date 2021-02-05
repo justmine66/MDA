@@ -1,6 +1,7 @@
 ﻿using MDA.Application.Commands;
 using MDA.Application.Notifications;
 using MDA.Domain.Commands;
+using MDA.Domain.Events;
 using MDA.Domain.Exceptions;
 using MDA.Domain.Saga;
 using MDA.MessageBus;
@@ -26,6 +27,7 @@ namespace MDA.Application.DependencyInjection
             services.AddMessageHandler<DomainExceptionMessage, ApplicationCommandResultProcessor>();
             services.AddMessageHandler<SagaTransactionDomainNotification, ApplicationCommandResultProcessor>();
             services.AddMessageHandler<DomainCommandHandledNotification, ApplicationCommandResultProcessor>();
+            services.AddMessageHandler<DomainEventHandledNotification, ApplicationCommandResultProcessor>();
 
             services.Configure<ApplicationCommandOptions>(_ => { });
 

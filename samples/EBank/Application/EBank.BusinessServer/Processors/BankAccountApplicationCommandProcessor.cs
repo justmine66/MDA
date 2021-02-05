@@ -46,9 +46,14 @@ namespace EBank.BusinessServer.Processors
 
         public void OnApplicationCommand(
             IApplicationCommandContext context,
-            ChangeAccountNameApplicationCommand command)
+            ChangeAccountNameApplicationCommand appCommand)
         {
-            var domainCommand = new ChangeAccountNameDomainCommand(command.AccountId, command.AccountName);
+            var domainCommand = new ChangeAccountNameDomainCommand(appCommand.AccountId, appCommand.AccountName)
+            {
+                ApplicationCommandId = appCommand.Id,
+                ApplicationCommandType = appCommand.GetType().FullName,
+                ApplicationCommandReplyScheme = appCommand.ReplyScheme
+            };
 
             context.DomainCommandPublisher.Publish(domainCommand);
         }

@@ -33,26 +33,28 @@ namespace EBank.BusinessServer.ProcessorManagers
         /// <summary>
         /// 1. 从取款交易聚合根，收到取款交易已发起的领域事件，向银行账户聚合根发起交易信息验证。
         /// </summary>
+        /// <param name="context">事件处理上下文</param>
         /// <param name="event">交易已发起的领域事件</param>
-        public void Handle(WithdrawTransactionStartedDomainEvent @event)
+        public void OnDomainEvent(IDomainEventHandlingContext context, WithdrawTransactionStartedDomainEvent @event)
         {
             var command = new ValidateWithdrawTransactionDomainCommand(@event.AggregateRootId, @event.AccountId, @event.AccountName, @event.Bank, @event.Money);
 
-            _domainCommandPublisher.Publish(command);
+            context.DomainCommandPublisher.Publish(command);
         }
 
         /// <summary>
         /// 2.1 从银行账户聚合根，收到取款交易信息验证已通过的领域事件，通知取款交易聚合根确认。
         /// </summary>
+        /// <param name="context">事件处理上下文</param>
         /// <param name="event">交易信息验证已通过的领域事件</param>
-        public void Handle(WithdrawTransactionValidatedDomainEvent @event)
+        public void OnDomainEvent(IDomainEventHandlingContext context, WithdrawTransactionValidatedDomainEvent @event)
         {
             var command = new ConfirmWithdrawTransactionValidatedDomainCommand()
             {
                 AggregateRootId = @event.TransactionId
             };
 
-            _domainCommandPublisher.Publish(command);
+            context.DomainCommandPublisher.Publish(command);
         }
 
         /// <summary>
@@ -72,26 +74,28 @@ namespace EBank.BusinessServer.ProcessorManagers
         /// <summary>
         /// 3.1 从取款交易聚合根，收到取款交易已准备就绪的领域事件，向银行账户聚合更提交交易。
         /// </summary>
+        /// <param name="context">事件处理上下文</param>
         /// <param name="event"></param>
-        public void Handle(WithdrawTransactionReadiedDomainEvent @event)
+        public void OnDomainEvent(IDomainEventHandlingContext context, WithdrawTransactionReadiedDomainEvent @event)
         {
             var command = new SubmitWithdrawTransactionDomainCommand(@event.AggregateRootId,@event.AccountId);
 
-            _domainCommandPublisher.Publish(command);
+            context.DomainCommandPublisher.Publish(command);
         }
 
         /// <summary>
         /// 4. 从银行账户聚合根，收到取款账户交易已提交的领域事件，通知取款交易聚合根确认。
         /// </summary>
+        /// <param name="context">事件处理上下文</param>
         /// <param name="event"></param>
-        public void Handle(WithdrawTransactionSubmittedDomainEvent @event)
+        public void OnDomainEvent(IDomainEventHandlingContext context, WithdrawTransactionSubmittedDomainEvent @event)
         {
             var command = new ConfirmWithdrawTransactionSubmittedDomainCommand()
             {
                 AggregateRootId = @event.TransactionId
             };
 
-            _domainCommandPublisher.Publish(command);
+            context.DomainCommandPublisher.Publish(command);
         }
     }
 }

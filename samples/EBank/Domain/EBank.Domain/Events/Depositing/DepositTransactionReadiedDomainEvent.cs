@@ -1,14 +1,14 @@
 ﻿using EBank.Domain.Models.Accounts.Primitives;
 using EBank.Domain.Models.Depositing;
 using EBank.Domain.Models.Depositing.Primitives;
-using MDA.Domain.Events;
+using MDA.Domain.Saga;
 
 namespace EBank.Domain.Events.Depositing
 {
     /// <summary>
     /// 存款交易信息验证完成的领域事件
     /// </summary>
-    public class DepositTransactionReadiedDomainEvent : DomainEvent<DepositTransactionId>
+    public class DepositTransactionReadiedDomainEvent : SubTransactionDomainEvent<DepositTransactionId>
     {
         public DepositTransactionReadiedDomainEvent(
             BankAccountId accountId, 

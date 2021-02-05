@@ -2,10 +2,11 @@
 using EBank.Domain.Models.Depositing.Primitives;
 using EBank.Domain.Models.Primitives;
 using MDA.Domain.Events;
+using MDA.Domain.Saga;
 
 namespace EBank.Domain.Events.Depositing
 {
-    public class DepositTransactionStartedDomainEvent : DomainEvent<DepositTransactionId>
+    public class DepositTransactionStartedDomainEvent : SubTransactionDomainEvent<DepositTransactionId>
     {
         public DepositTransactionStartedDomainEvent(
             BankAccountId accountId,

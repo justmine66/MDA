@@ -20,7 +20,7 @@ namespace EBank.ApiServer
 {
     public class Startup
     {
-        private static readonly Assembly CurrentAssembly = Assembly.GetExecutingAssembly();
+        private static readonly Assembly[] Assemblies = { Assembly.GetExecutingAssembly() };
 
         public Startup(IConfiguration configuration, IWebHostEnvironment hostEnvironment)
         {
@@ -41,10 +41,10 @@ namespace EBank.ApiServer
             services.AddMda(ctx =>
             {
                 ctx.AddInfrastructure();
-                ctx.AddMessageBus(bus => bus.AddKafka(Configuration), CurrentAssembly);
+                ctx.AddMessageBus(bus => bus.AddKafka(Configuration), Assemblies);
 
                 ctx.AddApplication(app => app.UseMessageBus(MessageBusClientNames.Kafka, Configuration));
-                ctx.AddDomain(domain => domain.UseMessageBus(MessageBusClientNames.Kafka), Configuration);
+                ctx.AddDomain(domain => domain.UseMessageBus(MessageBusClientNames.Kafka, Configuration), Configuration, Assemblies);
 
                 ctx.AddStateBackend(state => state.AddMySql(Configuration));
             });

@@ -18,7 +18,7 @@ namespace MDA.Domain.DependencyInjection
         {
             context.Services.AddDomainCommandCore(assemblies);
             context.Services.AddDomainModelCore(configuration); 
-            context.Services.AddDomainEventCore();
+            context.Services.AddDomainEventCore(assemblies);
 
             configure(new DefaultDomainConfigureContext(context.Services));
 
