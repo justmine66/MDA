@@ -15,13 +15,13 @@ namespace EBank.Domain.Commands.Depositing
             DepositTransactionId transactionId,
             BankAccountId accountId,
             BankAccountName accountName,
-            Money amount,
+            Money money,
             BankName bank)
         {
             AggregateRootId = transactionId;
             AccountId = accountId;
             AccountName = accountName;
-            Amount = amount;
+            Money = money;
             Bank = bank;
         }
 
@@ -43,6 +43,6 @@ namespace EBank.Domain.Commands.Depositing
         /// <summary>
         /// 金额
         /// </summary>
-        public Money Amount { get; }
+        public Money Money { get; }
     }
 }

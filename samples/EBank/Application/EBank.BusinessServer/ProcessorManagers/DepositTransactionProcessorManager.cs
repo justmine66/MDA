@@ -44,7 +44,7 @@ namespace EBank.BusinessServer.ProcessorManagers
                 AggregateRootId = @event.AccountId,
                 AccountName = @event.AccountName,
                 Bank = @event.Bank,
-                Amount = @event.Amount
+                Money = @event.Money
             };
 
             command.WithContext(@event);
@@ -76,8 +76,7 @@ namespace EBank.BusinessServer.ProcessorManagers
         {
             var command = new CancelDepositTransactionDomainCommand()
             {
-                AggregateRootId = notification.TransactionId,
-                Message = notification.Message
+                AggregateRootId = notification.TransactionId
             };
 
             command.WithContext(notification);

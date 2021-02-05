@@ -14,12 +14,12 @@ namespace EBank.Domain.Commands.Transferring
             TransferTransactionId transactionId,
             TransferAccount sourceAccount, 
             TransferAccount sinkAccount, 
-            Money amount)
+            Money money)
         {
             AggregateRootId = transactionId;
             SourceAccount = sourceAccount;
             SinkAccount = sinkAccount;
-            Amount = amount;
+            Money = money;
         }
 
         /// <summary>
@@ -35,6 +35,6 @@ namespace EBank.Domain.Commands.Transferring
         /// <summary>
         /// 转账金额
         /// </summary>
-        public Money Amount { get; }
+        public Money Money { get; }
     }
 }

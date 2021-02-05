@@ -14,7 +14,7 @@ namespace EBank.Domain.Commands.Accounts
     {
         public TransferTransactionId TransactionId { get; set; }
 
-        public Money Amount { get; set; }
+        public Money Money { get; set; }
 
         public TransferAccount Account { get; set; }
     }

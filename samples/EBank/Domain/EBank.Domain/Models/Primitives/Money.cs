@@ -7,10 +7,6 @@ namespace EBank.Domain.Models.Primitives
 {
     public class Money : ValueObject
     {
-        public Money(decimal amount)
-            : this(amount, Currency.Default)
-        { }
-
         public Money(decimal amount, Currency currency)
         {
             PreConditions.Positive(amount, nameof(amount));

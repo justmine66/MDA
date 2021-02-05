@@ -14,16 +14,16 @@ namespace EBank.Domain.Models.Withdrawing
     public partial class WithdrawTransaction 
     {
         public WithdrawTransaction(
-            long id,
-            long accountId,
-            string accountName,
-            string bank,
-            decimal amount) : base(id)
+            WithdrawTransactionId id,
+            BankAccountId accountId,
+            BankAccountName accountName,
+            BankName bank,
+            Money money) : base(id)
         {
             AccountId = accountId;
             AccountName = accountName;
             Bank = bank;
-            Amount = amount;
+            Money = money;
             Status = WithdrawTransactionStatus.Started;
         }
 
@@ -45,7 +45,7 @@ namespace EBank.Domain.Models.Withdrawing
         /// <summary>
         /// 金额
         /// </summary>
-        public Money Amount { get; private set; }
+        public Money Money { get; private set; }
 
         /// <summary>
         /// 状态
@@ -62,7 +62,7 @@ namespace EBank.Domain.Models.Withdrawing
 
         public void OnDomainCommand(StartWithdrawTransactionDomainCommand command)
         {
-            var @event = new WithdrawTransactionStartedDomainEvent(command.AccountId, command.AccountName, command.Bank, command.Amount);
+            var @event = new WithdrawTransactionStartedDomainEvent(command.AccountId, command.AccountName, command.Bank, command.Money);
 
             ApplyDomainEvent(@event);
         }
@@ -97,7 +97,7 @@ namespace EBank.Domain.Models.Withdrawing
             AccountId = @event.AccountId;
             AccountName = @event.AccountName;
             Bank = @event.Bank;
-            Amount = @event.Amount;
+            Money = @event.Money;
         }
 
         public void OnDomainEvent(WithdrawTransactionReadiedDomainEvent @event)

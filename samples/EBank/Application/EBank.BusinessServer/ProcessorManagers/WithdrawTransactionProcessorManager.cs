@@ -36,7 +36,7 @@ namespace EBank.BusinessServer.ProcessorManagers
         /// <param name="event">交易已发起的领域事件</param>
         public void Handle(WithdrawTransactionStartedDomainEvent @event)
         {
-            var command = new ValidateWithdrawTransactionDomainCommand(@event.AggregateRootId, @event.AccountId, @event.AccountName, @event.Bank, @event.Amount);
+            var command = new ValidateWithdrawTransactionDomainCommand(@event.AggregateRootId, @event.AccountId, @event.AccountName, @event.Bank, @event.Money);
 
             _domainCommandPublisher.Publish(command);
         }

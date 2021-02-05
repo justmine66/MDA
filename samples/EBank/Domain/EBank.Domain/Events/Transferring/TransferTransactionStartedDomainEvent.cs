@@ -13,12 +13,12 @@ namespace EBank.Domain.Events.Transferring
         public TransferTransactionStartedDomainEvent(
             TransferAccount sourceAccount,
             TransferAccount sinkAccount,
-            Money amount,
+            Money money,
             TransferTransactionStatus status)
         {
             SourceAccount = sourceAccount;
             SinkAccount = sinkAccount;
-            Amount = amount;
+            Money = money;
             Status = status;
         }
 
@@ -35,7 +35,7 @@ namespace EBank.Domain.Events.Transferring
         /// <summary>
         /// 转账金额
         /// </summary>
-        public Money Amount { get; }
+        public Money Money { get; }
 
         /// <summary>
         /// 交易状态

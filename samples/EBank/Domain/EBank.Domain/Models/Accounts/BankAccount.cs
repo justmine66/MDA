@@ -138,7 +138,7 @@ namespace EBank.Domain.Models.Accounts
             }
 
             // 2. 执行业务
-            ApplyDomainEvent(new DepositTransactionValidatedDomainEvent(command.TransactionId, command.Amount));
+            ApplyDomainEvent(new DepositTransactionValidatedDomainEvent(command.TransactionId, command.Money));
         }
 
         /// <summary>
@@ -180,9 +180,9 @@ namespace EBank.Domain.Models.Accounts
                 return;
             }
 
-            if (AvailableBalance < command.Amount)
+            if (AvailableBalance < command.Money)
             {
-                var notification = new WithdrawTransactionValidateFailedDomainNotification(command.TransactionId, $"取款失败，余额不足，可用余额: {AvailableBalance}, 取款金额: {command.Amount}。");
+                var notification = new WithdrawTransactionValidateFailedDomainNotification(command.TransactionId, $"取款失败，余额不足，可用余额: {AvailableBalance}, 取款金额: {command.Money}。");
 
                 PublishDomainNotification(notification);
 
@@ -190,7 +190,7 @@ namespace EBank.Domain.Models.Accounts
             }
 
             // 2. 执行业务
-            ApplyDomainEvent(new WithdrawTransactionValidatedDomainEvent(command.TransactionId, command.Amount));
+            ApplyDomainEvent(new WithdrawTransactionValidatedDomainEvent(command.TransactionId, command.Money));
         }
 
         /// <summary>
@@ -217,7 +217,7 @@ namespace EBank.Domain.Models.Accounts
         /// <param name="command">领域命令</param>
         public void OnDomainCommand(ValidateTransferTransactionDomainCommand command)
         {
-            var amount = command.Amount;
+            var amount = command.Money;
             var account = command.Account;
             var accountType = account.AccountType;
 
@@ -253,7 +253,7 @@ namespace EBank.Domain.Models.Accounts
             }
 
             // 2. 执行业务
-            ApplyDomainEvent(new TransferTransactionValidatedDomainEvent(command.TransactionId, command.Amount, accountType));
+            ApplyDomainEvent(new TransferTransactionValidatedDomainEvent(command.TransactionId, command.Money, accountType));
         }
 
         /// <summary>
@@ -304,26 +304,26 @@ namespace EBank.Domain.Models.Accounts
 
         public void OnDomainEvent(DepositTransactionValidatedDomainEvent @event)
         {
-            var accountTransaction = new AccountTransaction(@event.TransactionId, @event.Amount, AccountFundDirection.In);
+            var accountTransaction = new AccountTransaction(@event.TransactionId, @event.Money, AccountFundDirection.In);
 
             AddAccountTransaction(accountTransaction);
         }
 
         public void OnDomainEvent(DepositTransactionSubmittedDomainEvent @event)
         {
-            Balance += @event.Amount;
+            Balance += @event.Money;
         }
 
         public void OnDomainEvent(WithdrawTransactionValidatedDomainEvent @event)
         {
-            var transaction = new AccountTransaction(@event.TransactionId, @event.Amount, AccountFundDirection.Out);
+            var transaction = new AccountTransaction(@event.TransactionId, @event.Money, AccountFundDirection.Out);
 
             AddAccountTransaction(transaction);
         }
 
         public void OnDomainEvent(WithdrawTransactionSubmittedDomainEvent @event)
         {
-            Balance -= @event.Amount;
+            Balance -= @event.Money;
         }
 
         public void OnDomainEvent(TransferTransactionValidatedDomainEvent @event)
@@ -331,10 +331,10 @@ namespace EBank.Domain.Models.Accounts
             switch (@event.AccountType)
             {
                 case TransferAccountType.Source:
-                    AddAccountTransaction(new AccountTransaction(@event.TransactionId, @event.Amount, AccountFundDirection.Out));
+                    AddAccountTransaction(new AccountTransaction(@event.TransactionId, @event.Money, AccountFundDirection.Out));
                     break;
                 case TransferAccountType.Sink:
-                    AddAccountTransaction(new AccountTransaction(@event.TransactionId, @event.Amount, AccountFundDirection.In));
+                    AddAccountTransaction(new AccountTransaction(@event.TransactionId, @event.Money, AccountFundDirection.In));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -346,10 +346,10 @@ namespace EBank.Domain.Models.Accounts
             switch (@event.AccountType)
             {
                 case TransferAccountType.Source:
-                    Balance -= @event.Amount;
+                    Balance -= @event.Money;
                     break;
                 case TransferAccountType.Sink:
-                    Balance += @event.Amount;
+                    Balance += @event.Money;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

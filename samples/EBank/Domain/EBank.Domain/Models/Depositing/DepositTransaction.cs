@@ -31,7 +31,7 @@ namespace EBank.Domain.Models.Depositing
         /// <summary>
         /// 金额
         /// </summary>
-        public Money Amount { get; private set; }
+        public Money Money { get; private set; }
 
         /// <summary>
         /// 状态
@@ -48,7 +48,7 @@ namespace EBank.Domain.Models.Depositing
 
         public void OnDomainCommand(StartDepositTransactionDomainCommand command)
         {
-            var @event = new DepositTransactionStartedDomainEvent(command.AccountId, command.AccountName, command.Bank, command.Amount);
+            var @event = new DepositTransactionStartedDomainEvent(command.AccountId, command.AccountName, command.Bank, command.Money);
 
             ApplyDomainEvent(@event);
         }
@@ -83,7 +83,7 @@ namespace EBank.Domain.Models.Depositing
             AccountId = @event.AccountId;
             AccountName = @event.AccountName;
             Bank = @event.Bank;
-            Amount = @event.Amount;
+            Money = @event.Money;
         }
 
         public void OnDomainEvent(DepositTransactionReadiedDomainEvent @event)

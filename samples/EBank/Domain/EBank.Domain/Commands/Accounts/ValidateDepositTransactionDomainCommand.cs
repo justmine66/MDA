@@ -29,6 +29,6 @@ namespace EBank.Domain.Commands.Accounts
         /// <summary>
         /// 金额
         /// </summary>
-        public Money Amount { get; set; }
+        public Money Money { get; set; }
     }
 }

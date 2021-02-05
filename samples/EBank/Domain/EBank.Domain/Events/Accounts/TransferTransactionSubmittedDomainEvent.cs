@@ -13,11 +13,11 @@ namespace EBank.Domain.Events.Accounts
     {
         public TransferTransactionSubmittedDomainEvent(
             TransferTransactionId transactionId, 
-            Money amount, 
+            Money money, 
             TransferAccountType accountType)
         {
             TransactionId = transactionId;
-            Amount = amount;
+            Money = money;
             AccountType = accountType;
         }
 
@@ -29,7 +29,7 @@ namespace EBank.Domain.Events.Accounts
         /// <summary>
         /// 交易金额
         /// </summary>
-        public Money Amount { get; }
+        public Money Money { get; }
 
         /// <summary>
         /// 账户类型

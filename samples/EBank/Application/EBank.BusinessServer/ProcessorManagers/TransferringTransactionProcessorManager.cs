@@ -43,7 +43,7 @@ namespace EBank.BusinessServer.ProcessorManagers
                 AggregateRootId = @event.SourceAccount.Id,
                 TransactionId = @event.AggregateRootId,
                 Account = @event.SourceAccount,
-                Amount = @event.Amount
+                Money = @event.Money
             };
 
             _domainCommandPublisher.Publish(validateSource);
@@ -54,7 +54,7 @@ namespace EBank.BusinessServer.ProcessorManagers
                 AggregateRootId = @event.SinkAccount.Id,
                 TransactionId = @event.AggregateRootId,
                 Account = @event.SinkAccount,
-                Amount = @event.Amount
+                Money = @event.Money
             };
 
             _domainCommandPublisher.Publish(validateSink);

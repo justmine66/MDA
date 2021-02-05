@@ -26,11 +26,11 @@ namespace EBank.ApiServer.Application.Querying
 
             var po = new 
             {
-                TransactionId = @event.AggregateRootId,
-                AccountId = @event.AccountId,
-                AccountName = @event.AccountName,
-                Amount = @event.Amount,
-                Bank = @event.Bank,
+                TransactionId = @event.AggregateRootId.Id,
+                AccountId = @event.AccountId.Id,
+                AccountName = @event.AccountName.Name,
+                Amount = @event.Money.Amount,
+                Bank = @event.Bank.Name,
                 Status = WithdrawTransactionStatus.Started.ToString(),
                 Creator = "justmine",
                 CreatedTimestamp = @event.Timestamp
@@ -45,7 +45,7 @@ namespace EBank.ApiServer.Application.Querying
 
             var po = new
             {
-                TransactionId = @event.AggregateRootId,
+                TransactionId = @event.AggregateRootId.Id,
                 Status = @event.Status.ToString()
             };
 
@@ -58,7 +58,7 @@ namespace EBank.ApiServer.Application.Querying
 
             var po = new
             {
-                TransactionId = @event.AggregateRootId,
+                TransactionId = @event.AggregateRootId.Id,
                 Status = @event.Status.ToString()
             };
 
@@ -71,7 +71,7 @@ namespace EBank.ApiServer.Application.Querying
 
             var po = new
             {
-                TransactionId = @event.AggregateRootId,
+                TransactionId = @event.AggregateRootId.Id,
                 Status = @event.Status.ToString()
             };
 

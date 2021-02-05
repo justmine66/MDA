@@ -10,10 +10,10 @@ namespace EBank.Domain.Events.Accounts
     /// </summary>
     public class DepositTransactionValidatedDomainEvent : DomainEvent<BankAccountId>
     {
-        public DepositTransactionValidatedDomainEvent(DepositTransactionId transactionId, Money amount)
+        public DepositTransactionValidatedDomainEvent(DepositTransactionId transactionId, Money money)
         {
             TransactionId = transactionId;
-            Amount = amount;
+            Money = money;
         }
 
         /// <summary>
@@ -24,6 +24,6 @@ namespace EBank.Domain.Events.Accounts
         /// <summary>
         /// 交易金额
         /// </summary>
-        public Money Amount { get; }
+        public Money Money { get; }
     }
 }

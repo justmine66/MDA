@@ -2,7 +2,6 @@
 using EBank.Domain.Models.Transferring;
 using MDA.Domain.Events;
 using MDA.StateBackend.RDBMS.Shared;
-using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,28 +14,23 @@ namespace EBank.ApiServer.Application.Querying
         IAsyncDomainEventHandler<WithdrawTransactionSubmittedDomainEvent>,
         IAsyncDomainEventHandler<TransferTransactionSubmittedDomainEvent>
     {
-        private readonly ILogger _logger;
         private readonly IRelationalDbStorage _db;
 
-        public MySqlBankAccountReadDbSynchronizer(
-            ILogger<MySqlBankAccountReadDbSynchronizer> logger,
-            IRelationalDbStorageFactory db)
+        public MySqlBankAccountReadDbSynchronizer(IRelationalDbStorageFactory db)
         {
-            _logger = logger;
             _db = db.CreateRelationalDbStorage(DatabaseScheme.ReadDb);
         }
 
         public async Task HandleAsync(AccountOpenedDomainEvent @event, CancellationToken token = default)
         {
-            var sql =
-                $"INSERT INTO `{Tables.BankAccounts}` (`Id`, `Name`, `Bank`, `Balance`, `Creator`, `CreatedTimestamp`) VALUES (@Id, @Name, @Bank, @Balance, @Creator, @CreatedTimestamp);";
+            var sql = $"INSERT INTO `{Tables.BankAccounts}` (`Id`, `Name`, `Bank`, `Balance`, `Creator`, `CreatedTimestamp`) VALUES (@Id, @Name, @Bank, @Balance, @Creator, @CreatedTimestamp);";
 
             var parameter = new
             {
-                Id = @event.AggregateRootId,
-                Name = @event.AccountName,
-                Bank = @event.Bank,
-                Balance = @event.InitialBalance,
+                Id = @event.AggregateRootId.Id,
+                Name = @event.AccountName.Name,
+                Bank = @event.Bank.Name,
+                Balance = @event.InitialBalance.Amount,
                 Creator = "justmine",
                 CreatedTimestamp = @event.Timestamp
             };
@@ -50,8 +44,8 @@ namespace EBank.ApiServer.Application.Querying
 
             var po = new
             {
-                AccountId = @event.AggregateRootId,
-                Name = @event.AccountName
+                AccountId = @event.AggregateRootId.Id,
+                Name = @event.AccountName.Name
             };
 
             await _db.ExecuteAsync(sql, po, token);
@@ -63,8 +57,8 @@ namespace EBank.ApiServer.Application.Querying
 
             var po = new
             {
-                AccountId = @event.AggregateRootId,
-                Amount = @event.Amount
+                AccountId = @event.AggregateRootId.Id,
+                Amount = @event.Money.Amount
             };
 
             await _db.ExecuteAsync(sql, po, token);
@@ -76,8 +70,8 @@ namespace EBank.ApiServer.Application.Querying
 
             var po = new
             {
-                AccountId = @event.AggregateRootId,
-                Amount = @event.Amount
+                AccountId = @event.AggregateRootId.Id,
+                Amount = @event.Money.Amount
             };
 
             await _db.ExecuteAsync(sql, po, token);
@@ -103,8 +97,8 @@ namespace EBank.ApiServer.Application.Querying
 
             var po = new
             {
-                AccountId = @event.AggregateRootId,
-                Amount = @event.Amount
+                AccountId = @event.AggregateRootId.Id,
+                Amount = @event.Money.Amount
             };
 
             await _db.ExecuteAsync(sql, po, token);

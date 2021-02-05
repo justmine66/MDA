@@ -16,7 +16,7 @@ namespace EBank.BusinessServer.Bootstrap
 {
     public class Bootstrapper
     {
-        private static readonly Assembly[] Assemblies = { Assembly.GetExecutingAssembly() };
+        private static readonly Assembly[] Assemblies = { Assembly.GetExecutingAssembly(), Assembly.Load("EBank.Domain") };
 
         public static void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {

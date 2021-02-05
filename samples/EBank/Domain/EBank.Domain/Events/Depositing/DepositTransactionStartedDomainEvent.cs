@@ -11,12 +11,12 @@ namespace EBank.Domain.Events.Depositing
             BankAccountId accountId,
             BankAccountName accountName,
             BankName bank,
-            Money amount)
+            Money money)
         {
             AccountId = accountId;
             AccountName = accountName;
             Bank = bank;
-            Amount = amount;
+            Money = money;
         }
 
         /// <summary>
@@ -37,6 +37,6 @@ namespace EBank.Domain.Events.Depositing
         /// <summary>
         /// 金额
         /// </summary>
-        public Money Amount { get; }
+        public Money Money { get; }
     }
 }

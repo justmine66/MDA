@@ -10,10 +10,10 @@ namespace EBank.Domain.Events.Accounts
     /// </summary>
     public class WithdrawTransactionSubmittedDomainEvent : DomainEvent<BankAccountId>
     {
-        public WithdrawTransactionSubmittedDomainEvent(WithdrawTransactionId transactionId, Money amount)
+        public WithdrawTransactionSubmittedDomainEvent(WithdrawTransactionId transactionId, Money money)
         {
             TransactionId = transactionId;
-            Amount = amount;
+            Money = money;
         }
 
         /// <summary>
@@ -24,6 +24,6 @@ namespace EBank.Domain.Events.Accounts
         /// <summary>
         /// 金额
         /// </summary>
-        public Money Amount { get; }
+        public Money Money { get; }
     }
 }

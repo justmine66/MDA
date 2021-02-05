@@ -24,7 +24,7 @@ namespace EBank.Domain.Models.Transferring
         /// <summary>
         /// 转账金额
         /// </summary>
-        public Money Amount { get; private set; }
+        public Money Money { get; private set; }
 
         /// <summary>
         /// 交易状态
@@ -46,7 +46,7 @@ namespace EBank.Domain.Models.Transferring
 
         public void OnDomainCommand(StartTransferTransactionDomainCommand command)
         {
-            var @event = new TransferTransactionStartedDomainEvent(command.SourceAccount, command.SinkAccount, command.Amount, TransferTransactionStatus.Started);
+            var @event = new TransferTransactionStartedDomainEvent(command.SourceAccount, command.SinkAccount, command.Money, TransferTransactionStatus.Started);
 
             ApplyDomainEvent(@event);
         }
@@ -96,7 +96,7 @@ namespace EBank.Domain.Models.Transferring
             Id = @event.AggregateRootId;
             SourceAccount = @event.SourceAccount;
             SinkAccount = @event.SinkAccount;
-            Amount = @event.Amount;
+            Money = @event.Money;
             Status = @event.Status;
         }
 

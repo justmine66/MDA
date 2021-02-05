@@ -26,14 +26,14 @@ namespace EBank.ApiServer.Application.Querying
 
             var po = new
             {
-                TransactionId = @event.AggregateRootId,
-                SourceAccountId = @event.SourceAccount.Id,
-                SourceAccountName = @event.SourceAccount.Name,
-                SourceBank = @event.SourceAccount.Bank,
-                SinkAccountId = @event.SinkAccount.Id,
-                SinkAccountName = @event.SinkAccount.Name,
-                SinkBank = @event.SinkAccount.Bank,
-                Amount = @event.Amount,
+                TransactionId = @event.AggregateRootId.Id,
+                SourceAccountId = @event.SourceAccount.Id.Id,
+                SourceAccountName = @event.SourceAccount.Name.Name,
+                SourceBank = @event.SourceAccount.Bank.Name,
+                SinkAccountId = @event.SinkAccount.Id.Id,
+                SinkAccountName = @event.SinkAccount.Name.Name,
+                SinkBank = @event.SinkAccount.Bank.Name,
+                Amount = @event.Money.Amount,
                 Status = TransferTransactionStatus.Started.ToString(),
                 Creator = "justmine",
                 CreatedTimestamp = @event.Timestamp
@@ -48,7 +48,7 @@ namespace EBank.ApiServer.Application.Querying
 
             var po = new
             {
-                TransactionId = @event.AggregateRootId,
+                TransactionId = @event.AggregateRootId.Id,
                 Status = @event.Status.ToString()
             };
 
@@ -61,7 +61,7 @@ namespace EBank.ApiServer.Application.Querying
 
             var po = new
             {
-                TransactionId = @event.AggregateRootId,
+                TransactionId = @event.AggregateRootId.Id,
                 Status = @event.Status.ToString()
             };
 
@@ -74,7 +74,7 @@ namespace EBank.ApiServer.Application.Querying
 
             var po = new
             {
-                TransactionId = @event.AggregateRootId,
+                TransactionId = @event.AggregateRootId.Id,
                 Status = @event.Status.ToString()
             };
 
