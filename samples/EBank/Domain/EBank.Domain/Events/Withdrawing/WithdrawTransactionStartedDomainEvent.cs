@@ -1,14 +1,14 @@
 ﻿using EBank.Domain.Models.Accounts.Primitives;
 using EBank.Domain.Models.Primitives;
 using EBank.Domain.Models.Withdrawing.Primitives;
-using MDA.Domain.Events;
+using MDA.Domain.Saga;
 
 namespace EBank.Domain.Events.Withdrawing
 {
     /// <summary>
     /// 取款交易已发起的领域事件
     /// </summary>
-    public class WithdrawTransactionStartedDomainEvent : DomainEvent<WithdrawTransactionId>
+    public class WithdrawTransactionStartedDomainEvent : SubTransactionDomainEvent<WithdrawTransactionId>
     {
         public WithdrawTransactionStartedDomainEvent(
             BankAccountId accountId,

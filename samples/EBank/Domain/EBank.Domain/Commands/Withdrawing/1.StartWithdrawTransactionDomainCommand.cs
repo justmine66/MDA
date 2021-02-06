@@ -2,14 +2,14 @@
 using EBank.Domain.Models.Primitives;
 using EBank.Domain.Models.Withdrawing;
 using EBank.Domain.Models.Withdrawing.Primitives;
-using MDA.Domain.Commands;
+using MDA.Domain.Saga;
 
 namespace EBank.Domain.Commands.Withdrawing
 {
     /// <summary>
     /// 发起取款交易的领域命令
     /// </summary>
-    public class StartWithdrawTransactionDomainCommand : DomainCommand<WithdrawTransaction, WithdrawTransactionId>
+    public class StartWithdrawTransactionDomainCommand : BeginSubTransactionDomainCommand<WithdrawTransaction, WithdrawTransactionId>
     {
         public StartWithdrawTransactionDomainCommand(
             WithdrawTransactionId transactionId,
