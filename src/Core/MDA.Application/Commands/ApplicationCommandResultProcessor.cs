@@ -302,12 +302,13 @@ namespace MDA.Application.Commands
         {
             var applicationCommandId = exception.ApplicationCommandId;
             var applicationCommandType = exception.ApplicationCommandType;
+            var applicationCommandReplyScheme = exception.ApplicationCommandReplyScheme;
             var domainCommandId = exception.DomainCommandId;
             var domainCommandType = exception.DomainCommandType;
             var aggregateRootId = exception.AggregateRootId;
             var aggregateRootType = exception.AggregateRootType;
 
-            return $"{prefix}[Id:{applicationCommandId}, Type:{applicationCommandType}], domain command[Id:{domainCommandId}, Type:{domainCommandType}], aggregate root[Id:{aggregateRootId}, Type:{aggregateRootType}], {reason}.";
+            return $"{prefix}[Id:{applicationCommandId}, Type:{applicationCommandType}, ReplyScheme: {applicationCommandReplyScheme}], domain command[Id:{domainCommandId}, Type:{domainCommandType}], aggregate root[Id:{aggregateRootId}, Type:{aggregateRootType}], {reason}.";
         }
 
         private string FormatReplyMessage(DomainNotification notification, string prefix, string postfix)
