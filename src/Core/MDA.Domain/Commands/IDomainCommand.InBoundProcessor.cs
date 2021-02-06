@@ -39,7 +39,7 @@ namespace MDA.Domain.Commands
             _serviceProvider = serviceProvider;
         }
 
-        public void Handle(DomainCommandTransportMessage<TAggregateRootId> message) => HandleAsync(message).RunSynchronously();
+        public void Handle(DomainCommandTransportMessage<TAggregateRootId> message) => HandleAsync(message).SyncRun();
 
         public async Task HandleAsync(DomainCommandTransportMessage<TAggregateRootId> message, CancellationToken token = default)
         {
