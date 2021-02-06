@@ -120,11 +120,11 @@ namespace MDA.Domain.Commands
 
         private async Task ProcessUnKnownExceptionAsync(IDomainCommand command, Exception exception, CancellationToken token)
         {
+            _logger.LogError($"Handling domain command[Id: {command.Id}, Type: {command.GetType().FullName}, application command[{command.ApplicationCommandId}, {command.ApplicationCommandType}, reply scheme: {command.ApplicationCommandReplyScheme}], aggregate root[{command.AggregateRootId},{command.AggregateRootType.FullName}], has a unknown exceptionException: {LogFormatter.PrintException(exception)}.");
+
             var canReturnOnDomainCommandHandled = command.ApplicationCommandReplyScheme == ApplicationCommandReplySchemes.OnDomainCommandHandled;
             if (!canReturnOnDomainCommandHandled)
             {
-                _logger.LogError($"Handling domain command[Id: {command.Id}, Type: {command.GetType().FullName}, application command[{command.ApplicationCommandId}, {command.ApplicationCommandType}, reply scheme: {command.ApplicationCommandReplyScheme}], aggregate root[{command.AggregateRootId},{command.AggregateRootType.FullName}], has a unknown exceptionException: {LogFormatter.PrintException(exception)}.");
-
                 return;
             }
 
@@ -144,10 +144,10 @@ namespace MDA.Domain.Commands
             var commandType = command.GetType().FullName;
             var canReturnOnDomainCommandHandled = command.ApplicationCommandReplyScheme == ApplicationCommandReplySchemes.OnDomainCommandHandled;
 
+            _logger.LogError($"Handling domain command has a domain exception, Id: {commandId}, Type: {commandType}, Exception: {LogFormatter.PrintException(domainException)}.");
+
             if (!canReturnOnDomainCommandHandled)
             {
-                _logger.LogError($"Handling domain command has a domain exception, Id: {commandId}, Type: {commandType}, Exception: {LogFormatter.PrintException(domainException)}.");
-
                 return;
             }
 
