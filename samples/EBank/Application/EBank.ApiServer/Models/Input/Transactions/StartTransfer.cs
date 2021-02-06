@@ -47,7 +47,7 @@ namespace EBank.ApiServer.Models.Input.Transactions
             /// <summary>
             /// 开户行
             /// </summary>
-            /// <example>100</example>
+            /// <example>招商银行</example>
             [Required]
             public string Bank { get; set; }
         }
