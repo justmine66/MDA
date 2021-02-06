@@ -22,7 +22,7 @@ namespace MDA.XUnitTest.ApplicationCommands
             _domainCommandPublisher = domainCommandPublisher;
         }
 
-        public void OnApplicationCommand(IApplicationCommandContext context, CreateApplicationCommand command)
+        public void OnApplicationCommand(IApplicationCommandingContext context, CreateApplicationCommand command)
         {
             _logger.LogInformation($"The application command: {nameof(command)}[Payload: {command.Payload}] handled.");
 
@@ -32,7 +32,7 @@ namespace MDA.XUnitTest.ApplicationCommands
         }
 
         public async Task OnApplicationCommandAsync(
-            IApplicationCommandContext context,
+            IApplicationCommandingContext context,
             CreateApplicationCommand command,
             CancellationToken token = default)
         {

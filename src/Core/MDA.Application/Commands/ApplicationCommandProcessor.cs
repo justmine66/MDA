@@ -14,10 +14,10 @@ namespace MDA.Application.Commands
         where TApplicationCommand : class, IApplicationCommand
     {
         private readonly ILogger _logger;
-        private readonly IApplicationCommandContext _context;
+        private readonly IApplicationCommandingContext _context;
 
         public ApplicationCommandProcessor(
-            IApplicationCommandContext context, 
+            IApplicationCommandingContext context,
             ILogger<ApplicationCommandProcessor<TApplicationCommand>> logger)
         {
             _context = context;
@@ -36,6 +36,8 @@ namespace MDA.Application.Commands
                     return;
                 }
 
+                _context.SetApplicationCommand(command);
+
                 handler.OnApplicationCommand(_context, command);
             }
         }
@@ -51,6 +53,8 @@ namespace MDA.Application.Commands
 
                     return;
                 }
+
+                _context.SetApplicationCommand(command);
 
                 await handler.OnApplicationCommandAsync(_context, command, token);
             }

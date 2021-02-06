@@ -11,7 +11,7 @@ namespace EBank.BusinessServer.Processors
     public class DepositTransactionApplicationCommandProcessor :
         IApplicationCommandHandler<StartDepositApplicationCommand>
     {
-        public void OnApplicationCommand(IApplicationCommandContext context, StartDepositApplicationCommand appCommand)
+        public void OnApplicationCommand(IApplicationCommandingContext context, StartDepositApplicationCommand appCommand)
         {
             var transactionId = SnowflakeId.Default().NextId();
             var domainCommand = new StartDepositTransactionDomainCommand(transactionId, appCommand.AccountId,
@@ -23,7 +23,7 @@ namespace EBank.BusinessServer.Processors
                 ApplicationCommandReplyScheme = appCommand.ReplyScheme
             };
 
-            context.DomainCommandPublisher.Publish(domainCommand);
+            context.PublishDomainCommand(domainCommand);
         }
     }
 }

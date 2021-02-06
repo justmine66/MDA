@@ -20,7 +20,7 @@ namespace EBank.BusinessServer.Processors
         }
 
         public async Task OnApplicationCommandAsync(
-            IApplicationCommandContext context,
+            IApplicationCommandingContext context,
             OpenBankAccountApplicationCommand appCommand,
             CancellationToken token = default)
         {
@@ -34,28 +34,18 @@ namespace EBank.BusinessServer.Processors
                 appCommand.AccountId,
                 appCommand.AccountName,
                 appCommand.Bank,
-                appCommand.InitialBalance)
-            {
-                ApplicationCommandId = appCommand.Id,
-                ApplicationCommandType = appCommand.GetType().FullName,
-                ApplicationCommandReplyScheme = appCommand.ReplyScheme
-            };
+                appCommand.InitialBalance);
 
-            context.DomainCommandPublisher.Publish(domainCommand);
+            context.PublishDomainCommand(domainCommand);
         }
 
         public void OnApplicationCommand(
-            IApplicationCommandContext context,
+            IApplicationCommandingContext context,
             ChangeAccountNameApplicationCommand appCommand)
         {
-            var domainCommand = new ChangeAccountNameDomainCommand(appCommand.AccountId, appCommand.AccountName)
-            {
-                ApplicationCommandId = appCommand.Id,
-                ApplicationCommandType = appCommand.GetType().FullName,
-                ApplicationCommandReplyScheme = appCommand.ReplyScheme
-            };
+            var domainCommand = new ChangeAccountNameDomainCommand(appCommand.AccountId, appCommand.AccountName);
 
-            context.DomainCommandPublisher.Publish(domainCommand);
+            context.PublishDomainCommand(domainCommand);
         }
     }
 }

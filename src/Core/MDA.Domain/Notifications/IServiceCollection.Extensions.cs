@@ -5,34 +5,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace MDA.Application.Commands
+namespace MDA.Domain.Notifications
 {
     internal static class ServiceCollectionExtensions
     {
         private static readonly List<Type[]> AddedProxies = new List<Type[]>();
         private static readonly List<Type[]> AddedAsyncProxies = new List<Type[]>();
 
-        public static IServiceCollection AddApplicationCommandCore(this IServiceCollection services, params Assembly[] assemblies)
+        public static IServiceCollection AddDomainNotificationCore(this IServiceCollection services, params Assembly[] assemblies)
         {
-            services.AddSingleton<IApplicationCommandExecutor, DefaultApplicationCommandExecutor>();
-            services.AddSingleton<IApplicationCommandingContext, DefaultApplicationCommandingContext>();
-            services.AddSingleton<IApplicationCommandService, DefaultApplicationCommandService>();
-            services.AddSingleton<IApplicationCommandResultListener, ApplicationCommandResultProcessor>();
-
-            services.AddApplicationCommandHandlers(assemblies);
+            services.AddSingleton<IDomainNotifyingContext, DefaultDomainNotifyingContext>();
+            services.AddDomainNotificationHandlers(assemblies);
 
             return services;
         }
 
-        public static IServiceCollection AddApplicationCommandHandlers(this IServiceCollection services, params Assembly[] assemblies)
+        public static IServiceCollection AddDomainNotificationHandlers(this IServiceCollection services, params Assembly[] assemblies)
         {
             var assemblyList = new List<Assembly>(assemblies);
             var types = assemblyList
                 .SelectMany(assembly => assembly.GetTypes()
                     .Where(it => !it.IsInterface && !it.IsAbstract));
 
-            var commandHandlerType = typeof(IApplicationCommandHandler<>);
-            var asyncCommandHandlerType = typeof(IAsyncApplicationCommandHandler<>);
+            var eventHandlerType = typeof(IDomainNotificationHandler<>);
+            var asyncEventHandlerType = typeof(IAsyncDomainNotificationHandler<>);
 
             foreach (var implementationType in types)
             {
@@ -44,13 +40,13 @@ namespace MDA.Application.Commands
                     }
 
                     var genericType = serviceType.GetGenericTypeDefinition();
-                    if (genericType != commandHandlerType &&
-                        genericType != asyncCommandHandlerType)
+                    if (genericType != eventHandlerType &&
+                        genericType != asyncEventHandlerType)
                     {
                         continue;
                     }
 
-                    var isAsync = genericType == asyncCommandHandlerType;
+                    var isAsync = genericType == asyncEventHandlerType;
                     var genericArguments = serviceType.GetGenericArguments();
 
                     // 1. 注册命令处理者
@@ -60,15 +56,15 @@ namespace MDA.Application.Commands
                     var messageHandlerServiceType = isAsync
                         ? typeof(IAsyncMessageHandler<>).MakeGenericType(genericArguments)
                         : typeof(IMessageHandler<>).MakeGenericType(genericArguments);
-                    var messageHandlerImplementationType = typeof(ApplicationCommandProcessor<>).MakeGenericType(genericArguments);
+                    var messageHandlerImplementationType = typeof(DomainNotificationProcessor<>).MakeGenericType(genericArguments);
 
                     services.AddScoped(messageHandlerServiceType, messageHandlerImplementationType);
 
                     if (TryAddProxy(genericArguments, isAsync,
                         out var proxyServiceType,
-                        out var proxyImplType))
+                        out var proxyImplementationType))
                     {
-                        services.AddScoped(proxyServiceType, proxyImplType);
+                        services.AddScoped(proxyServiceType, proxyImplementationType);
                     }
                 }
             }
@@ -76,19 +72,19 @@ namespace MDA.Application.Commands
             return services;
         }
 
-        private static bool IsApplicationCommandType(IEnumerable<Type> arguments)
-            => arguments.All(argument => typeof(IApplicationCommand).IsAssignableFrom(argument));
+        private static bool IsDomainNotificationType(IEnumerable<Type> arguments)
+            => arguments.All(argument => typeof(IDomainNotification).IsAssignableFrom(argument));
 
         private static bool TryAddProxy(
             Type[] genericArguments,
             bool isAsync,
             out Type proxyServiceType,
-            out Type proxyImplType)
+            out Type proxyImplementationType)
         {
             proxyServiceType = default;
-            proxyImplType = default;
+            proxyImplementationType = default;
 
-            if (!IsApplicationCommandType(genericArguments))
+            if (!IsDomainNotificationType(genericArguments))
             {
                 return false;
             }
@@ -103,7 +99,7 @@ namespace MDA.Application.Commands
                     }
                 }
 
-                proxyImplType = typeof(DefaultAsyncMessageHandlerProxy<>).MakeGenericType(genericArguments);
+                proxyImplementationType = typeof(DefaultAsyncMessageHandlerProxy<>).MakeGenericType(genericArguments);
                 proxyServiceType = typeof(IAsyncMessageHandlerProxy<>).MakeGenericType(genericArguments);
 
                 AddedAsyncProxies.Add(genericArguments);
@@ -118,7 +114,7 @@ namespace MDA.Application.Commands
                     }
                 }
 
-                proxyImplType = typeof(DefaultMessageHandlerProxy<>).MakeGenericType(genericArguments);
+                proxyImplementationType = typeof(DefaultMessageHandlerProxy<>).MakeGenericType(genericArguments);
                 proxyServiceType = typeof(IMessageHandlerProxy<>).MakeGenericType(genericArguments);
 
                 AddedProxies.Add(genericArguments);

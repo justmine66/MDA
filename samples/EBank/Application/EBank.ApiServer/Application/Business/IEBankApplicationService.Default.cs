@@ -63,7 +63,11 @@ namespace EBank.ApiServer.Application.Business
         /// <param name="token"></param>
         public async Task WithdrawFundsAsync(StartWithdrawApplicationCommand command, CancellationToken token = default)
         {
-            await _commandService.PublishAsync(command, token);
+            var result = await _commandService.ExecuteCommandAsync(command, token);
+            if (!result.Succeed())
+            {
+                throw new ApiDomainException(result);
+            }
         }
 
         /// <summary>

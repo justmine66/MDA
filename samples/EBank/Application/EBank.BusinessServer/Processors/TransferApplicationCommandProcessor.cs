@@ -8,7 +8,7 @@ namespace EBank.BusinessServer.Processors
 {
     public class TransferApplicationCommandProcessor : IApplicationCommandHandler<StartTransferApplicationCommand>
     {
-        public void OnApplicationCommand(IApplicationCommandContext context, StartTransferApplicationCommand command)
+        public void OnApplicationCommand(IApplicationCommandingContext context, StartTransferApplicationCommand command)
         {
             var transactionId = SnowflakeId.Default().NextId();
             var source = command.SourceAccount;
@@ -19,7 +19,7 @@ namespace EBank.BusinessServer.Processors
                 new TransferAccount(sink.Id, sink.Name, sink.Bank, TransferAccountType.Sink),
                 command.Amount);
 
-            context.DomainCommandPublisher.Publish(domainCommand);
+            context.PublishDomainCommand(domainCommand);
         }
     }
 }

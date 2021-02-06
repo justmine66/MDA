@@ -11,13 +11,13 @@ namespace EBank.BusinessServer.Processors
     public class WithdrawTransactionApplicationCommandProcessor :
         IApplicationCommandHandler<StartWithdrawApplicationCommand>
     {
-        public void OnApplicationCommand(IApplicationCommandContext context, StartWithdrawApplicationCommand appCommand)
+        public void OnApplicationCommand(IApplicationCommandingContext context, StartWithdrawApplicationCommand appCommand)
         {
             var transactionId = SnowflakeId.Default().NextId();
             var command = new StartWithdrawTransactionDomainCommand(transactionId, appCommand.AccountId, appCommand.AccountName,
                 appCommand.Amount, appCommand.Bank);
 
-            context.DomainCommandPublisher.Publish(command);
+            context.PublishDomainCommand(command);
         }
     }
 }

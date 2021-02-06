@@ -1,4 +1,6 @@
 ﻿using MDA.Domain.Commands;
+using MDA.Domain.Events;
+using MDA.Domain.Notifications;
 
 namespace MDA.Domain.Exceptions
 {
@@ -15,6 +17,24 @@ namespace MDA.Domain.Exceptions
             exception.ApplicationCommandId = command.ApplicationCommandId;
             exception.ApplicationCommandType = command.ApplicationCommandType;
             exception.ApplicationCommandReplyScheme = command.ApplicationCommandReplyScheme;
+
+            return exception;
+        }
+
+        internal static IDomainExceptionMessage WithEventingContext(this IDomainExceptionMessage exception, IDomainEvent @event)
+        {
+            exception.ApplicationCommandId = @event.ApplicationCommandId;
+            exception.ApplicationCommandType = @event.ApplicationCommandType;
+            exception.ApplicationCommandReplyScheme = @event.ApplicationCommandReplyScheme;
+
+            return exception;
+        }
+
+        internal static IDomainExceptionMessage WithNotifyingContext(this IDomainExceptionMessage exception, IDomainNotification notification)
+        {
+            exception.ApplicationCommandId = notification.ApplicationCommandId;
+            exception.ApplicationCommandType = notification.ApplicationCommandType;
+            exception.ApplicationCommandReplyScheme = notification.ApplicationCommandReplyScheme;
 
             return exception;
         }

@@ -5,11 +5,11 @@ namespace MDA.Domain.Events
 {
     public interface IDomainEventHandler<in TDomainEvent> where TDomainEvent : IDomainEvent
     {
-        void OnDomainEvent(IDomainEventHandlingContext context, TDomainEvent @event);
+        void OnDomainEvent(IDomainEventingContext context, TDomainEvent @event);
     }
 
     public interface IAsyncDomainEventHandler<in TDomainEvent> where TDomainEvent : IDomainEvent
     {
-        Task OnDomainEventAsync(IDomainEventHandlingContext context, TDomainEvent @event, CancellationToken token = default);
+        Task OnDomainEventAsync(IDomainEventingContext context, TDomainEvent @event, CancellationToken token = default);
     }
 }

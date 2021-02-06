@@ -20,7 +20,7 @@ namespace EBank.ApiServer.Application.Querying
             _db = db.CreateRelationalDbStorage(DatabaseScheme.ReadDb);
         }
 
-        public async Task OnDomainEventAsync(IDomainEventHandlingContext context, DepositTransactionStartedDomainEvent @event, CancellationToken token = default)
+        public async Task OnDomainEventAsync(IDomainEventingContext context, DepositTransactionStartedDomainEvent @event, CancellationToken token = default)
         {
             var sql = $"INSERT INTO `{Tables.DepositTransactions}` (`Id`, `AccountId`, `AccountName`, `Bank`, `Amount`, `Status`, `Creator`, `CreatedTimestamp`) VALUES (@TransactionId, @AccountId, @AccountName, @Bank, @amount, @Status, @Creator, @CreatedTimestamp);";
 
@@ -39,7 +39,7 @@ namespace EBank.ApiServer.Application.Querying
             await _db.ExecuteAsync(sql, po, token);
         }
 
-        public async Task OnDomainEventAsync(IDomainEventHandlingContext context, DepositTransactionReadiedDomainEvent @event, CancellationToken token = default)
+        public async Task OnDomainEventAsync(IDomainEventingContext context, DepositTransactionReadiedDomainEvent @event, CancellationToken token = default)
         {
             var sql = $"UPDATE `{Tables.DepositTransactions}` SET `Status`=@Status WHERE `Id`=@TransactionId;";
 
@@ -52,7 +52,7 @@ namespace EBank.ApiServer.Application.Querying
             await _db.ExecuteAsync(sql, po, token);
         }
 
-        public async Task OnDomainEventAsync(IDomainEventHandlingContext context, DepositTransactionCompletedDomainEvent @event, CancellationToken token = default)
+        public async Task OnDomainEventAsync(IDomainEventingContext context, DepositTransactionCompletedDomainEvent @event, CancellationToken token = default)
         {
             var sql = $"UPDATE `{Tables.DepositTransactions}` SET `Status`=@Status WHERE `Id`=@TransactionId;";
 
@@ -65,7 +65,7 @@ namespace EBank.ApiServer.Application.Querying
             await _db.ExecuteAsync(sql, po, token);
         }
 
-        public async Task OnDomainEventAsync(IDomainEventHandlingContext context, DepositTransactionCancelledDomainEvent @event, CancellationToken token = default)
+        public async Task OnDomainEventAsync(IDomainEventingContext context, DepositTransactionCancelledDomainEvent @event, CancellationToken token = default)
         {
             var sql = $"UPDATE `{Tables.DepositTransactions}` SET `Status`=@Status WHERE `Id`=@TransactionId;";
 

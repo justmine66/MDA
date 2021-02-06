@@ -6,12 +6,12 @@ namespace MDA.Application.Commands
     public interface IApplicationCommandHandler<in TApplicationCommand> 
         where TApplicationCommand : IApplicationCommand
     {
-        void OnApplicationCommand(IApplicationCommandContext context, TApplicationCommand command);
+        void OnApplicationCommand(IApplicationCommandingContext context, TApplicationCommand command);
     }
 
     public interface IAsyncApplicationCommandHandler<in TApplicationCommand>
         where TApplicationCommand : IApplicationCommand
     {
-        Task OnApplicationCommandAsync(IApplicationCommandContext context, TApplicationCommand command, CancellationToken token = default);
+        Task OnApplicationCommandAsync(IApplicationCommandingContext context, TApplicationCommand command, CancellationToken token = default);
     }
 }

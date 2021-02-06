@@ -16,10 +16,10 @@ namespace MDA.Domain.Events
         where TDomainEvent : class, IDomainEvent
     {
         private readonly ILogger _logger;
-        private readonly IDomainEventHandlingContext _context;
+        private readonly IDomainEventingContext _context;
 
         public DomainEventProcessor(
-            IDomainEventHandlingContext context,
+            IDomainEventingContext context,
             ILogger<DomainEventProcessor<TDomainEvent>> logger)
         {
             _logger = logger;
@@ -36,6 +36,8 @@ namespace MDA.Domain.Events
 
                 return;
             }
+
+            _context.SetDomainEvent(@event);
 
             handler.OnDomainEvent(_context, @event);
 
@@ -54,6 +56,8 @@ namespace MDA.Domain.Events
 
                 return;
             }
+
+            _context.SetDomainEvent(@event);
 
             await handler.OnDomainEventAsync(_context, @event, token);
 
@@ -78,7 +82,7 @@ namespace MDA.Domain.Events
 
             notification.FillFrom(@event);
 
-            _context.DomainNotificationPublisher.Publish(notification);
+            _context.PublishDomainNotification(notification);
         }
 
         private async Task ReplyApplicationEventAsync(IDomainEvent @event, CancellationToken token)
@@ -97,7 +101,7 @@ namespace MDA.Domain.Events
 
             notification.FillFrom(@event);
 
-            await _context.DomainNotificationPublisher.PublishAsync(notification, token);
+            await _context.PublishDomainNotificationAsync(notification, token);
         }
     }
 }

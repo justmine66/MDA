@@ -21,7 +21,7 @@ namespace EBank.ApiServer.Application.Querying
             _db = db.CreateRelationalDbStorage(DatabaseScheme.ReadDb);
         }
 
-        public async Task OnDomainEventAsync(IDomainEventHandlingContext context, AccountOpenedDomainEvent @event, CancellationToken token = default)
+        public async Task OnDomainEventAsync(IDomainEventingContext context, AccountOpenedDomainEvent @event, CancellationToken token = default)
         {
             var sql = $"INSERT INTO `{Tables.BankAccounts}` (`Id`, `Name`, `Bank`, `Balance`, `Creator`, `CreatedTimestamp`) VALUES (@Id, @Name, @Bank, @Balance, @Creator, @CreatedTimestamp);";
 
@@ -38,7 +38,7 @@ namespace EBank.ApiServer.Application.Querying
             await _db.ExecuteAsync(sql, parameter, token);
         }
 
-        public async Task OnDomainEventAsync(IDomainEventHandlingContext context, AccountNameChangedDomainEvent @event, CancellationToken token)
+        public async Task OnDomainEventAsync(IDomainEventingContext context, AccountNameChangedDomainEvent @event, CancellationToken token)
         {
             var sql = $"UPDATE `{Tables.BankAccounts}` SET `Name`=@Name WHERE `Id`=@AccountId;";
 
@@ -51,7 +51,7 @@ namespace EBank.ApiServer.Application.Querying
             await _db.ExecuteAsync(sql, po, token);
         }
 
-        public async Task OnDomainEventAsync(IDomainEventHandlingContext context, DepositTransactionSubmittedDomainEvent @event, CancellationToken token = default)
+        public async Task OnDomainEventAsync(IDomainEventingContext context, DepositTransactionSubmittedDomainEvent @event, CancellationToken token = default)
         {
             var sql = $"UPDATE `{Tables.BankAccounts}` SET `Balance`=`Balance`+@Amount WHERE `Id`=@AccountId;";
 
@@ -64,7 +64,7 @@ namespace EBank.ApiServer.Application.Querying
             await _db.ExecuteAsync(sql, po, token);
         }
 
-        public async Task OnDomainEventAsync(IDomainEventHandlingContext context, WithdrawTransactionSubmittedDomainEvent @event, CancellationToken token = default)
+        public async Task OnDomainEventAsync(IDomainEventingContext context, WithdrawTransactionSubmittedDomainEvent @event, CancellationToken token = default)
         {
             var sql = $"UPDATE `{Tables.BankAccounts}` SET `Balance`=`Balance`-@Amount WHERE `Id`=@AccountId;";
 
@@ -77,7 +77,7 @@ namespace EBank.ApiServer.Application.Querying
             await _db.ExecuteAsync(sql, po, token);
         }
 
-        public async Task OnDomainEventAsync(IDomainEventHandlingContext context, TransferTransactionSubmittedDomainEvent @event, CancellationToken token = default)
+        public async Task OnDomainEventAsync(IDomainEventingContext context, TransferTransactionSubmittedDomainEvent @event, CancellationToken token = default)
         {
             var sql = string.Empty;
             switch (@event.AccountType)

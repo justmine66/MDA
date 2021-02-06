@@ -87,11 +87,6 @@ namespace MDA.Domain.Commands
                 return;
             }
 
-            if (command.NeedReplyApplicationCommand())
-            {
-                await ReplyApplicationCommandAsync(command, token);
-            }
-
             var hasDomainEvent = false;
             var mutatingDomainEvents = aggregate.MutatingDomainEvents;
             if (mutatingDomainEvents.IsNotEmpty())
@@ -114,19 +109,21 @@ namespace MDA.Domain.Commands
             {
                 _logger.LogWarning($"The domain command: [Id: {commandId}, Type: {commandType}] apply neither domain event nor generate domain notification for aggregate root: [Id: {aggregateRootStringId}, Type: {aggregateRootTypeFullName}], please confirm whether the state will be lost.");
             }
+
+            if (command.NeedReplyApplicationCommand())
+            {
+                await ReplyApplicationCommandAsync(command, token);
+            }
         }
 
         #region [ private methods ]
 
         private async Task ProcessUnKnownExceptionAsync(IDomainCommand command, Exception exception, CancellationToken token)
         {
-            var commandId = command.Id;
-            var commandType = command.GetType().FullName;
             var canReturnOnDomainCommandHandled = command.ApplicationCommandReplyScheme == ApplicationCommandReplySchemes.OnDomainCommandHandled;
-
             if (!canReturnOnDomainCommandHandled)
             {
-                _logger.LogError($"Handling domain command has a unknown exception, Id: {commandId}, Type: {commandType}, Exception: {LogFormatter.PrintException(exception)}.");
+                _logger.LogError($"Handling domain command[Id: {command.Id}, Type: {command.GetType().FullName}, application command[{command.ApplicationCommandId}, {command.ApplicationCommandType}, reply scheme: {command.ApplicationCommandReplyScheme}], aggregate root[{command.AggregateRootId},{command.AggregateRootType.FullName}], has a unknown exceptionException: {LogFormatter.PrintException(exception)}.");
 
                 return;
             }
@@ -169,34 +166,19 @@ namespace MDA.Domain.Commands
         {
             mutatingDomainEvents.FillFrom(command);
 
-            IEnumerable<DomainEventResult> appendResults;
-            try
-            {
-                appendResults = await _stateBackend.AppendMutatingDomainEventsAsync(mutatingDomainEvents, token);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Append domain event to state backend has a exception: {LogFormatter.PrintException(e)}.");
+            var results = await _stateBackend.AppendMutatingDomainEventsAsync(mutatingDomainEvents, token);
 
-                return;
-            }
+            await results.OnResultAsync(async success =>
+           {
+               var @event = mutatingDomainEvents.Single(it => it.Id == success.EventId);
 
-            if (appendResults.IsEmpty()) return;
+               await PublishDomainEventAsync(@event, token);
+           }, async fail =>
+           {
+               _logger.LogError($"Append domain event has a error: {fail.Message}.");
 
-            foreach (var result in appendResults)
-            {
-                if (!(result.StorageSucceed() ||
-                      result.HandleSucceed()))
-                {
-                    _logger.LogError($"Append domain event has a error: {result.Message}.");
-                }
-                else
-                {
-                    var @event = mutatingDomainEvents.Single(it => it.Id == result.EventId);
-
-                    await PublishDomainEventAsync(@event, token);
-                }
-            }
+               await Task.CompletedTask;
+           });
         }
 
         private async Task ProcessMutatingDomainNotificationsAsync(IEnumerable<IDomainNotification> mutatingDomainNotifications, IDomainCommand command, CancellationToken token)

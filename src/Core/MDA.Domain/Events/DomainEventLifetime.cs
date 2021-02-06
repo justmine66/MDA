@@ -1,7 +1,7 @@
 ﻿namespace MDA.Domain.Events
 {
     /// <summary>
-    /// 领域事件声明周期
+    /// 领域事件生命周期
     /// </summary>
     public enum DomainEventLifetime
     {

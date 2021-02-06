@@ -15,7 +15,7 @@ namespace MDA.Domain.Events
         public static IServiceCollection AddDomainEventCore(this IServiceCollection services, params Assembly[] assemblies)
         {
             services.AddSingleton<IDomainEventStateBackend, MemoryDomainEventStateBackend>();
-            services.AddSingleton<IDomainEventHandlingContext, DefaultDomainEventHandlingContext>();
+            services.AddSingleton<IDomainEventingContext, DefaultDomainEventingContext>();
             services.AddDomainEventHandlers(assemblies);
 
             return services;

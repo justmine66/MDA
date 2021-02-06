@@ -64,5 +64,23 @@ namespace MDA.Domain.Notifications
 
             return sink;
         }
+
+        internal static IDomainNotification WithEventingContext(this IDomainNotification notification, IDomainEvent @event)
+        {
+            notification.ApplicationCommandId = @event.ApplicationCommandId;
+            notification.ApplicationCommandType = @event.ApplicationCommandType;
+            notification.ApplicationCommandReplyScheme = @event.ApplicationCommandReplyScheme;
+
+            return notification;
+        }
+
+        internal static IDomainNotification WithEventingContext<TAggregateRootId>(this IDomainNotification<TAggregateRootId> notification, IDomainEvent @event)
+        {
+            notification.ApplicationCommandId = @event.ApplicationCommandId;
+            notification.ApplicationCommandType = @event.ApplicationCommandType;
+            notification.ApplicationCommandReplyScheme = @event.ApplicationCommandReplyScheme;
+
+            return notification;
+        }
     }
 }

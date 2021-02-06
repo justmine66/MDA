@@ -3,7 +3,6 @@ using EBank.Domain.Commands.Withdrawing;
 using EBank.Domain.Events.Accounts;
 using EBank.Domain.Events.Withdrawing;
 using EBank.Domain.Notifications;
-using MDA.Domain.Commands;
 using MDA.Domain.Events;
 using MDA.Domain.Notifications;
 
@@ -25,21 +24,16 @@ namespace EBank.BusinessServer.ProcessorManagers
         // 4. 从银行账户聚合根，收到取款账户交易已提交的领域事件，通知取款交易聚合根确认。
         IDomainEventHandler<WithdrawTransactionSubmittedDomainEvent>
     {
-        private readonly IDomainCommandPublisher _domainCommandPublisher;
-
-        public WithdrawTransactionProcessorManager(IDomainCommandPublisher domainCommandPublisher)
-            => _domainCommandPublisher = domainCommandPublisher;
-
         /// <summary>
         /// 1. 从取款交易聚合根，收到取款交易已发起的领域事件，向银行账户聚合根发起交易信息验证。
         /// </summary>
         /// <param name="context">事件处理上下文</param>
         /// <param name="event">交易已发起的领域事件</param>
-        public void OnDomainEvent(IDomainEventHandlingContext context, WithdrawTransactionStartedDomainEvent @event)
+        public void OnDomainEvent(IDomainEventingContext context, WithdrawTransactionStartedDomainEvent @event)
         {
             var command = new ValidateWithdrawTransactionDomainCommand(@event.AggregateRootId, @event.AccountId, @event.AccountName, @event.Bank, @event.Money);
 
-            context.DomainCommandPublisher.Publish(command);
+            context.PublishDomainCommand(command);
         }
 
         /// <summary>
@@ -47,28 +41,29 @@ namespace EBank.BusinessServer.ProcessorManagers
         /// </summary>
         /// <param name="context">事件处理上下文</param>
         /// <param name="event">交易信息验证已通过的领域事件</param>
-        public void OnDomainEvent(IDomainEventHandlingContext context, WithdrawTransactionValidatedDomainEvent @event)
+        public void OnDomainEvent(IDomainEventingContext context, WithdrawTransactionValidatedDomainEvent @event)
         {
             var command = new ConfirmWithdrawTransactionValidatedDomainCommand()
             {
                 AggregateRootId = @event.TransactionId
             };
 
-            context.DomainCommandPublisher.Publish(command);
+            context.PublishDomainCommand(command);
         }
 
         /// <summary>
         /// 2.2 从银行账户聚合根，收到取款交易信息验证已失败的通知，向取款账交易聚合根发起取消交易。
         /// </summary>
+        /// <param name="context">领域通知处理上下文</param>
         /// <param name="notification">取款交易信息验证已失败的通知</param>
-        public void Handle(WithdrawTransactionValidateFailedDomainNotification notification)
+        public void OnDomainNotification(IDomainNotifyingContext context, WithdrawTransactionValidateFailedDomainNotification notification)
         {
             var command = new CancelWithdrawTransactionDomainCommand()
             {
                 AggregateRootId = notification.TransactionId
             };
 
-            _domainCommandPublisher.Publish(command);
+            context.PublishDomainCommand(command);
         }
 
         /// <summary>
@@ -76,11 +71,11 @@ namespace EBank.BusinessServer.ProcessorManagers
         /// </summary>
         /// <param name="context">事件处理上下文</param>
         /// <param name="event"></param>
-        public void OnDomainEvent(IDomainEventHandlingContext context, WithdrawTransactionReadiedDomainEvent @event)
+        public void OnDomainEvent(IDomainEventingContext context, WithdrawTransactionReadiedDomainEvent @event)
         {
-            var command = new SubmitWithdrawTransactionDomainCommand(@event.AggregateRootId,@event.AccountId);
+            var command = new SubmitWithdrawTransactionDomainCommand(@event.AggregateRootId, @event.AccountId);
 
-            context.DomainCommandPublisher.Publish(command);
+            context.PublishDomainCommand(command);
         }
 
         /// <summary>
@@ -88,14 +83,14 @@ namespace EBank.BusinessServer.ProcessorManagers
         /// </summary>
         /// <param name="context">事件处理上下文</param>
         /// <param name="event"></param>
-        public void OnDomainEvent(IDomainEventHandlingContext context, WithdrawTransactionSubmittedDomainEvent @event)
+        public void OnDomainEvent(IDomainEventingContext context, WithdrawTransactionSubmittedDomainEvent @event)
         {
             var command = new ConfirmWithdrawTransactionSubmittedDomainCommand()
             {
                 AggregateRootId = @event.TransactionId
             };
 
-            context.DomainCommandPublisher.Publish(command);
+            context.PublishDomainCommand(command);
         }
     }
 }

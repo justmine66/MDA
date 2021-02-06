@@ -5,6 +5,7 @@ using MDA.Infrastructure.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Reflection;
+using MDA.Domain.Notifications;
 
 namespace MDA.Domain.DependencyInjection
 {
@@ -19,6 +20,7 @@ namespace MDA.Domain.DependencyInjection
             context.Services.AddDomainCommandCore(assemblies);
             context.Services.AddDomainModelCore(configuration); 
             context.Services.AddDomainEventCore(assemblies);
+            context.Services.AddDomainNotificationCore(assemblies);
 
             configure(new DefaultDomainConfigureContext(context.Services));
 
