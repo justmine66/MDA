@@ -34,6 +34,6 @@ namespace MDA.Infrastructure.Async
             }
         }
 
-        public static void SyncRun(this Task task) => task.ConfigureAwait(false).GetAwaiter().GetResult();
+        public static void RunSynchronously(this Task task) => task.ConfigureAwait(false).GetAwaiter().GetResult();
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Disruptor;
-using MDA.Infrastructure.Async;
 using MDA.Infrastructure.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -37,7 +36,7 @@ namespace MDA.MessageBus.Disruptor
                     if (asyncHandlerProxies.IsNotEmpty())
                     {
                         hasHandler = true;
-                        MessageHandlerUtils.DynamicInvokeAsyncHandle(asyncHandlerProxies, data.Message, logger).SyncRun();
+                        MessageHandlerUtils.DynamicInvokeAsyncHandle(asyncHandlerProxies, data.Message, logger).RunSynchronously();
                     }
 
                     if (!hasHandler)
