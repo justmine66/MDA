@@ -9,7 +9,7 @@ namespace EBank.Domain.Models.Primitives
     {
         public Money(decimal amount, Currency currency)
         {
-            PreConditions.Positive(amount, nameof(amount));
+            PreConditions.NotNull(currency, nameof(currency));
 
             Amount = amount;
             Currency = currency;
