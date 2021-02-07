@@ -5,7 +5,7 @@ using MDA.Domain.Saga;
 namespace EBank.Domain.Notifications.Accounts
 {
     /// <summary>
-    /// 取款交易验证失败的领域通知
+    /// 取款交易已验证的领域通知
     /// </summary>
     public class WithdrawTransactionValidatedDomainNotification : SubTransactionDomainNotification<WithdrawTransactionId>
     {

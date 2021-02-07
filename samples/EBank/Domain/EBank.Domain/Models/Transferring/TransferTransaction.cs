@@ -75,14 +75,14 @@ namespace EBank.Domain.Models.Transferring
 
         public void OnDomainCommand(ConfirmTransferTransactionSubmittedDomainCommand command)
         {
-            var @event = new TransferTransactionCompletedDomainEvent(TransferTransactionStatus.Completed, $"当前账户信息, 类型: {command.AccountType}，余额: {command.AccountBalance.ToShortString()}, 在途收入余额：{command.AccountInAmountInFlight.ToShortString()}, 在途支出余额：{command.AccountOutAmountInFlight.ToShortString()}");
+            var @event = new TransferTransactionCompletedDomainEvent(TransferTransactionStatus.Completed, command.AccountType, $"当前账户信息, 余额: {command.AccountBalance.ToShortString()}, 在途收入总额：{command.AccountInAmountInFlight.ToShortString()}, 在途支出总额：{command.AccountOutAmountInFlight.ToShortString()}");
 
             ApplyDomainEvent(@event);
         }
 
         public void OnDomainCommand(CancelTransferTransactionDomainCommand command)
         {
-            var @event = new TransferTransactionCancelledDomainEvent(TransferTransactionStatus.Canceled, command.Message);
+            var @event = new TransferTransactionCancelledDomainEvent(SourceAccount, SinkAccount, TransferTransactionStatus.Canceled, command.Message);
 
             ApplyDomainEvent(@event);
         }

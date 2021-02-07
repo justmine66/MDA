@@ -45,7 +45,7 @@ namespace EBank.Domain.Events.Accounts
         public Money AccountInAmountInFlight { get; }
 
         /// <summary>
-        /// 账户在途支出金额
+        /// 账户在途支出总额
         /// </summary>
         public Money AccountOutAmountInFlight { get; }
     }

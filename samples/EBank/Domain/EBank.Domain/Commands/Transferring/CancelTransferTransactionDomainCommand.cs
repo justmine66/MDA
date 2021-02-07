@@ -9,6 +9,12 @@ namespace EBank.Domain.Commands.Transferring
     /// </summary>
     public class CancelTransferTransactionDomainCommand : SubTransactionDomainCommand<TransferTransaction, TransferTransactionId>
     {
-        public string Message { get; set; }
+        public CancelTransferTransactionDomainCommand(TransferTransactionId transferTransactionId, string message)
+        {
+            AggregateRootId = transferTransactionId;
+            Message = message;
+        }
+
+        public string Message { get; }
     }
 }

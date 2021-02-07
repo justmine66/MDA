@@ -15,10 +15,11 @@ CREATE TABLE If Not Exists `bank_accounts`
   UNIQUE KEY `IX_Account_Id` (`Id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='银行账户表';
 
-CREATE TABLE If Not Exists `deposit_transactions`
+CREATE TABLE If Not Exists `account_in_transactions`
 (
   `pkId` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增长标识',
   `Id` bigint(20) DEFAULT 0 NOT NULL COMMENT '交易号',
+  `Type` varchar(16) DEFAULT '' NOT NULL COMMENT '交易类型',
   `AccountId` bigint(20) DEFAULT 0 NOT NULL COMMENT '账号',
   `AccountName` varchar(32) DEFAULT '' NOT NULL COMMENT '账户名',
   `Bank` varchar(64) DEFAULT '' NOT NULL COMMENT '开户行',
@@ -29,12 +30,13 @@ CREATE TABLE If Not Exists `deposit_transactions`
   `Message` varchar(128) DEFAULT '' NOT NULL COMMENT '消息',
   PRIMARY KEY (`pkId`),
   UNIQUE KEY `IX_Transaction_Id` (`Id`)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='存款交易表';
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='账户入账交易表';
 
-CREATE TABLE If Not Exists `withdraw_transactions`
+CREATE TABLE If Not Exists `account_out_transactions`
 (
   `pkId` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增长标识',
   `Id` bigint(20) DEFAULT 0 NOT NULL COMMENT '交易号',
+  `Type` varchar(16) DEFAULT '' NOT NULL COMMENT '交易类型',
   `AccountId` bigint(20) DEFAULT 0 NOT NULL COMMENT '账号',
   `AccountName` varchar(32) DEFAULT '' NOT NULL COMMENT '账户名',
   `Bank` varchar(64) DEFAULT '' NOT NULL COMMENT '开户行',
@@ -45,23 +47,4 @@ CREATE TABLE If Not Exists `withdraw_transactions`
   `Message` varchar(128) DEFAULT '' NOT NULL COMMENT '消息',
   PRIMARY KEY (`pkId`),
   UNIQUE KEY `IX_Transaction_Id` (`Id`)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='取款交易表';
-
-CREATE TABLE If Not Exists `transfer_transactions`
-(
-  `pkId` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增长标识',
-  `Id` bigint(20) DEFAULT 0 NOT NULL COMMENT '交易号',
-  `SourceAccountId` bigint(20) DEFAULT 0 NOT NULL COMMENT '源账号',
-  `SourceAccountName` varchar(32) DEFAULT '' NOT NULL COMMENT '源账户名',
-  `SourceBank` varchar(64) DEFAULT '' NOT NULL COMMENT '源账户开户行',
-  `SinkAccountId` bigint(20) DEFAULT 0 NOT NULL COMMENT '目标账号',
-  `SinkAccountName` varchar(32) DEFAULT '' NOT NULL COMMENT '目标账户名',
-  `SinkBank` varchar(64) DEFAULT '' NOT NULL COMMENT '目标账户开户行',
-  `Amount` DECIMAL(18,2) DEFAULT 0 NOT NULL COMMENT '转账金额',
-  `Status` varchar(16) DEFAULT '' NOT NULL COMMENT '状态',
-  `Creator` varchar(36) DEFAULT '' NOT NULL COMMENT '创建者',
-  `CreatedTimestamp` bigint(20) DEFAULT 0 NOT NULL COMMENT '创建时间，时间戳，单位：毫秒',
-  `Message` varchar(128) DEFAULT '' NOT NULL COMMENT '消息',
-  PRIMARY KEY (`pkId`),
-  UNIQUE KEY `IX_Transaction_Id` (`Id`)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='转账交易表';
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='账户出账交易表';

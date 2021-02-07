@@ -4,3 +4,4 @@
 4. ObjectPortMapper支持可空类型转换，比如：decimal => decimal?
 5. 状态后端可靠性保障。
 6. 解决Newtonsoft序列化带多个构造函数类的问题。
+7. 领域事件持久化索引和载荷保证事务性。

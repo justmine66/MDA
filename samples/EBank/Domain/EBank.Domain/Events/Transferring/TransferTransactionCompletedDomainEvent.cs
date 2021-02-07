@@ -9,11 +9,17 @@ namespace EBank.Domain.Events.Transferring
     /// </summary>
     public class TransferTransactionCompletedDomainEvent : EndSubTransactionDomainEvent<TransferTransactionId>
     {
-        public TransferTransactionCompletedDomainEvent(TransferTransactionStatus status, string message)
+        public TransferTransactionCompletedDomainEvent(TransferTransactionStatus status, TransferAccountType accountType, string message)
         {
             Status = status;
+            AccountType = accountType;
             Message = message;
         }
+
+        /// <summary>
+        /// 账户类型
+        /// </summary>
+        public TransferAccountType AccountType { get; }
 
         /// <summary>
         /// 交易状态

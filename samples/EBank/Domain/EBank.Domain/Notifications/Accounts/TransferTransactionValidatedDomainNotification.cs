@@ -1,21 +1,20 @@
-﻿using EBank.Domain.Models.Accounts.Primitives;
-using EBank.Domain.Models.Primitives;
+﻿using EBank.Domain.Models.Primitives;
 using EBank.Domain.Models.Transferring;
 using EBank.Domain.Models.Transferring.Primitives;
-using MDA.Domain.Events;
+using MDA.Domain.Saga;
 
-namespace EBank.Domain.Events.Accounts
+namespace EBank.Domain.Notifications.Accounts
 {
     /// <summary>
-    /// 转款交易已验证的领域事件
+    /// 转账交易已验证的领域通知
     /// </summary>
-    public class TransferTransactionValidatedDomainEvent : DomainEvent<BankAccountId>
+    public class TransferTransactionValidatedDomainNotification : SubTransactionDomainNotification<TransferTransactionId>
     {
-        public TransferTransactionValidatedDomainEvent(TransferTransactionId transactionId, Money money, TransferAccountType accountType)
+        public TransferTransactionValidatedDomainNotification(TransferTransactionId transactionId, Money money, TransferAccountType accountType)
         {
             TransactionId = transactionId;
-            Money = money;
             AccountType = accountType;
+            Money = money;
         }
 
         /// <summary>

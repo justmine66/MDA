@@ -9,11 +9,23 @@ namespace EBank.Domain.Events.Transferring
     /// </summary>
     public class TransferTransactionCancelledDomainEvent : EndSubTransactionDomainEvent<TransferTransactionId>
     {
-        public TransferTransactionCancelledDomainEvent(TransferTransactionStatus status, string message)
+        public TransferTransactionCancelledDomainEvent(TransferAccount sourceAccount, TransferAccount sinkAccount, TransferTransactionStatus status, string message)
         {
-            Status = status;
+            SourceAccount = sourceAccount;
+            SinkAccount = sinkAccount;
             Message = message;
+            Status = status;
         }
+
+        /// <summary>
+        /// 源账户信息
+        /// </summary>
+        public TransferAccount SourceAccount { get; }
+
+        /// <summary>
+        /// 目标账户信息
+        /// </summary>
+        public TransferAccount SinkAccount { get; }
 
         public TransferTransactionStatus Status { get; }
     }

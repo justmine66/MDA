@@ -1,4 +1,5 @@
-﻿using EBank.Domain.Models.Transferring;
+﻿using EBank.Domain.Models.Accounts.Primitives;
+using EBank.Domain.Models.Transferring;
 using EBank.Domain.Models.Transferring.Primitives;
 using MDA.Domain.Saga;
 
@@ -25,5 +26,6 @@ namespace EBank.Domain.Notifications.Accounts
         /// 账户类型
         /// </summary>
         public TransferAccountType AccountType { get; }
+        
     }
 }

@@ -61,17 +61,26 @@ namespace EBank.Domain.Models.Accounts
         /// <param name="transactionId">交易号</param>
         /// <param name="transaction">已删除的账户交易</param>
         public bool TryRemoveAccountTransaction(long transactionId, out AccountTransaction transaction)
-            => _transactionsInFlight.TryGetValue(transactionId, out transaction) &&
-              _transactionsInFlight.Remove(transactionId);
+        {
+            if (_transactionsInFlight == null)
+            {
+                transaction = null;
+
+                return false;
+            }
+
+            return _transactionsInFlight.TryGetValue(transactionId, out transaction) &&
+                _transactionsInFlight.Remove(transactionId);
+        }
 
         /// <summary>
         /// 可用余额。
-        /// 计算规则：可用余额 = 账户余额 + 在途收入金额 - 在途支出金额。
+        /// 计算规则：可用余额 = 账户余额 + 在途收入总额 - 在途支出总额。
         /// </summary>
         public Money AvailableBalance => Balance + InAmountInFlight - OutAmountInFlight;
 
         /// <summary>
-        /// 在途收入金额
+        /// 在途收入总额
         /// </summary>
         public Money InAmountInFlight
         {
@@ -84,7 +93,7 @@ namespace EBank.Domain.Models.Accounts
         }
 
         /// <summary>
-        /// 在途支出金额
+        /// 在途支出总额
         /// </summary>
         public Money OutAmountInFlight
         {
@@ -168,7 +177,7 @@ namespace EBank.Domain.Models.Accounts
                 throw new BankAccountDomainException($"在账户[{Id},{Name},{Bank}]中，没有找到可提交的在途存款交易: {transactionId}.");
             }
 
-            // 2. 执行业务
+            // 2. 处理业务
             ApplyDomainEvent(new DepositTransactionSubmittedDomainEvent(transaction.Id, transaction.Money, Balance, inAmountInFlight, outAmountInFlight));
         }
 
@@ -202,7 +211,7 @@ namespace EBank.Domain.Models.Accounts
                 return;
             }
 
-            // 2. 执行业务
+            // 2. 处理业务
             AddAccountTransaction(new AccountTransaction(command.TransactionId, command.Money, AccountFundDirection.Out));
             PublishDomainNotification(new WithdrawTransactionValidatedDomainNotification(command.TransactionId, command.Money));
         }
@@ -223,7 +232,7 @@ namespace EBank.Domain.Models.Accounts
                 throw new BankAccountDomainException($"在账户[{Id},{Name},{Bank}]中，没有找到在途取款交易: {transactionId}.");
             }
 
-            // 2. 执行业务
+            // 2. 处理业务
             ApplyDomainEvent(new WithdrawTransactionSubmittedDomainEvent(transaction.Id, transaction.Money, Balance, inAmountInFlight, outAmountInFlight));
         }
 
@@ -241,21 +250,21 @@ namespace EBank.Domain.Models.Accounts
             // 1. 业务预检
             if (!Id.Equals(command.AggregateRootId))
             {
-                PublishDomainNotification(new TransferTransactionValidateFailedDomainNotification(command.TransactionId, accountType, $"{accountTypeString}账户号不正确。"));
+                PublishDomainNotification(new TransferTransactionValidateFailedDomainNotification(command.TransactionId, accountType, $"{accountTypeString}账户的账户号不正确。"));
 
                 return;
             }
 
             if (!Name.Equals(account.Name))
             {
-                PublishDomainNotification(new TransferTransactionValidateFailedDomainNotification(command.TransactionId, accountType, $"{accountTypeString}账户名不正确。"));
+                PublishDomainNotification(new TransferTransactionValidateFailedDomainNotification(command.TransactionId, accountType, $"{accountTypeString}账户的账户名不正确。"));
 
                 return;
             }
 
             if (!Bank.Equals(account.Bank))
             {
-                PublishDomainNotification(new TransferTransactionValidateFailedDomainNotification(command.TransactionId, accountType, $"{accountTypeString}开户行不匹配。"));
+                PublishDomainNotification(new TransferTransactionValidateFailedDomainNotification(command.TransactionId, accountType, $"{accountTypeString}账户的开户行不匹配。"));
 
                 return;
             }
@@ -269,8 +278,29 @@ namespace EBank.Domain.Models.Accounts
                 return;
             }
 
-            // 2. 执行业务
-            ApplyDomainEvent(new TransferTransactionValidatedDomainEvent(command.TransactionId, command.Money, accountType));
+            // 2. 处理业务
+            switch (accountType)
+            {
+                case TransferAccountType.Source:
+                    AddAccountTransaction(new AccountTransaction(command.TransactionId, command.Money, AccountFundDirection.Out));
+                    break;
+                case TransferAccountType.Sink:
+                    AddAccountTransaction(new AccountTransaction(command.TransactionId, command.Money, AccountFundDirection.In));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            PublishDomainNotification(new TransferTransactionValidatedDomainNotification(command.TransactionId, command.Money, accountType));
+        }
+
+        /// <summary>
+        /// 释放转账在途交易
+        /// </summary>
+        /// <param name="command"></param>
+        public void OnDomainCommand(FreeTransferAccountTransactionDomainCommand command)
+        {
+            TryRemoveAccountTransaction(command.TransactionId, out _);
         }
 
         /// <summary>
@@ -280,6 +310,8 @@ namespace EBank.Domain.Models.Accounts
         public void OnDomainCommand(SubmitTransferTransactionDomainCommand command)
         {
             var transactionId = command.TransactionId;
+            var inAmountInFlight = InAmountInFlight;
+            var outAmountInFlight = OutAmountInFlight;
 
             if (!TryRemoveAccountTransaction(command.TransactionId, out var transaction))
             {
@@ -291,10 +323,10 @@ namespace EBank.Domain.Models.Accounts
             switch (fundDirection)
             {
                 case AccountFundDirection.In:
-                    ApplyDomainEvent(new TransferTransactionSubmittedDomainEvent(transaction.Id, transaction.Money, TransferAccountType.Sink, Balance, InAmountInFlight, OutAmountInFlight));
+                    ApplyDomainEvent(new TransferTransactionSubmittedDomainEvent(transaction.Id, transaction.Money, TransferAccountType.Sink, Balance, inAmountInFlight, outAmountInFlight));
                     break;
                 case AccountFundDirection.Out:
-                    ApplyDomainEvent(new TransferTransactionSubmittedDomainEvent(transaction.Id, transaction.Money, TransferAccountType.Source, Balance, InAmountInFlight, OutAmountInFlight));
+                    ApplyDomainEvent(new TransferTransactionSubmittedDomainEvent(transaction.Id, transaction.Money, TransferAccountType.Source, Balance, inAmountInFlight, outAmountInFlight));
                     break;
                 default:
                     throw new BankAccountDomainException($"不支持的账户资金流向: {fundDirection}。");
@@ -327,21 +359,6 @@ namespace EBank.Domain.Models.Accounts
         public void OnDomainEvent(WithdrawTransactionSubmittedDomainEvent @event)
         {
             Balance -= @event.Money;
-        }
-
-        public void OnDomainEvent(TransferTransactionValidatedDomainEvent @event)
-        {
-            switch (@event.AccountType)
-            {
-                case TransferAccountType.Source:
-                    AddAccountTransaction(new AccountTransaction(@event.TransactionId, @event.Money, AccountFundDirection.Out));
-                    break;
-                case TransferAccountType.Sink:
-                    AddAccountTransaction(new AccountTransaction(@event.TransactionId, @event.Money, AccountFundDirection.In));
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
         }
 
         public void OnDomainEvent(TransferTransactionSubmittedDomainEvent @event)

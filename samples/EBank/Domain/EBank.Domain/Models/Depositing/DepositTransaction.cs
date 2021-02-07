@@ -62,7 +62,7 @@ namespace EBank.Domain.Models.Depositing
 
         public void OnDomainCommand(ConfirmDepositTransactionSubmittedDomainCommand command)
         {
-            var @event = new DepositTransactionCompletedDomainEvent(DepositTransactionStatus.Completed, $"当前账户信息，余额：{command.AccountBalance.ToShortString()}, 在途收入余额：{command.AccountInAmountInFlight.ToShortString()}, 在途支出余额：{command.AccountOutAmountInFlight.ToShortString()}");
+            var @event = new DepositTransactionCompletedDomainEvent(DepositTransactionStatus.Completed, $"当前余额：{command.AccountBalance.ToShortString()}, 在途收入总额：{command.AccountInAmountInFlight.ToShortString()}, 在途支出总额：{command.AccountOutAmountInFlight.ToShortString()}");
 
             ApplyDomainEvent(@event);
         }

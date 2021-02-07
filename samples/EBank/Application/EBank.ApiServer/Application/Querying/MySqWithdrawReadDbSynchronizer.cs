@@ -22,11 +22,12 @@ namespace EBank.ApiServer.Application.Querying
 
         public async Task OnDomainEventAsync(IDomainEventingContext context, WithdrawTransactionStartedDomainEvent @event, CancellationToken token = default)
         {
-            var sql = $"INSERT INTO `{Tables.WithdrawTransactions}` (`Id`, `AccountId`, `AccountName`, `Bank`, `Amount`, `Status`, `Creator`, `CreatedTimestamp`) VALUES (@TransactionId, @AccountId, @AccountName, @Bank, @amount, @Status, @Creator, @CreatedTimestamp);";
+            var sql = $"INSERT INTO `{Tables.AccountOutTransactions}` (`Id`, `Type`, `AccountId`, `AccountName`, `Bank`, `Amount`, `Status`, `Creator`, `CreatedTimestamp`) VALUES (@TransactionId, @Type, @AccountId, @AccountName, @Bank, @amount, @Status, @Creator, @CreatedTimestamp);";
 
             var po = new 
             {
                 TransactionId = @event.AggregateRootId.Id,
+                Type = AccountTransactionType.Withdraw.ToString(),
                 AccountId = @event.AccountId.Id,
                 AccountName = @event.AccountName.Name,
                 Amount = @event.Money.Amount,
@@ -41,7 +42,7 @@ namespace EBank.ApiServer.Application.Querying
 
         public async Task OnDomainEventAsync(IDomainEventingContext context, WithdrawTransactionReadiedDomainEvent @event, CancellationToken token = default)
         {
-            var sql = $"UPDATE `{Tables.WithdrawTransactions}` SET `Status`=@Status WHERE `Id`=@TransactionId;";
+            var sql = $"UPDATE `{Tables.AccountOutTransactions}` SET `Status`=@Status WHERE `Id`=@TransactionId;";
 
             var po = new
             {
@@ -54,7 +55,7 @@ namespace EBank.ApiServer.Application.Querying
 
         public async Task OnDomainEventAsync(IDomainEventingContext context, WithdrawTransactionCompletedDomainEvent @event, CancellationToken token = default)
         {
-            var sql = $"UPDATE `{Tables.WithdrawTransactions}` SET `Status`=@Status,`Message`=@Message WHERE `Id`=@TransactionId;";
+            var sql = $"UPDATE `{Tables.AccountOutTransactions}` SET `Status`=@Status,`Message`=@Message WHERE `Id`=@TransactionId;";
 
             var po = new
             {
@@ -68,7 +69,7 @@ namespace EBank.ApiServer.Application.Querying
 
         public async Task OnDomainEventAsync(IDomainEventingContext context, WithdrawTransactionCancelledDomainEvent @event, CancellationToken token = default)
         {
-            var sql = $"UPDATE `{Tables.WithdrawTransactions}` SET `Status`=@Status,`Message`=@Message WHERE `Id`=@TransactionId;";
+            var sql = $"UPDATE `{Tables.AccountOutTransactions}` SET `Status`=@Status,`Message`=@Message WHERE `Id`=@TransactionId;";
 
             var po = new
             {
