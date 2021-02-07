@@ -10,10 +10,18 @@ namespace EBank.Domain.Events.Accounts
     /// </summary>
     public class WithdrawTransactionSubmittedDomainEvent : EndSubTransactionDomainEvent<BankAccountId>
     {
-        public WithdrawTransactionSubmittedDomainEvent(WithdrawTransactionId transactionId, Money money)
+        public WithdrawTransactionSubmittedDomainEvent(
+            WithdrawTransactionId transactionId, 
+            Money money, 
+            Money accountBalance,
+            Money accountInAmountInFlight,
+            Money accountOutAmountInFlight)
         {
             TransactionId = transactionId;
             Money = money;
+            AccountBalance = accountBalance;
+            AccountInAmountInFlight = accountInAmountInFlight;
+            AccountOutAmountInFlight = accountOutAmountInFlight;
         }
 
         /// <summary>
@@ -25,5 +33,20 @@ namespace EBank.Domain.Events.Accounts
         /// 金额
         /// </summary>
         public Money Money { get; }
+
+        /// <summary>
+        /// 账户余额
+        /// </summary>
+        public Money AccountBalance { get; }
+
+        /// <summary>
+        /// 账户在途收入金额
+        /// </summary>
+        public Money AccountInAmountInFlight { get; }
+
+        /// <summary>
+        /// 账户在途支出金额
+        /// </summary>
+        public Money AccountOutAmountInFlight { get; }
     }
 }

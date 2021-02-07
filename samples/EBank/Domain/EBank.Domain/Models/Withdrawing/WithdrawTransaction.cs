@@ -76,7 +76,7 @@ namespace EBank.Domain.Models.Withdrawing
 
         public void OnDomainCommand(ConfirmWithdrawTransactionSubmittedDomainCommand command)
         {
-            var @event = new WithdrawTransactionCompletedDomainEvent(WithdrawTransactionStatus.Completed);
+            var @event = new WithdrawTransactionCompletedDomainEvent(WithdrawTransactionStatus.Completed, $"当前账户信息，余额：{command.AccountBalance.ToShortString()}, 在途收入余额：{command.AccountInAmountInFlight.ToShortString()}, 在途支出余额：{command.AccountOutAmountInFlight.ToShortString()}");
 
             ApplyDomainEvent(@event);
         }

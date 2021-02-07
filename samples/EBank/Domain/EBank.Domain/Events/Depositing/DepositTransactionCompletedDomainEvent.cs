@@ -9,14 +9,15 @@ namespace EBank.Domain.Events.Depositing
     /// </summary>
     public class DepositTransactionCompletedDomainEvent : EndSubTransactionDomainEvent<DepositTransactionId>
     {
-        public DepositTransactionCompletedDomainEvent(DepositTransactionStatus status)
+        public DepositTransactionCompletedDomainEvent(DepositTransactionStatus status, string message)
         {
             Status = status;
+            Message = message;
         }
 
         /// <summary>
         /// 状态
         /// </summary>
-        public DepositTransactionStatus Status{ get;  }
-}
+        public DepositTransactionStatus Status { get; }
+    }
 }

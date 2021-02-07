@@ -68,21 +68,31 @@ namespace EBank.Domain.Models.Accounts
         /// 可用余额。
         /// 计算规则：可用余额 = 账户余额 + 在途收入金额 - 在途支出金额。
         /// </summary>
-        public decimal AvailableBalance
+        public Money AvailableBalance => Balance + InAmountInFlight - OutAmountInFlight;
+
+        /// <summary>
+        /// 在途收入金额
+        /// </summary>
+        public Money InAmountInFlight
         {
             get
             {
-                // 在途收入金额
-                var inFlightInAmount = _transactionsInFlight?.Values
+                return _transactionsInFlight?.Values
                                            .Where(it => it.FundDirection == AccountFundDirection.In)
                                            .Sum(it => it.Money.Amount) ?? 0;
-                // 在途支出金额
-                var inFlightOutAmount = _transactionsInFlight?.Values
-                                            .Where(it => it.FundDirection == AccountFundDirection.Out)
-                                            .Sum(it => it.Money.Amount) ?? 0;
+            }
+        }
 
-                // 余额 - 在途占用
-                return Balance + inFlightInAmount - inFlightOutAmount;
+        /// <summary>
+        /// 在途支出金额
+        /// </summary>
+        public Money OutAmountInFlight
+        {
+            get
+            {
+                return _transactionsInFlight?.Values
+                           .Where(it => it.FundDirection == AccountFundDirection.Out)
+                           .Sum(it => it.Money.Amount) ?? 0;
             }
         }
     }
@@ -156,7 +166,7 @@ namespace EBank.Domain.Models.Accounts
             }
 
             // 2. 执行业务
-            ApplyDomainEvent(new DepositTransactionSubmittedDomainEvent(transaction.Id, transaction.Money));
+            ApplyDomainEvent(new DepositTransactionSubmittedDomainEvent(transaction.Id, transaction.Money, Balance, InAmountInFlight, OutAmountInFlight));
         }
 
         /// <summary>
@@ -208,7 +218,7 @@ namespace EBank.Domain.Models.Accounts
             }
 
             // 2. 执行业务
-            ApplyDomainEvent(new WithdrawTransactionSubmittedDomainEvent(transaction.Id, transaction.Money));
+            ApplyDomainEvent(new WithdrawTransactionSubmittedDomainEvent(transaction.Id, transaction.Money, Balance, InAmountInFlight, OutAmountInFlight));
         }
 
         /// <summary>
@@ -275,10 +285,10 @@ namespace EBank.Domain.Models.Accounts
             switch (fundDirection)
             {
                 case AccountFundDirection.In:
-                    ApplyDomainEvent(new TransferTransactionSubmittedDomainEvent(transaction.Id, transaction.Money, TransferAccountType.Sink));
+                    ApplyDomainEvent(new TransferTransactionSubmittedDomainEvent(transaction.Id, transaction.Money, TransferAccountType.Sink, Balance, InAmountInFlight, OutAmountInFlight));
                     break;
                 case AccountFundDirection.Out:
-                    ApplyDomainEvent(new TransferTransactionSubmittedDomainEvent(transaction.Id, transaction.Money, TransferAccountType.Source));
+                    ApplyDomainEvent(new TransferTransactionSubmittedDomainEvent(transaction.Id, transaction.Money, TransferAccountType.Source, Balance, InAmountInFlight, OutAmountInFlight));
                     break;
                 default:
                     throw new BankAccountDomainException($"不支持的账户资金流向: {fundDirection}。");

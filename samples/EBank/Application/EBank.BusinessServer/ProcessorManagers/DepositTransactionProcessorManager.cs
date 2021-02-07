@@ -93,10 +93,7 @@ namespace EBank.BusinessServer.ProcessorManagers
         /// <param name="event"></param>
         public void OnDomainEvent(IDomainEventingContext context, DepositTransactionSubmittedDomainEvent @event)
         {
-            var command = new ConfirmDepositTransactionSubmittedDomainCommand()
-            {
-                AggregateRootId = @event.TransactionId
-            };
+            var command = new ConfirmDepositTransactionSubmittedDomainCommand(@event.TransactionId, @event.AccountBalance, @event.AccountInAmountInFlight, @event.AccountOutAmountInFlight);
 
             context.PublishDomainCommand(command);
         }
