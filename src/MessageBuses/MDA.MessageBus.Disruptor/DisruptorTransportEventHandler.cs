@@ -42,7 +42,7 @@ namespace MDA.MessageBus.Disruptor
 
                     if (!hasHandler)
                     {
-                        logger.LogError($"No message handler found: {messageType.FullName}.");
+                        logger.LogWarning($"No message handler found: {messageType.FullName}.");
                     }
                 }
             }

@@ -148,7 +148,7 @@ namespace MDA.MessageBus.Kafka
 
                 if (!hasHandler)
                 {
-                    _logger.LogError($"No message handler found for {messageTypeFullName}, the consume group: {_consumer.Group}, topic: {eventArgs.Topic}.");
+                    _logger.LogWarning($"No message handler found for {messageTypeFullName}, the consume group: {_consumer.Group}, topic: {eventArgs.Topic}.");
                 }
             }
         }
