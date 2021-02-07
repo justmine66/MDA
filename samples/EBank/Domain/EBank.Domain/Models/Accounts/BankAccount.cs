@@ -3,7 +3,7 @@ using EBank.Domain.Events.Accounts;
 using EBank.Domain.Models.Accounts.Primitives;
 using EBank.Domain.Models.Primitives;
 using EBank.Domain.Models.Transferring;
-using EBank.Domain.Notifications;
+using EBank.Domain.Notifications.Accounts;
 using MDA.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -147,8 +147,9 @@ namespace EBank.Domain.Models.Accounts
                 return;
             }
 
-            // 2. 执行业务
-            ApplyDomainEvent(new DepositTransactionValidatedDomainEvent(command.TransactionId, command.Money));
+            // 2. 处理业务
+            AddAccountTransaction(new AccountTransaction(command.TransactionId, command.Money, AccountFundDirection.In));
+            PublishDomainNotification(new DepositTransactionValidatedDomainNotification(command.TransactionId, command.Money));
         }
 
         /// <summary>
@@ -158,6 +159,8 @@ namespace EBank.Domain.Models.Accounts
         public void OnDomainCommand(SubmitDepositTransactionDomainCommand command)
         {
             var transactionId = command.TransactionId;
+            var inAmountInFlight = InAmountInFlight;
+            var outAmountInFlight = OutAmountInFlight;
 
             // 1. 业务预检
             if (!TryRemoveAccountTransaction(command.TransactionId, out var transaction))
@@ -166,7 +169,7 @@ namespace EBank.Domain.Models.Accounts
             }
 
             // 2. 执行业务
-            ApplyDomainEvent(new DepositTransactionSubmittedDomainEvent(transaction.Id, transaction.Money, Balance, InAmountInFlight, OutAmountInFlight));
+            ApplyDomainEvent(new DepositTransactionSubmittedDomainEvent(transaction.Id, transaction.Money, Balance, inAmountInFlight, outAmountInFlight));
         }
 
         /// <summary>
@@ -200,7 +203,8 @@ namespace EBank.Domain.Models.Accounts
             }
 
             // 2. 执行业务
-            ApplyDomainEvent(new WithdrawTransactionValidatedDomainEvent(command.TransactionId, command.Money));
+            AddAccountTransaction(new AccountTransaction(command.TransactionId, command.Money, AccountFundDirection.Out));
+            PublishDomainNotification(new WithdrawTransactionValidatedDomainNotification(command.TransactionId, command.Money));
         }
 
         /// <summary>
@@ -210,6 +214,8 @@ namespace EBank.Domain.Models.Accounts
         public void OnDomainCommand(SubmitWithdrawTransactionDomainCommand command)
         {
             var transactionId = command.TransactionId;
+            var inAmountInFlight = InAmountInFlight;
+            var outAmountInFlight = OutAmountInFlight;
 
             // 1. 业务预检
             if (!TryRemoveAccountTransaction(command.TransactionId, out var transaction))
@@ -218,7 +224,7 @@ namespace EBank.Domain.Models.Accounts
             }
 
             // 2. 执行业务
-            ApplyDomainEvent(new WithdrawTransactionSubmittedDomainEvent(transaction.Id, transaction.Money, Balance, InAmountInFlight, OutAmountInFlight));
+            ApplyDomainEvent(new WithdrawTransactionSubmittedDomainEvent(transaction.Id, transaction.Money, Balance, inAmountInFlight, outAmountInFlight));
         }
 
         /// <summary>
@@ -313,23 +319,9 @@ namespace EBank.Domain.Models.Accounts
             Name = @event.AccountName;
         }
 
-        public void OnDomainEvent(DepositTransactionValidatedDomainEvent @event)
-        {
-            var accountTransaction = new AccountTransaction(@event.TransactionId, @event.Money, AccountFundDirection.In);
-
-            AddAccountTransaction(accountTransaction);
-        }
-
         public void OnDomainEvent(DepositTransactionSubmittedDomainEvent @event)
         {
             Balance += @event.Money;
-        }
-
-        public void OnDomainEvent(WithdrawTransactionValidatedDomainEvent @event)
-        {
-            var transaction = new AccountTransaction(@event.TransactionId, @event.Money, AccountFundDirection.Out);
-
-            AddAccountTransaction(transaction);
         }
 
         public void OnDomainEvent(WithdrawTransactionSubmittedDomainEvent @event)

@@ -2,7 +2,7 @@
 using EBank.Domain.Commands.Withdrawing;
 using EBank.Domain.Events.Accounts;
 using EBank.Domain.Events.Withdrawing;
-using EBank.Domain.Notifications;
+using EBank.Domain.Notifications.Accounts;
 using MDA.Domain.Events;
 using MDA.Domain.Notifications;
 
@@ -16,7 +16,7 @@ namespace EBank.BusinessServer.ProcessorManagers
         // 1. 从取款交易聚合根，收到取款交易已发起的领域事件，向银行账户聚合根发起交易信息验证。
         IDomainEventHandler<WithdrawTransactionStartedDomainEvent>,
         // 2.1 从银行账户聚合根，收到取款交易信息验证已通过的通知，通知取款交易聚合根确认。
-        IDomainEventHandler<WithdrawTransactionValidatedDomainEvent>,
+        IDomainNotificationHandler<WithdrawTransactionValidatedDomainNotification>,
         // 2.2 从银行账户聚合根，收到取款交易信息验证已失败的通知，向取款账交易聚合根发起取消交易。
         IDomainNotificationHandler<WithdrawTransactionValidateFailedDomainNotification>,
         // 3.1 从取款交易聚合根，收到取款交易已准备就绪的领域事件，向银行账户聚合更提交交易。
@@ -39,13 +39,13 @@ namespace EBank.BusinessServer.ProcessorManagers
         /// <summary>
         /// 2.1 从银行账户聚合根，收到取款交易信息验证已通过的领域事件，通知取款交易聚合根确认。
         /// </summary>
-        /// <param name="context">事件处理上下文</param>
-        /// <param name="event">交易信息验证已通过的领域事件</param>
-        public void OnDomainEvent(IDomainEventingContext context, WithdrawTransactionValidatedDomainEvent @event)
+        /// <param name="context">通知处理上下文</param>
+        /// <param name="notification">交易信息验证已通过的领域通知</param>
+        public void OnDomainNotification(IDomainNotifyingContext context, WithdrawTransactionValidatedDomainNotification notification)
         {
             var command = new ConfirmWithdrawTransactionValidatedDomainCommand()
             {
-                AggregateRootId = @event.TransactionId
+                AggregateRootId = notification.TransactionId
             };
 
             context.PublishDomainCommand(command);

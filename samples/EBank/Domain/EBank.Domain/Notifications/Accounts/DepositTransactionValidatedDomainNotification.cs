@@ -1,16 +1,15 @@
-﻿using EBank.Domain.Models.Accounts.Primitives;
-using EBank.Domain.Models.Depositing.Primitives;
+﻿using EBank.Domain.Models.Depositing.Primitives;
 using EBank.Domain.Models.Primitives;
-using MDA.Domain.Events;
+using MDA.Domain.Saga;
 
-namespace EBank.Domain.Events.Accounts
+namespace EBank.Domain.Notifications.Accounts
 {
     /// <summary>
-    /// 存款交易已验证的领域事件
+    /// 存款交易已验证的领域通知
     /// </summary>
-    public class DepositTransactionValidatedDomainEvent : DomainEvent<BankAccountId>
+    public class DepositTransactionValidatedDomainNotification : SubTransactionDomainNotification<DepositTransactionId>
     {
-        public DepositTransactionValidatedDomainEvent(DepositTransactionId transactionId, Money money)
+        public DepositTransactionValidatedDomainNotification(DepositTransactionId transactionId, Money money)
         {
             TransactionId = transactionId;
             Money = money;

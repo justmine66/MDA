@@ -1,7 +1,7 @@
 ﻿using EBank.Domain.Models.Depositing.Primitives;
 using MDA.Domain.Saga;
 
-namespace EBank.Domain.Notifications
+namespace EBank.Domain.Notifications.Accounts
 {
     /// <summary>
     /// 存款交易验证失败的领域通知

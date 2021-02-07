@@ -2,7 +2,7 @@
 using EBank.Domain.Models.Transferring.Primitives;
 using MDA.Domain.Saga;
 
-namespace EBank.Domain.Notifications
+namespace EBank.Domain.Notifications.Accounts
 {
     /// <summary>
     /// 转账交易验证失败的领域通知
