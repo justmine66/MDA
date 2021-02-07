@@ -125,14 +125,14 @@ namespace EBank.Domain.Models.Accounts
             // 1. 业务预检
             if (!Name.Equals(command.AccountName))
             {
-                PublishDomainNotification(new DepositTransactionValidateFailedDomainNotification(command.TransactionId, "存款失败，账户名不正确。"));
+                PublishDomainNotification(new DepositTransactionValidateFailedDomainNotification(command.TransactionId, "账户名不正确。"));
 
                 return;
             }
 
             if (!Bank.Equals(command.Bank))
             {
-                PublishDomainNotification(new DepositTransactionValidateFailedDomainNotification(command.TransactionId, "存款失败，开户行不匹配。"));
+                PublishDomainNotification(new DepositTransactionValidateFailedDomainNotification(command.TransactionId, "开户行不匹配。"));
 
                 return;
             }
@@ -168,21 +168,21 @@ namespace EBank.Domain.Models.Accounts
             // 1. 业务预检
             if (!Name.Equals(command.AccountName))
             {
-                PublishDomainNotification(new WithdrawTransactionValidateFailedDomainNotification(command.TransactionId, "取款失败，账户名不正确。"));
+                PublishDomainNotification(new WithdrawTransactionValidateFailedDomainNotification(command.TransactionId, "账户名不正确。"));
 
                 return;
             }
 
             if (!Bank.Equals(command.Bank))
             {
-                PublishDomainNotification(new WithdrawTransactionValidateFailedDomainNotification(command.TransactionId, "取款失败，开户行不匹配。"));
+                PublishDomainNotification(new WithdrawTransactionValidateFailedDomainNotification(command.TransactionId, "开户行不匹配。"));
 
                 return;
             }
 
             if (AvailableBalance < command.Money)
             {
-                var notification = new WithdrawTransactionValidateFailedDomainNotification(command.TransactionId, $"取款失败，余额不足，可用余额: {AvailableBalance}, 取款金额: {command.Money}。");
+                var notification = new WithdrawTransactionValidateFailedDomainNotification(command.TransactionId, $"余额不足，可用余额: {AvailableBalance}, 取款金额: {command.Money}。");
 
                 PublishDomainNotification(notification);
 
@@ -220,25 +220,26 @@ namespace EBank.Domain.Models.Accounts
             var amount = command.Money;
             var account = command.Account;
             var accountType = account.AccountType;
+            var accountTypeString = accountType == TransferAccountType.Source ? "源" : "目标";
 
             // 1. 业务预检
             if (!Id.Equals(command.AggregateRootId))
             {
-                PublishDomainNotification(new TransferTransactionValidateFailedDomainNotification(command.TransactionId, accountType, "账户号不正确。"));
+                PublishDomainNotification(new TransferTransactionValidateFailedDomainNotification(command.TransactionId, accountType, $"{accountTypeString}账户号不正确。"));
 
                 return;
             }
 
             if (!Name.Equals(account.Name))
             {
-                PublishDomainNotification(new TransferTransactionValidateFailedDomainNotification(command.TransactionId, accountType, "账户名不正确。"));
+                PublishDomainNotification(new TransferTransactionValidateFailedDomainNotification(command.TransactionId, accountType, $"{accountTypeString}账户名不正确。"));
 
                 return;
             }
 
             if (!Bank.Equals(account.Bank))
             {
-                PublishDomainNotification(new TransferTransactionValidateFailedDomainNotification(command.TransactionId, accountType, "开户行不匹配。"));
+                PublishDomainNotification(new TransferTransactionValidateFailedDomainNotification(command.TransactionId, accountType, $"{accountTypeString}开户行不匹配。"));
 
                 return;
             }

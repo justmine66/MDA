@@ -11,7 +11,7 @@ namespace EBank.Domain.Models.Withdrawing
     /// 表示一笔取款交易，内存状态。
     /// 定义：从哪个银行的哪个账户取款。
     /// </summary>
-    public partial class WithdrawTransaction 
+    public partial class WithdrawTransaction
     {
         public WithdrawTransaction(
             WithdrawTransactionId id,
@@ -83,7 +83,7 @@ namespace EBank.Domain.Models.Withdrawing
 
         public void OnDomainCommand(CancelWithdrawTransactionDomainCommand command)
         {
-            var @event = new WithdrawTransactionCancelledDomainEvent(WithdrawTransactionStatus.Canceled);
+            var @event = new WithdrawTransactionCancelledDomainEvent(WithdrawTransactionStatus.Canceled, command.Message);
 
             ApplyDomainEvent(@event);
         }

@@ -8,10 +8,10 @@ namespace EBank.Domain.Notifications
     /// </summary>
     public class DepositTransactionValidateFailedDomainNotification : EndSubTransactionDomainNotification<DepositTransactionId>
     {
-        public DepositTransactionValidateFailedDomainNotification(DepositTransactionId transactionId, string reason)
+        public DepositTransactionValidateFailedDomainNotification(DepositTransactionId transactionId, string message)
         {
             TransactionId = transactionId;
-            Message = reason;
+            Message = message;
         }
 
         /// <summary>

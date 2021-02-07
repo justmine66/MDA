@@ -9,11 +9,11 @@ namespace EBank.Domain.Notifications
     /// </summary>
     public class TransferTransactionValidateFailedDomainNotification : EndSubTransactionDomainNotification<TransferTransactionId>
     {
-        public TransferTransactionValidateFailedDomainNotification(TransferTransactionId transactionId, TransferAccountType accountType, string reason)
+        public TransferTransactionValidateFailedDomainNotification(TransferTransactionId transactionId, TransferAccountType accountType, string message)
         {
             TransactionId = transactionId;
             AccountType = accountType;
-            Message = reason;
+            Message = message;
         }
 
         /// <summary>

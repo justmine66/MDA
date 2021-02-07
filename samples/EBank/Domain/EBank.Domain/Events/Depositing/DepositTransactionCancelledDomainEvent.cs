@@ -7,11 +7,12 @@ namespace EBank.Domain.Events.Depositing
     /// <summary>
     /// 存款交易已取消的领域事件
     /// </summary>
-    public class DepositTransactionCancelledDomainEvent : SubTransactionDomainEvent<DepositTransactionId>
+    public class DepositTransactionCancelledDomainEvent : EndSubTransactionDomainEvent<DepositTransactionId>
     {
-        public DepositTransactionCancelledDomainEvent(DepositTransactionStatus status)
+        public DepositTransactionCancelledDomainEvent(DepositTransactionStatus status, string message)
         {
             Status = status;
+            Message = message;
         }
 
         /// <summary>

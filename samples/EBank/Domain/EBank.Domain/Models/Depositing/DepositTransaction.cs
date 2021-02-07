@@ -11,7 +11,7 @@ namespace EBank.Domain.Models.Depositing
     /// 表示一笔存款交易，内存状态。
     /// 定义：将金额存入哪个银行的哪个账户。
     /// </summary>
-    public partial class DepositTransaction 
+    public partial class DepositTransaction
     {
         /// <summary>
         /// 账户号
@@ -69,7 +69,7 @@ namespace EBank.Domain.Models.Depositing
 
         public void OnDomainCommand(CancelDepositTransactionDomainCommand command)
         {
-            var @event = new DepositTransactionCancelledDomainEvent(DepositTransactionStatus.Canceled);
+            var @event = new DepositTransactionCancelledDomainEvent(DepositTransactionStatus.Canceled, command.Message);
 
             ApplyDomainEvent(@event);
         }

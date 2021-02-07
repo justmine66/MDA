@@ -75,7 +75,8 @@ namespace EBank.BusinessServer.ProcessorManagers
         {
             var command = new CancelTransferTransactionDomainCommand()
             {
-                AggregateRootId = notification.TransactionId
+                AggregateRootId = notification.TransactionId,
+                Message = notification.Message
             };
 
             context.PublishDomainCommand(command);

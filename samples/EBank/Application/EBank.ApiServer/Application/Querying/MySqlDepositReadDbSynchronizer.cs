@@ -67,12 +67,13 @@ namespace EBank.ApiServer.Application.Querying
 
         public async Task OnDomainEventAsync(IDomainEventingContext context, DepositTransactionCancelledDomainEvent @event, CancellationToken token = default)
         {
-            var sql = $"UPDATE `{Tables.DepositTransactions}` SET `Status`=@Status WHERE `Id`=@TransactionId;";
+            var sql = $"UPDATE `{Tables.DepositTransactions}` SET `Status`=@Status,`Message`=@Message WHERE `Id`=@TransactionId;";
 
             var po = new
             {
                 TransactionId = @event.AggregateRootId.Id,
-                Status = @event.Status.ToString()
+                Status = @event.Status.ToString(),
+                Message = @event.Message.SetEmptyStringWhenNull()
             };
 
             await _db.ExecuteAsync(sql, po, token);

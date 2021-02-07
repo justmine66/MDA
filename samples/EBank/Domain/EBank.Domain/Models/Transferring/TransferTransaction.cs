@@ -82,7 +82,7 @@ namespace EBank.Domain.Models.Transferring
 
         public void OnDomainCommand(CancelTransferTransactionDomainCommand command)
         {
-            var @event = new TransferTransactionCancelledDomainEvent(TransferTransactionStatus.Canceled);
+            var @event = new TransferTransactionCancelledDomainEvent(TransferTransactionStatus.Canceled, command.Message);
 
             ApplyDomainEvent(@event);
         }

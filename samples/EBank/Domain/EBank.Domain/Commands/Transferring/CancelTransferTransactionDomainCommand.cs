@@ -1,11 +1,14 @@
 ﻿using EBank.Domain.Models.Transferring;
 using EBank.Domain.Models.Transferring.Primitives;
-using MDA.Domain.Commands;
+using MDA.Domain.Saga;
 
 namespace EBank.Domain.Commands.Transferring
 {
     /// <summary>
     /// 取消转账交易的领域命令
     /// </summary>
-    public class CancelTransferTransactionDomainCommand : DomainCommand<TransferTransaction, TransferTransactionId> { }
+    public class CancelTransferTransactionDomainCommand : SubTransactionDomainCommand<TransferTransaction, TransferTransactionId>
+    {
+        public string Message { get; set; }
+    }
 }

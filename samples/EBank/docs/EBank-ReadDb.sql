@@ -26,6 +26,7 @@ CREATE TABLE If Not Exists `deposit_transactions`
   `Status` varchar(16) DEFAULT '' NOT NULL COMMENT '状态',
   `Creator` varchar(36) DEFAULT '' NOT NULL COMMENT '创建者',
   `CreatedTimestamp` bigint(20) DEFAULT 0 NOT NULL COMMENT '创建时间，时间戳，单位：毫秒',
+  `Message` varchar(128) DEFAULT '' NOT NULL COMMENT '消息',
   PRIMARY KEY (`pkId`),
   UNIQUE KEY `IX_Transaction_Id` (`Id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='存款交易表';
@@ -41,6 +42,7 @@ CREATE TABLE If Not Exists `withdraw_transactions`
   `Status` varchar(16) DEFAULT '' NOT NULL COMMENT '状态',
   `Creator` varchar(36) DEFAULT '' NOT NULL COMMENT '创建者',
   `CreatedTimestamp` bigint(20) DEFAULT 0 NOT NULL COMMENT '创建时间，时间戳，单位：毫秒',
+  `Message` varchar(128) DEFAULT '' NOT NULL COMMENT '消息',
   PRIMARY KEY (`pkId`),
   UNIQUE KEY `IX_Transaction_Id` (`Id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='取款交易表';
@@ -59,6 +61,7 @@ CREATE TABLE If Not Exists `transfer_transactions`
   `Status` varchar(16) DEFAULT '' NOT NULL COMMENT '状态',
   `Creator` varchar(36) DEFAULT '' NOT NULL COMMENT '创建者',
   `CreatedTimestamp` bigint(20) DEFAULT 0 NOT NULL COMMENT '创建时间，时间戳，单位：毫秒',
+  `Message` varchar(128) DEFAULT '' NOT NULL COMMENT '消息',
   PRIMARY KEY (`pkId`),
   UNIQUE KEY `IX_Transaction_Id` (`Id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='转账交易表';

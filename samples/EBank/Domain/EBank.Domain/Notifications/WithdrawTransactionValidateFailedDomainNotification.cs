@@ -8,10 +8,10 @@ namespace EBank.Domain.Notifications
     /// </summary>
     public class WithdrawTransactionValidateFailedDomainNotification : EndSubTransactionDomainNotification<WithdrawTransactionId>
     {
-        public WithdrawTransactionValidateFailedDomainNotification(WithdrawTransactionId transactionId, string reason)
+        public WithdrawTransactionValidateFailedDomainNotification(WithdrawTransactionId transactionId, string message)
         {
             TransactionId = transactionId;
-            Message = reason;
+            Message = message;
         }
 
         /// <summary>

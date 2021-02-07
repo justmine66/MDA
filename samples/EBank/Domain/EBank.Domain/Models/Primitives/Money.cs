@@ -67,6 +67,8 @@ namespace EBank.Domain.Models.Primitives
             return new Money(left.Amount / right.Amount, left.Currency);
         }
 
+        public override string ToString() => $"[Amount: {Amount}, Currency: {Currency}]";
+
         protected override IEnumerable<object> GetEqualityMembers()
         {
             yield return Amount;

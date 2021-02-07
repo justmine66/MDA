@@ -44,6 +44,6 @@ namespace EBank.Domain.Models.Primitives
             yield return DisplayName;
         }
 
-        public override string ToString() => $"[Code: {Code}, Symbol: {Symbol}, Code: {DisplayName}]";
+        public override string ToString() => $"[Code: {Code}, Symbol: {Symbol}, DisplayName: {DisplayName}]";
     }
 }
