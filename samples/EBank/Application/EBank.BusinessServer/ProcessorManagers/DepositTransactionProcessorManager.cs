@@ -9,7 +9,7 @@ using MDA.Domain.Notifications;
 namespace EBank.BusinessServer.ProcessorManagers
 {
     /// <summary>
-    /// 存款交易处理管理器
+    /// 存款交易流程管理器
     /// 协调整个存款交易事务
     /// </summary>
     public class DepositTransactionProcessorManager :

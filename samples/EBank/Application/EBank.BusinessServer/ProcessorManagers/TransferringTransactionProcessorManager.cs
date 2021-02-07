@@ -9,7 +9,7 @@ using MDA.Domain.Notifications;
 namespace EBank.BusinessServer.ProcessorManagers
 {
     /// <summary>
-    /// 转账交易处理器
+    /// 转账交易流程管理器
     /// 协调整个转账交易流程
     /// </summary>
     public class TransferringTransactionProcessorManager :
