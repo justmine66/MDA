@@ -66,9 +66,7 @@ namespace MDA.Domain.Commands
 
             try
             {
-                var context = AggregateRootMessagingContext.Instance.Value
-                    .SetServiceProvider(_serviceProvider);
-                
+                var context = AggregateRootMessagingContext.Singleton.SetServiceProvider(_serviceProvider);
                 var result = aggregate.HandleDomainCommand(context, command);
                 if (!result.Succeed())
                 {

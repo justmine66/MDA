@@ -4,7 +4,9 @@ namespace MDA.Domain.Models
 {
     public class AggregateRootMessagingContext
     {
-        public static Lazy<AggregateRootMessagingContext> Instance = new Lazy<AggregateRootMessagingContext>();
+        private static readonly Lazy<AggregateRootMessagingContext> Instance = new Lazy<AggregateRootMessagingContext>();
+
+        public static AggregateRootMessagingContext Singleton = Instance.Value;
 
         public IServiceProvider ServiceProvider { get; private set; }
 
