@@ -37,24 +37,6 @@ namespace MDA.Domain.Models
         public int Generation { get; set; }
         public long Version { get; set; }
 
-        public virtual void ApplyDomainEvent(IDomainEvent @event)
-        {
-            // 1. 填充领域事件信息到聚合根
-            if (@event == null) return;
-
-            @event.AggregateRootId = Id;
-            FillAggregateInfo(@event);
-            HandleDomainEvent(@event);
-
-            // 2. 添加到当前变更领域事件列表
-            if (MutatingDomainEvents == null)
-            {
-                MutatingDomainEvents = new List<IDomainEvent>();
-            }
-
-            MutatingDomainEvents.Add(@event);
-        }
-
         public virtual DomainCommandResult HandleDomainCommand(AggregateRootMessagingContext context, IDomainCommand command)
         {
             var aggregateRootId = command.AggregateRootId;
@@ -77,21 +59,6 @@ namespace MDA.Domain.Models
 
         public virtual void HandleDomainEvent(IDomainEvent @event) => ExecuteDomainEvent(@event);
 
-        public virtual void PublishDomainNotification(IDomainNotification notification)
-        {
-            // 1. 填充领域通知信息
-            notification.AggregateRootId = Id;
-            notification.AggregateRootType = AggregateRootType.FullName;
-
-            // 2. 添加到当前变更领域通知列表
-            if (MutatingDomainNotifications == null)
-            {
-                MutatingDomainNotifications = new List<IDomainNotification>();
-            }
-
-            MutatingDomainNotifications.Add(notification);
-        }
-
         public virtual void ReplayDomainEvents(IEnumerable<IDomainEvent> events)
         {
             if (events.IsEmpty()) return;
@@ -110,6 +77,38 @@ namespace MDA.Domain.Models
 
                 HandleDomainEvent(@event);
             }
+        }
+
+        protected virtual void ApplyDomainEvent(IDomainEvent @event)
+        {
+            // 1. 填充领域事件信息到聚合根
+            if (@event == null) return;
+
+            @event.AggregateRootId = Id;
+            FillAggregateInfo(@event);
+            HandleDomainEvent(@event);
+
+            // 2. 添加到当前变更领域事件列表
+            if (MutatingDomainEvents == null)
+            {
+                MutatingDomainEvents = new List<IDomainEvent>();
+            }
+
+            MutatingDomainEvents.Add(@event);
+        }
+        protected virtual void PublishDomainNotification(IDomainNotification notification)
+        {
+            // 1. 填充领域通知信息
+            notification.AggregateRootId = Id;
+            notification.AggregateRootType = AggregateRootType.FullName;
+
+            // 2. 添加到当前变更领域通知列表
+            if (MutatingDomainNotifications == null)
+            {
+                MutatingDomainNotifications = new List<IDomainNotification>();
+            }
+
+            MutatingDomainNotifications.Add(notification);
         }
 
         private void ExecutingDomainCommand(AggregateRootMessagingContext context, IDomainCommand command)
