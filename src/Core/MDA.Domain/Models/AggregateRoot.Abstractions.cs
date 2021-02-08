@@ -76,9 +76,10 @@ namespace MDA.Domain.Models
         /// <summary>
         /// 处理领域命令
         /// </summary>
+        /// <param name="context">上下文</param>
         /// <param name="command">领域命令</param>
         /// <returns>处理结果</returns>
-        DomainCommandResult HandleDomainCommand(IDomainCommand command);
+        DomainCommandResult HandleDomainCommand(AggregateRootMessagingContext context, IDomainCommand command);
 
         /// <summary>
         /// 处理领域事件。

@@ -66,7 +66,10 @@ namespace MDA.Domain.Commands
 
             try
             {
-                var result = aggregate.HandleDomainCommand(command);
+                var context = AggregateRootMessagingContext.Instance.Value
+                    .SetServiceProvider(_serviceProvider);
+                
+                var result = aggregate.HandleDomainCommand(context, command);
                 if (!result.Succeed())
                 {
                     _logger.LogError($"Handling domain command: [Id: {commandId}, Type: {commandType}] has a error: {result.Message}.");

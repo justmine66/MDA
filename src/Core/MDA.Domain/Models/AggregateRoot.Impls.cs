@@ -55,7 +55,7 @@ namespace MDA.Domain.Models
             MutatingDomainEvents.Add(@event);
         }
 
-        public virtual DomainCommandResult HandleDomainCommand(IDomainCommand command)
+        public virtual DomainCommandResult HandleDomainCommand(AggregateRootMessagingContext context, IDomainCommand command)
         {
             var aggregateRootId = command.AggregateRootId;
             var domainCommandAggregateType = command.AggregateRootType;
@@ -70,13 +70,12 @@ namespace MDA.Domain.Models
                 return DomainCommandResult.Failed(command.Id, $"Incorrect the aggregate root id, expected: {Id}, actual: {aggregateRootId}");
             }
 
-            ExecuteDomainMessage(DomainMessageTypes.Command, command);
+            ExecutingDomainCommand(context, command);
 
             return DomainCommandResult.Succeed(command.Id);
         }
 
-        public virtual void HandleDomainEvent(IDomainEvent @event)
-            => ExecuteDomainMessage(DomainMessageTypes.Event, @event);
+        public virtual void HandleDomainEvent(IDomainEvent @event) => ExecuteDomainEvent(@event);
 
         public virtual void PublishDomainNotification(IDomainNotification notification)
         {
@@ -113,61 +112,93 @@ namespace MDA.Domain.Models
             }
         }
 
-        private void ExecuteDomainMessage(DomainMessageTypes messageType, IMessage message)
+        private void ExecutingDomainCommand(AggregateRootMessagingContext context, IDomainCommand command)
         {
-            var messageParameterType = message.GetType();
-            var messageParameterTypeFullName = message.GetType();
+            var methodName = "OnDomainCommand";
+            var commandType = command.GetType();
+            var commandTypeFullName = command.GetType();
+            var domainCommandType = typeof(IDomainCommand);
             var aggregateTypeFullName = AggregateRootType.FullName;
 
-            string methodName;
-            switch (messageType)
+            if (!domainCommandType.IsAssignableFrom(commandType))
             {
-                case DomainMessageTypes.Command:
-                    methodName = "OnDomainCommand";
+                throw new MethodNotFoundException($"The method: {methodName}({commandTypeFullName}) in {aggregateTypeFullName} is wrong, reason: {commandTypeFullName} cannot assign to interface: {domainCommandType.FullName}.");
+            }
 
-                    var domainCommandType = typeof(IDomainCommand);
+            var methodWithoutContext = AggregateRootType
+                .GetMethod(methodName,
+                    BindingFlags.Instance | BindingFlags.Public,
+                    null,
+                    new[] { commandType },
+                    null);
+            if (methodWithoutContext != null)
+            {
+                var instance = Expression.Constant(this);
+                var parameter = Expression.Parameter(commandType, methodName);
+                var call = Expression.Call(instance, methodWithoutContext, parameter);
+                var lambda = Expression.Lambda(call, parameter);
+                var methodDelegate = lambda.Compile();
 
-                    if (!domainCommandType.IsAssignableFrom(messageParameterType))
-                    {
-                        throw new MethodNotFoundException($"The method: {methodName}({messageParameterTypeFullName}) in {aggregateTypeFullName} is wrong, reason: {messageParameterTypeFullName} cannot assign to interface: {domainCommandType.FullName}.");
-                    }
+                methodDelegate.DynamicInvoke(command);
 
-                    break;
-                case DomainMessageTypes.Event:
-                    methodName = "OnDomainEvent";
+                return;
+            }
 
-                    var domainEventType = typeof(IDomainEvent);
+            var contextType = context.GetType();
+            var methodWithContext = AggregateRootType
+                .GetMethod(methodName,
+                    BindingFlags.Instance | BindingFlags.Public,
+                    null,
+                    new[] { contextType, commandType },
+                    null);
+            if (methodWithContext != null)
+            {
+                var instance = Expression.Constant(this);
+                var parameter1 = Expression.Parameter(contextType, $"{methodName}_0");
+                var parameter2 = Expression.Parameter(commandType, $"{methodName}_1");
+                var call = Expression.Call(instance, methodWithContext, parameter1, parameter2);
+                var lambda = Expression.Lambda(call, parameter1, parameter2);
+                var methodDelegate = lambda.Compile();
 
-                    if (!domainEventType.IsAssignableFrom(messageParameterType))
-                    {
-                        throw new MethodNotFoundException($"The method: {methodName}({messageParameterTypeFullName}) in {aggregateTypeFullName} is wrong, reason: {messageParameterTypeFullName} cannot assign to interface: {domainEventType.FullName}.");
-                    }
+                methodDelegate.DynamicInvoke(context, command);
 
-                    break;
-                case DomainMessageTypes.Notification:
-                    throw new NotSupportedException($"{messageType}");
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(messageType), messageType, null);
+                return;
+            }
+
+            throw new MethodNotFoundException($"No {methodName}({commandTypeFullName}) found in {aggregateTypeFullName}.");
+        }
+
+        private void ExecuteDomainEvent(IMessage @event)
+        {
+            var eventType = @event.GetType();
+            var methodName = "OnDomainEvent";
+            var eventTypeFullName = @event.GetType();
+            var domainEventType = typeof(IDomainEvent);
+            var aggregateTypeFullName = AggregateRootType.FullName;
+
+            if (!domainEventType.IsAssignableFrom(eventType))
+            {
+                throw new MethodNotFoundException($"The method: {methodName}({eventTypeFullName}) in {aggregateTypeFullName} is wrong, reason: {eventTypeFullName} cannot assign to interface: {domainEventType.FullName}.");
             }
 
             var method = AggregateRootType
                 .GetMethod(methodName,
                     BindingFlags.Instance | BindingFlags.Public,
                     null,
-                    new[] { messageParameterType },
+                    new[] { eventType },
                     null);
             if (method == null)
             {
-                throw new MethodNotFoundException($"No {methodName}({messageParameterTypeFullName}) found in {aggregateTypeFullName}.");
+                throw new MethodNotFoundException($"No {methodName}({eventTypeFullName}) found in {aggregateTypeFullName}.");
             }
 
             var instance = Expression.Constant(this);
-            var parameter = Expression.Parameter(messageParameterType, methodName);
+            var parameter = Expression.Parameter(eventType, methodName);
             var call = Expression.Call(instance, method, parameter);
             var lambda = Expression.Lambda(call, parameter);
             var methodDelegate = lambda.Compile();
 
-            methodDelegate.DynamicInvoke(message);
+            methodDelegate.DynamicInvoke(@event);
         }
 
         protected void FillAggregateInfo(IDomainEvent @event)

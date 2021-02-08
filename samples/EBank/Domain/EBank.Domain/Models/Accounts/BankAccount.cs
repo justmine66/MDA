@@ -5,6 +5,8 @@ using EBank.Domain.Models.Primitives;
 using EBank.Domain.Models.Transferring;
 using EBank.Domain.Notifications.Accounts;
 using MDA.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -299,10 +301,20 @@ namespace EBank.Domain.Models.Accounts
         /// <summary>
         /// 释放转账在途交易
         /// </summary>
+        /// <param name="context"></param>
         /// <param name="command"></param>
-        public void OnDomainCommand(FreeTransferAccountTransactionDomainCommand command)
+        public void OnDomainCommand(AggregateRootMessagingContext context, FreeTransferAccountTransactionDomainCommand command)
         {
-            TryRemoveAccountTransaction(command.TransactionId, out _);
+            var logger = context.ServiceProvider.GetService<ILogger<BankAccount>>();
+
+            if (TryRemoveAccountTransaction(command.TransactionId, out var transaction))
+            {
+                logger.LogInformation($"已释放转账在途交易: [{command.TransactionId},{transaction.Money.ToShortString()},{transaction.FundDirection}], 账户: [{Id},{Name},{Bank}]");
+            }
+            else
+            {
+                logger.LogWarning($"没有待释放的转账在途交易: {command.TransactionId}, 账户: [{Id},{Name},{Bank}]");
+            }
         }
 
         /// <summary>

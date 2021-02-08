@@ -3,6 +3,8 @@ using EBank.Domain.Events.Transferring;
 using EBank.Domain.Models.Primitives;
 using EBank.Domain.Models.Transferring.Primitives;
 using MDA.Domain.Models;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace EBank.Domain.Models.Transferring
 {
@@ -51,15 +53,18 @@ namespace EBank.Domain.Models.Transferring
             ApplyDomainEvent(@event);
         }
 
-        public void OnDomainCommand(ConfirmTransferTransactionValidatedDomainCommand command)
+        public void OnDomainCommand(AggregateRootMessagingContext context, ConfirmTransferTransactionValidatedDomainCommand command)
         {
             var accountType = command.AccountType;
+            var logger = context.ServiceProvider.GetService<ILogger<TransferTransaction>>();
 
             if (Status != TransferTransactionStatus.Started)
             {
                 var accountTypeString = accountType == TransferAccountType.Source ? "源" : "目标";
 
-                throw new TransferTransactionDomainException($"收到确认转账交易{accountTypeString}账户已验证通过的领域命令，但交易状态非法: {Status}。");
+                logger.LogWarning($"收到确认转账交易{accountTypeString}账户已验证通过的领域命令，但交易: {Id}, 状态非法: {Status}。");
+
+                return;
             }
 
             switch (accountType)
