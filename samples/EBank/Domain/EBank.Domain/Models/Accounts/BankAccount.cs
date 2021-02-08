@@ -204,7 +204,7 @@ namespace EBank.Domain.Models.Accounts
 
             if (AvailableBalance < command.Money)
             {
-                var notification = new WithdrawTransactionValidateFailedDomainNotification(command.TransactionId, $"余额不足，可用余额: {AvailableBalance}, 取款金额: {command.Money}。");
+                var notification = new WithdrawTransactionValidateFailedDomainNotification(command.TransactionId, $"余额不足，可用余额: {AvailableBalance.ToShortString()}, 取款金额: {command.Money.ToShortString()}。");
 
                 PublishDomainNotification(notification);
 
