@@ -269,9 +269,11 @@ namespace EBank.Domain.Models.Accounts
                 return;
             }
 
-            if (accountType == TransferAccountType.Source && AvailableBalance < amount)
+            var availableBalance = AvailableBalance;
+
+            if (accountType == TransferAccountType.Source && availableBalance < amount)
             {
-                var notification = new TransferTransactionValidateFailedDomainNotification(command.TransactionId, accountType, $"源账户余额不足，可用余额: {AvailableBalance}, 转账金额: {amount}。");
+                var notification = new TransferTransactionValidateFailedDomainNotification(command.TransactionId, accountType, $"源账户余额不足，可用余额: {availableBalance.ToShortString()}, 转账金额: {amount.ToShortString()}。");
 
                 PublishDomainNotification(notification);
 

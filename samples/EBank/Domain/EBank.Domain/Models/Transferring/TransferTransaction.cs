@@ -53,12 +53,16 @@ namespace EBank.Domain.Models.Transferring
 
         public void OnDomainCommand(ConfirmTransferTransactionValidatedDomainCommand command)
         {
+            var accountType = command.AccountType;
+
             if (Status != TransferTransactionStatus.Started)
             {
-                throw new TransferTransactionDomainException($"收到确认交易账户已验证的领域命令，但交易状态非法: {Status}。");
+                var accountTypeString = accountType == TransferAccountType.Source ? "源" : "目标";
+
+                throw new TransferTransactionDomainException($"收到确认转账交易{accountTypeString}账户已验证通过的领域命令，但交易状态非法: {Status}。");
             }
 
-            switch (command.AccountType)
+            switch (accountType)
             {
                 case TransferAccountType.Source:
                     ApplyDomainEvent(new TransferTransactionSourceAccountValidatedDomainEvent());
