@@ -1,9 +1,9 @@
-﻿using MDA.Domain.Models;
+﻿using MDA.Domain.Shared.Models;
 using MDA.Infrastructure.Hashes;
 using MDA.MessageBus;
 using System;
 
-namespace MDA.Domain.Commands
+namespace MDA.Domain.Shared.Commands
 {
     /// <summary>
     /// 表示一个领域命令

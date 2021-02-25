@@ -1,6 +1,7 @@
-﻿using MDA.Domain.Commands;
-using MDA.Domain.Events;
-using MDA.Domain.Saga;
+﻿using MDA.Domain.Saga;
+using MDA.Domain.Shared.Commands;
+using MDA.Domain.Shared.Events;
+using MDA.Domain.Shared.Notifications;
 
 namespace MDA.Domain.Notifications
 {
@@ -8,7 +9,7 @@ namespace MDA.Domain.Notifications
     {
         public static bool NeedReplyApplicationCommand(this IDomainNotification notification, out IEndSubTransactionDomainNotification needRepliedNotification)
         {
-            if (notification.ApplicationCommandReplyScheme == ApplicationCommandReplySchemes.OnDomainCommandHandled && 
+            if (notification.ApplicationCommandReplyScheme == Shared.ApplicationCommandReplySchemes.OnDomainCommandHandled && 
                 notification is IEndSubTransactionDomainNotification endNotification)
             {
                 needRepliedNotification = endNotification;

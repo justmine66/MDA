@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MDA.Domain.Models
+namespace MDA.Domain.Shared.Models
 {
     public class AggregateRootMessagingContext
     {

@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using MDA.Domain.Shared.Notifications;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MDA.Domain.Notifications

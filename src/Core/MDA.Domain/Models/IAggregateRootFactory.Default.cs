@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MDA.Domain.Shared.Models;
+using MDA.Infrastructure.Utils;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Runtime.Serialization;
-using MDA.Infrastructure.Utils;
 
 namespace MDA.Domain.Models
 {

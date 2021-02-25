@@ -1,6 +1,6 @@
 ﻿using EBank.Domain.Models.Accounts;
 using EBank.Domain.Models.Accounts.Primitives;
-using MDA.Domain.Commands;
+using MDA.Domain.Shared.Commands;
 
 namespace EBank.Domain.Commands.Accounts
 {

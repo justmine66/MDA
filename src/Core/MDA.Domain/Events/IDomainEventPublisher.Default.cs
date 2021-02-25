@@ -1,8 +1,9 @@
-﻿using MDA.MessageBus;
+﻿using MDA.Domain.Shared.Events;
+using MDA.MessageBus;
+using Microsoft.Extensions.Options;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 
 namespace MDA.Domain.Events
 {

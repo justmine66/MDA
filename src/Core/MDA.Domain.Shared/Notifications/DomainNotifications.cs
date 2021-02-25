@@ -1,8 +1,8 @@
-﻿using MDA.Domain.Models;
+﻿using MDA.Domain.Shared.Models;
 using MDA.Infrastructure.Hashes;
 using MDA.MessageBus;
 
-namespace MDA.Domain.Notifications
+namespace MDA.Domain.Shared.Notifications
 {
     /// <summary>
     /// 表示一个领域通知

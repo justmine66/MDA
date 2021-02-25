@@ -1,4 +1,4 @@
-﻿namespace MDA.Domain.Commands
+﻿namespace MDA.Domain.Shared.Commands
 {
     public interface IDomainCommandPublisher
     {

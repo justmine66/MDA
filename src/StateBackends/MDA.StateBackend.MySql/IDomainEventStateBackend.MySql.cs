@@ -1,4 +1,5 @@
 ﻿using MDA.Domain.Events;
+using MDA.Domain.Shared.Events;
 using MDA.Infrastructure.Async;
 using MDA.Infrastructure.Serialization;
 using MDA.Infrastructure.Typing;

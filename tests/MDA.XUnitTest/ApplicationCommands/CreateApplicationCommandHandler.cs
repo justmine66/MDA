@@ -1,5 +1,5 @@
 ﻿using MDA.Application.Commands;
-using MDA.Domain.Commands;
+using MDA.Domain.Shared.Commands;
 using MDA.XUnitTest.BusinessProcessing;
 using Microsoft.Extensions.Logging;
 using System.Threading;

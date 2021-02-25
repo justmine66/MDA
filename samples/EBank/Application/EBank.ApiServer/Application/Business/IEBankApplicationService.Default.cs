@@ -4,7 +4,7 @@ using EBank.Application.Commanding.Depositing;
 using EBank.Application.Commanding.Transferring;
 using EBank.Application.Commanding.Withdrawing;
 using MDA.Application.Commands;
-using MDA.Domain;
+using MDA.Domain.Shared;
 using System.Threading;
 using System.Threading.Tasks;
 

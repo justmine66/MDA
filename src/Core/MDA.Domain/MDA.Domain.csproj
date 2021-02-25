@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\MessageBuses\MDA.MessageBus\MDA.MessageBus.csproj" />
+    <ProjectReference Include="..\MDA.Domain.Shared\MDA.Domain.Shared.csproj" />
     <ProjectReference Include="..\MDA.Infrastructure\MDA.Infrastructure.csproj" />
   </ItemGroup>
 

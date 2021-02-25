@@ -1,5 +1,5 @@
-﻿using MDA.Domain.Models;
-using MDA.Domain.Notifications;
+﻿using MDA.Domain.Shared.Models;
+using MDA.Domain.Shared.Notifications;
 
 namespace MDA.Domain.Saga
 {

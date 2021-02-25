@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\MessageBuses\MDA.MessageBus\MDA.MessageBus.csproj" />
+    <ProjectReference Include="..\MDA.Infrastructure\MDA.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,9 +1,9 @@
 ﻿using MDA.Application.Commands;
 using MDA.Application.Notifications;
-using MDA.Domain.Commands;
-using MDA.Domain.Events;
-using MDA.Domain.Exceptions;
-using MDA.Domain.Saga;
+using MDA.Domain.Shared.Commands;
+using MDA.Domain.Shared.Events;
+using MDA.Domain.Shared.Exceptions;
+using MDA.Domain.Shared.Saga;
 using MDA.MessageBus;
 using MDA.MessageBus.DependencyInjection;
 using Microsoft.Extensions.Configuration;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using MDA.Domain.Shared.Events;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 

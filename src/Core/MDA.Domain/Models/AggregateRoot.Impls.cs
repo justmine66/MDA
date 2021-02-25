@@ -1,6 +1,7 @@
-﻿using MDA.Domain.Commands;
-using MDA.Domain.Events;
-using MDA.Domain.Notifications;
+﻿using MDA.Domain.Shared.Commands;
+using MDA.Domain.Shared.Events;
+using MDA.Domain.Shared.Models;
+using MDA.Domain.Shared.Notifications;
 using MDA.Infrastructure.Utils;
 using MDA.MessageBus;
 using System;

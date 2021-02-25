@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MDA.Domain.Shared;
+using System;
 
 namespace MDA.Domain.Exceptions
 {

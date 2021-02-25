@@ -1,6 +1,6 @@
-﻿using MDA.Domain.Notifications;
+﻿using MDA.Domain.Shared.Notifications;
 
-namespace MDA.Domain.Commands
+namespace MDA.Domain.Shared.Commands
 {
     /// <summary>
     /// 表示领域命令已被处理的通知

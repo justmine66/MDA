@@ -1,4 +1,4 @@
-﻿using MDA.Domain.Events;
+﻿using MDA.Domain.Shared.Events;
 
 namespace MDA.Domain.Saga
 {

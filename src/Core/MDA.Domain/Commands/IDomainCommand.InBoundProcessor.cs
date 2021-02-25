@@ -3,6 +3,12 @@ using MDA.Domain.Exceptions;
 using MDA.Domain.Models;
 using MDA.Domain.Notifications;
 using MDA.Domain.Saga;
+using MDA.Domain.Shared.Commands;
+using MDA.Domain.Shared.Events;
+using MDA.Domain.Shared.Exceptions;
+using MDA.Domain.Shared.Models;
+using MDA.Domain.Shared.Notifications;
+using MDA.Domain.Shared.Saga;
 using MDA.Infrastructure.Async;
 using MDA.Infrastructure.Utils;
 using MDA.MessageBus;
@@ -123,7 +129,7 @@ namespace MDA.Domain.Commands
         {
             _logger.LogError($"Handling domain command[Id: {command.Id}, Type: {command.GetType().FullName}, application command[{command.ApplicationCommandId}, {command.ApplicationCommandType}, reply scheme: {command.ApplicationCommandReplyScheme}], aggregate root[{command.AggregateRootId},{command.AggregateRootType.FullName}], has a unknown exceptionException: {LogFormatter.PrintException(exception)}.");
 
-            var canReturnOnDomainCommandHandled = command.ApplicationCommandReplyScheme == ApplicationCommandReplySchemes.OnDomainCommandHandled;
+            var canReturnOnDomainCommandHandled = command.ApplicationCommandReplyScheme == Shared.ApplicationCommandReplySchemes.OnDomainCommandHandled;
             if (!canReturnOnDomainCommandHandled)
             {
                 return;
@@ -143,7 +149,7 @@ namespace MDA.Domain.Commands
         {
             var commandId = command.Id;
             var commandType = command.GetType().FullName;
-            var canReturnOnDomainCommandHandled = command.ApplicationCommandReplyScheme == ApplicationCommandReplySchemes.OnDomainCommandHandled;
+            var canReturnOnDomainCommandHandled = command.ApplicationCommandReplyScheme == Shared.ApplicationCommandReplySchemes.OnDomainCommandHandled;
 
             _logger.LogError($"Handling domain command has a domain exception, Id: {commandId}, Type: {commandType}, Exception: {LogFormatter.PrintException(domainException)}.");
 

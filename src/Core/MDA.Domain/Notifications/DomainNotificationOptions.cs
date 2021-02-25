@@ -1,4 +1,6 @@
-﻿namespace MDA.Domain.Notifications
+﻿using MDA.Domain.Shared;
+
+namespace MDA.Domain.Notifications
 {
     public class DomainNotificationOptions
     {

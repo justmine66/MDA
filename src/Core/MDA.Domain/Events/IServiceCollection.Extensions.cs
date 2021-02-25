@@ -1,4 +1,5 @@
-﻿using MDA.MessageBus;
+﻿using MDA.Domain.Shared.Events;
+using MDA.MessageBus;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;

@@ -5,6 +5,7 @@ using EBank.Domain.Models.Primitives;
 using EBank.Domain.Models.Transferring;
 using EBank.Domain.Notifications.Accounts;
 using MDA.Domain.Models;
+using MDA.Domain.Shared.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;

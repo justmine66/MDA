@@ -4,6 +4,7 @@ using MDA.MessageBus;
 using Microsoft.Extensions.Options;
 using System.Threading;
 using System.Threading.Tasks;
+using MDA.Domain.Shared;
 
 namespace MDA.Application.Commands
 {

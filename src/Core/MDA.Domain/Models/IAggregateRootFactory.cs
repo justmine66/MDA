@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MDA.Domain.Shared.Models;
+using System;
 
 namespace MDA.Domain.Models
 {

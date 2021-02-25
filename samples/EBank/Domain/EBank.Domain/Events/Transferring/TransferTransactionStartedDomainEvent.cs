@@ -1,7 +1,7 @@
 ﻿using EBank.Domain.Models.Primitives;
 using EBank.Domain.Models.Transferring;
 using EBank.Domain.Models.Transferring.Primitives;
-using MDA.Domain.Events;
+using MDA.Domain.Shared.Events;
 
 namespace EBank.Domain.Events.Transferring
 {

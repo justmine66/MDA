@@ -1,5 +1,6 @@
-﻿using MDA.Domain.Commands;
-using MDA.Domain.Saga;
+﻿using MDA.Domain.Saga;
+using MDA.Domain.Shared.Commands;
+using MDA.Domain.Shared.Events;
 using System.Collections.Generic;
 
 namespace MDA.Domain.Events
@@ -35,7 +36,7 @@ namespace MDA.Domain.Events
 
         public static bool NeedReplyApplicationCommand(this IDomainEvent @event)
         {
-            var needReply = @event.ApplicationCommandReplyScheme == ApplicationCommandReplySchemes.OnDomainEventHandled;
+            var needReply = @event.ApplicationCommandReplyScheme == Shared.ApplicationCommandReplySchemes.OnDomainEventHandled;
             if (!needReply)
             {
                 return false;

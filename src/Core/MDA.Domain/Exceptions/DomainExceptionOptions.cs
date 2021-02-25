@@ -1,4 +1,6 @@
-﻿namespace MDA.Domain.Exceptions
+﻿using MDA.Domain.Shared;
+
+namespace MDA.Domain.Exceptions
 {
     public class DomainExceptionOptions
     {

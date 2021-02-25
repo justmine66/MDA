@@ -1,8 +1,10 @@
-﻿using System;
+﻿using MDA.Domain.Events;
+using MDA.Domain.Shared.Events;
+using MDA.Domain.Shared.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MDA.Domain.Events;
 
 namespace MDA.Domain.Models
 {

@@ -1,4 +1,5 @@
 ﻿using MDA.Domain.Models;
+using MDA.Domain.Shared.Models;
 using MDA.Infrastructure.Serialization;
 using MDA.Infrastructure.Typing;
 using System;

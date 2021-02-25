@@ -1,5 +1,5 @@
 ﻿using MDA.Application.Notifications;
-using MDA.Domain.Commands;
+using MDA.Domain.Shared.Commands;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

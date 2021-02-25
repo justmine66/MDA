@@ -1,4 +1,5 @@
 ﻿using MDA.Domain.Models;
+using MDA.Domain.Shared.Commands;
 using MDA.MessageBus;
 using MDA.MessageBus.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;

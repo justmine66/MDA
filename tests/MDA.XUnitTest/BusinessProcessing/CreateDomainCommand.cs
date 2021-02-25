@@ -1,4 +1,4 @@
-﻿using MDA.Domain.Commands;
+﻿using MDA.Domain.Shared.Commands;
 
 namespace MDA.XUnitTest.BusinessProcessing
 {

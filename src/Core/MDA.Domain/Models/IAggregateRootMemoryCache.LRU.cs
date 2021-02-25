@@ -1,4 +1,5 @@
-﻿using MDA.Infrastructure.DataStructures;
+﻿using MDA.Domain.Shared.Models;
+using MDA.Infrastructure.DataStructures;
 using MDA.Infrastructure.Hashes;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

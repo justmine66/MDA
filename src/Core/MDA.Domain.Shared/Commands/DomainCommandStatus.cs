@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MDA.Domain.Commands
+namespace MDA.Domain.Shared.Commands
 {
     [Flags]
     public enum DomainCommandStatus
