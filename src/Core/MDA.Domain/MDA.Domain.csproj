@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MDA.Domain.Shared\MDA.Domain.Shared.csproj" />
-    <ProjectReference Include="..\MDA.Infrastructure\MDA.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

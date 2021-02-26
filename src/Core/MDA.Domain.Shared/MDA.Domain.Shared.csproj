@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\MessageBuses\MDA.MessageBus\MDA.MessageBus.csproj" />
-    <ProjectReference Include="..\MDA.Infrastructure\MDA.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
