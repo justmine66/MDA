@@ -4,7 +4,7 @@ using EBank.Domain.Models.Transferring;
 using MDA.Application.Commands;
 using MDA.Infrastructure.Utils;
 
-namespace EBank.BusinessServer.Processors
+namespace EBank.DomainServer.Processors
 {
     public class TransferApplicationCommandProcessor : IApplicationCommandHandler<StartTransferApplicationCommand>
     {

@@ -6,7 +6,7 @@ using MDA.Application.Commands;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EBank.BusinessServer.Processors
+namespace EBank.DomainServer.Processors
 {
     public class BankAccountApplicationCommandProcessor :
         IAsyncApplicationCommandHandler<OpenBankAccountApplicationCommand>,

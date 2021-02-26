@@ -3,7 +3,7 @@ using EBank.Domain.Commands.Withdrawing;
 using MDA.Application.Commands;
 using MDA.Infrastructure.Utils;
 
-namespace EBank.BusinessServer.Processors
+namespace EBank.DomainServer.Processors
 {
     /// <summary>
     /// 取款交易应用层命令处理器

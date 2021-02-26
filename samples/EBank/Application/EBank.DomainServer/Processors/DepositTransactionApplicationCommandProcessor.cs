@@ -3,7 +3,7 @@ using EBank.Domain.Commands.Depositing;
 using MDA.Application.Commands;
 using MDA.Infrastructure.Utils;
 
-namespace EBank.BusinessServer.Processors
+namespace EBank.DomainServer.Processors
 {
     /// <summary>
     /// 存款交易应用层命令处理器

@@ -1,10 +1,10 @@
-﻿using EBank.BusinessServer.Bootstrap;
+﻿using EBank.DomainServer.Bootstrap;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EBank.BusinessServer
+namespace EBank.DomainServer
 {
     class Program
     {

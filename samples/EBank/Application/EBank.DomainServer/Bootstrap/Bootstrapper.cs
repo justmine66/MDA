@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
 
-namespace EBank.BusinessServer.Bootstrap
+namespace EBank.DomainServer.Bootstrap
 {
     public class Bootstrapper
     {

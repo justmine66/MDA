@@ -6,7 +6,7 @@ using EBank.Domain.Notifications.Accounts;
 using MDA.Domain.Events;
 using MDA.Domain.Notifications;
 
-namespace EBank.BusinessServer.ProcessorManagers
+namespace EBank.DomainServer.ProcessorManagers
 {
     /// <summary>
     /// 转账交易流程管理器
