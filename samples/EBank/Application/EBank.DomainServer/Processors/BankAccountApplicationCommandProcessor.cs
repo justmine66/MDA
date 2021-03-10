@@ -1,4 +1,4 @@
-﻿using EBank.Application.Commanding.Accounts;
+﻿using EBank.Application.Commands.Accounts;
 using EBank.Domain.Commands.Accounts;
 using EBank.Domain.Models.Accounts;
 using MDA.Application.Commands;

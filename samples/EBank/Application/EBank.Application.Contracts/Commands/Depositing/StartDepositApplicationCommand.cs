@@ -1,11 +1,11 @@
 ﻿using MDA.Application.Commands;
 
-namespace EBank.Application.Commanding.Withdrawing
+namespace EBank.Application.Commands.Depositing
 {
     /// <summary>
-    /// 发起取款的应用命令
+    /// 发起存款的应用命令
     /// </summary>
-    public class StartWithdrawApplicationCommand : ApplicationCommand
+    public class StartDepositApplicationCommand : ApplicationCommand
     {
         /// <summary>
         /// 账户号

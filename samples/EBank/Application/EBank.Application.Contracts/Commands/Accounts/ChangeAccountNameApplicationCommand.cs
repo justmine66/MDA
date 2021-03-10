@@ -1,7 +1,7 @@
 ﻿using MDA.Application.Commands;
 using System.ComponentModel.DataAnnotations;
 
-namespace EBank.Application.Commanding.Accounts
+namespace EBank.Application.Commands.Accounts
 {
     /// <summary>
     /// 变更账户名的应用命令

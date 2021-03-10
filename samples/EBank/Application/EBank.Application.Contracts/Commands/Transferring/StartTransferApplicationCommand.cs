@@ -1,6 +1,6 @@
 ﻿using MDA.Application.Commands;
 
-namespace EBank.Application.Commanding.Transferring
+namespace EBank.Application.Commands.Transferring
 {
     /// <summary>
     /// 发起转账的应用命令

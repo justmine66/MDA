@@ -1,4 +1,4 @@
-﻿using EBank.Application.Commanding.Transferring;
+﻿using EBank.Application.Commands.Transferring;
 using EBank.Domain.Commands.Transferring;
 using EBank.Domain.Models.Transferring;
 using MDA.Application.Commands;

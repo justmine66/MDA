@@ -2,9 +2,9 @@
 using EBank.ApiServer.Application.Querying;
 using EBank.ApiServer.Models.Input.Transactions;
 using EBank.ApiServer.Models.Output;
-using EBank.Application.Commanding.Depositing;
-using EBank.Application.Commanding.Transferring;
-using EBank.Application.Commanding.Withdrawing;
+using EBank.Application.Commands.Depositing;
+using EBank.Application.Commands.Transferring;
+using EBank.Application.Commands.Withdrawing;
 using MDA.Infrastructure.Mappers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

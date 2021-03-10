@@ -1,5 +1,5 @@
 ﻿using EBank.ApiServer.Application.Querying.Models;
-using EBank.Application.Commanding.Accounts;
+using EBank.Application.Commands.Accounts;
 using System;
 using System.Net;
 using System.Threading.Tasks;

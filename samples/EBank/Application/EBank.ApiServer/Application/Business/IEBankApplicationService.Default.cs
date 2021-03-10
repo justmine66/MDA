@@ -1,8 +1,8 @@
 ﻿using EBank.ApiServer.Infrastructure.Exceptions;
-using EBank.Application.Commanding.Accounts;
-using EBank.Application.Commanding.Depositing;
-using EBank.Application.Commanding.Transferring;
-using EBank.Application.Commanding.Withdrawing;
+using EBank.Application.Commands.Accounts;
+using EBank.Application.Commands.Depositing;
+using EBank.Application.Commands.Transferring;
+using EBank.Application.Commands.Withdrawing;
 using MDA.Application.Commands;
 using MDA.Domain.Shared;
 using System.Threading;

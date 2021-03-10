@@ -1,4 +1,4 @@
-﻿using EBank.Application.Commanding.Depositing;
+﻿using EBank.Application.Commands.Depositing;
 using EBank.Domain.Commands.Depositing;
 using MDA.Application.Commands;
 using MDA.Infrastructure.Utils;

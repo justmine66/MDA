@@ -2,7 +2,7 @@
 using EBank.ApiServer.Application.Querying;
 using EBank.ApiServer.Models.Input.BankAccounts;
 using EBank.ApiServer.Models.Output;
-using EBank.Application.Commanding.Accounts;
+using EBank.Application.Commands.Accounts;
 using MDA.Infrastructure.Mappers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

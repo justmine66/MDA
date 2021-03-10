@@ -1,16 +1,17 @@
 ﻿using MDA.Application.Commands;
+using MDA.Infrastructure.Utils;
 
-namespace EBank.Application.Commanding.Depositing
+namespace EBank.Application.Commands.Accounts
 {
     /// <summary>
-    /// 发起存款的应用命令
+    /// 开户应用命令
     /// </summary>
-    public class StartDepositApplicationCommand : ApplicationCommand
+    public class OpenBankAccountApplicationCommand : ApplicationCommand
     {
         /// <summary>
         /// 账户号
         /// </summary>
-        public long AccountId { get; set; }
+        public long AccountId { get; set; } = SnowflakeId.Default().NextId();
 
         /// <summary>
         /// 账户名
@@ -23,8 +24,8 @@ namespace EBank.Application.Commanding.Depositing
         public string Bank { get; set; }
 
         /// <summary>
-        /// 金额
+        /// 初始余额
         /// </summary>
-        public decimal Amount { get; set; }
+        public decimal InitialBalance { get; set; }
     }
 }
