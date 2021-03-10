@@ -1,7 +1,6 @@
 ﻿using EBank.Domain.Models.Accounts.Primitives;
 using EBank.Domain.Models.Depositing.Primitives;
 using EBank.Domain.Models.Primitives;
-using MDA.Domain.Events;
 using MDA.Domain.Saga;
 
 namespace EBank.Domain.Events.Depositing
