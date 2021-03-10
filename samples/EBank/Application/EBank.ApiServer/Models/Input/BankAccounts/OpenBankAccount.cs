@@ -14,8 +14,8 @@ namespace EBank.ApiServer.Models.Input.BankAccounts
         /// </summary>
         /// <example>张三</example>
         [Required]
-        [MinLength(DomainRules.PreConditions.Account.Name.Length.Minimum)]
-        [MaxLength(DomainRules.PreConditions.Account.Name.Length.Maximum)]
+        [MinLength(BankAccount.Name.Length.Minimum)]
+        [MaxLength(BankAccount.Name.Length.Maximum)]
         public string AccountName { get; set; }
 
         /// <summary>
@@ -23,15 +23,15 @@ namespace EBank.ApiServer.Models.Input.BankAccounts
         /// </summary>
         /// <example>招商银行</example>
         [Required]
-        [MinLength(DomainRules.PreConditions.Account.Bank.Length.Minimum)]
-        [MaxLength(DomainRules.PreConditions.Account.Bank.Length.Maximum)]
+        [MinLength(BankAccount.Bank.Length.Minimum)]
+        [MaxLength(BankAccount.Bank.Length.Maximum)]
         public string Bank { get; set; }
 
         /// <summary>
         /// 初始余额
         /// </summary>
         /// <example>1000</example>
-        [GreaterThanAndEqual(DomainRules.PreConditions.Account.InitialBalance.Range.Minimum)]
+        [GreaterThanAndEqual(BankAccount.InitialBalance.Range.Minimum)]
         public decimal InitialBalance { get; set; }
     }
 }

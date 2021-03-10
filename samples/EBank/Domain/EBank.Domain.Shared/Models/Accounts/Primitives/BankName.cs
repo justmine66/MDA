@@ -11,7 +11,7 @@ namespace EBank.Domain.Models.Accounts.Primitives
     {
         public BankName(string name)
         {
-            PreConditions.Range(nameof(name), name.Length, DomainRules.PreConditions.Account.Bank.Length.Minimum, DomainRules.PreConditions.Account.Bank.Length.Maximum);
+            PreConditions.Range(nameof(name), name.Length, BankAccount.Bank.Length.Minimum, BankAccount.Bank.Length.Maximum);
 
             Name = name;
         }
