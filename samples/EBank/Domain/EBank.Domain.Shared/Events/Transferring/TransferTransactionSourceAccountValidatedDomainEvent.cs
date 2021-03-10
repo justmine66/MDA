@@ -1,5 +1,5 @@
 ﻿using EBank.Domain.Models.Transferring.Primitives;
-using MDA.Domain.Shared.Events;
+using MDA.Domain.Events;
 
 namespace EBank.Domain.Events.Transferring
 {

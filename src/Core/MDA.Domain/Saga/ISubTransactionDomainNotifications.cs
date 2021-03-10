@@ -1,4 +1,4 @@
-﻿using MDA.Domain.Shared.Notifications;
+﻿using MDA.Domain.Notifications;
 
 namespace MDA.Domain.Saga
 {

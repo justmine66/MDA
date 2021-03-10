@@ -1,8 +1,6 @@
 ﻿using MDA.Domain.Events;
+using MDA.Domain.Notifications;
 using MDA.Domain.Saga;
-using MDA.Domain.Shared.Commands;
-using MDA.Domain.Shared.Events;
-using MDA.Domain.Shared.Notifications;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,7 +11,7 @@ namespace MDA.Domain.Commands
     {
         public static bool NeedReplyApplicationCommand(this IDomainCommand command)
         {
-            var needReply = command.ApplicationCommandReplyScheme == Shared.ApplicationCommandReplySchemes.OnDomainCommandHandled;
+            var needReply = command.ApplicationCommandReplyScheme == ApplicationCommandReplySchemes.OnDomainCommandHandled;
             if (!needReply)
             {
                 return false;

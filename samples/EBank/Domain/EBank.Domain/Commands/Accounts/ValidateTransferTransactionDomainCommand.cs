@@ -3,7 +3,7 @@ using EBank.Domain.Models.Accounts.Primitives;
 using EBank.Domain.Models.Primitives;
 using EBank.Domain.Models.Transferring;
 using EBank.Domain.Models.Transferring.Primitives;
-using MDA.Domain.Shared.Commands;
+using MDA.Domain.Commands;
 
 namespace EBank.Domain.Commands.Accounts
 {

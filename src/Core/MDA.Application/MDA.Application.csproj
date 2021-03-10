@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MDA.Domain.Shared\MDA.Domain.Shared.csproj" />
+    <ProjectReference Include="..\MDA.Domain\MDA.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

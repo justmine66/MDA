@@ -1,5 +1,4 @@
-﻿using MDA.Domain.Shared.Notifications;
-using MDA.MessageBus;
+﻿using MDA.MessageBus;
 using MDA.MessageBus.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

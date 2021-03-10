@@ -1,5 +1,4 @@
-﻿using MDA.Domain.Shared.Exceptions;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
 namespace MDA.Domain.Exceptions

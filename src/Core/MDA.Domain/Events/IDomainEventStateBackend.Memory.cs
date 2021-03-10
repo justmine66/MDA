@@ -1,5 +1,4 @@
-﻿using MDA.Domain.Shared.Events;
-using MDA.Infrastructure.Utils;
+﻿using MDA.Infrastructure.Utils;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,7 +1,7 @@
 ﻿using MDA.MessageBus;
 using System;
 
-namespace MDA.Domain.Shared.Exceptions
+namespace MDA.Domain.Exceptions
 {
     /// <summary>
     /// 领域异常消息，用于传输端到端的异常消息。

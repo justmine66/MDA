@@ -1,5 +1,5 @@
 ﻿using EBank.Domain.Models.Accounts.Primitives;
-using MDA.Domain.Shared.Events;
+using MDA.Domain.Events;
 
 namespace EBank.Domain.Events.Accounts
 {

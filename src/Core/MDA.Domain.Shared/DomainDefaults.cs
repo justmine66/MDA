@@ -1,13 +1,13 @@
-﻿namespace MDA.Domain.Shared
+﻿namespace MDA.Domain
 {
     public class DomainDefaults
     {
         public class Topics
         {
-            public static string Exception = "MDA.Domain.Shared.Exceptions";
-            public static string Command = "MDA.Domain.Shared.Commands";
-            public static string Event = "MDA.Domain.Shared.Events";
-            public static string Notification = "MDA.Domain.Shared.Notifications";
+            public static string Exception = "MDA.Domain.Exceptions";
+            public static string Command = "MDA.Domain.Commands";
+            public static string Event = "MDA.Domain.Events";
+            public static string Notification = "MDA.Domain.Notifications";
         }
     }
 }

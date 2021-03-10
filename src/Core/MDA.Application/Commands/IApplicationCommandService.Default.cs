@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using MDA.Domain;
-using MDA.Domain.Shared;
+using MDA.Domain;
 
 namespace MDA.Application.Commands
 {

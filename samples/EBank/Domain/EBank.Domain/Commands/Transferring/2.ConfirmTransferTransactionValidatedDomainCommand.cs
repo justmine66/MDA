@@ -1,6 +1,6 @@
 ﻿using EBank.Domain.Models.Transferring;
 using EBank.Domain.Models.Transferring.Primitives;
-using MDA.Domain.Shared.Commands;
+using MDA.Domain.Commands;
 
 namespace EBank.Domain.Commands.Transferring
 {

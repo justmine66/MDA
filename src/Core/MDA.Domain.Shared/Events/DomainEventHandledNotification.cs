@@ -1,6 +1,6 @@
-﻿using MDA.Domain.Shared.Notifications;
+﻿using MDA.Domain.Notifications;
 
-namespace MDA.Domain.Shared.Events
+namespace MDA.Domain.Events
 {
     /// <summary>
     /// 表示领域事件已被处理的通知

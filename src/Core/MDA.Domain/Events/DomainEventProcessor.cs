@@ -1,8 +1,6 @@
-﻿using MDA.Domain.Notifications;
+﻿using MDA.Domain.Events;
+using MDA.Domain.Notifications;
 using MDA.Domain.Saga;
-using MDA.Domain.Shared.Events;
-using MDA.Domain.Shared.Notifications;
-using MDA.Domain.Shared.Saga;
 using MDA.MessageBus;
 using MDA.MessageBus.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;

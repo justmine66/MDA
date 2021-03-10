@@ -1,5 +1,4 @@
-﻿using MDA.Domain.Shared.Notifications;
-using MDA.MessageBus;
+﻿using MDA.MessageBus;
 using Microsoft.Extensions.Options;
 using System;
 using System.Threading;

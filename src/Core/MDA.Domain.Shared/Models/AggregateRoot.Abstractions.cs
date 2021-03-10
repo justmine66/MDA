@@ -1,11 +1,11 @@
-﻿using MDA.Domain.Shared.Commands;
-using MDA.Domain.Shared.Events;
-using MDA.Domain.Shared.Notifications;
+﻿using MDA.Domain.Commands;
+using MDA.Domain.Events;
+using MDA.Domain.Notifications;
 using MDA.Infrastructure.Serialization;
 using System;
 using System.Collections.Generic;
 
-namespace MDA.Domain.Shared.Models
+namespace MDA.Domain.Models
 {
     /// <summary>
     /// 聚合根

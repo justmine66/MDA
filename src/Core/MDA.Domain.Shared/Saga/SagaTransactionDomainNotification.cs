@@ -1,6 +1,6 @@
-﻿using MDA.Domain.Shared.Notifications;
+﻿using MDA.Domain.Notifications;
 
-namespace MDA.Domain.Shared.Saga
+namespace MDA.Domain.Saga
 {
     public class SagaTransactionDomainNotification : DomainNotification
     {
