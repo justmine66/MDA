@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Configurations>Debug;Release;Staging</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\StateBackends\MDA.StateBackend.RDBMS.Shared\MDA.StateBackend.RDBMS.Shared.csproj" />
     <ProjectReference Include="..\EBank.Domain.Shared\EBank.Domain.Shared.csproj" />
   </ItemGroup>
 

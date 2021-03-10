@@ -14,7 +14,7 @@
     <ProjectReference Include="..\..\..\..\src\MessageBuses\MDA.MessageBus.Disruptor\MDA.MessageBus.Disruptor.csproj" />
     <ProjectReference Include="..\..\..\..\src\MessageBuses\MDA.MessageBus.Kafka\MDA.MessageBus.Kafka.csproj" />
     <ProjectReference Include="..\..\..\..\src\StateBackends\MDA.StateBackend.MySql\MDA.StateBackend.MySql.csproj" />
-    <ProjectReference Include="..\..\Domain\EBank.Domain.Repositories.MySql\EBank.Domain.Repositories.MySql.csproj" />
+    <ProjectReference Include="..\..\Domain\EBank.Domain.MySql\EBank.Domain.MySql.csproj" />
     <ProjectReference Include="..\..\Domain\EBank.Domain\EBank.Domain.csproj" />
     <ProjectReference Include="..\EBank.Application.Contracts\EBank.Application.Contracts.csproj" />
   </ItemGroup>

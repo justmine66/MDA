@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Configurations>Debug;Release;Staging</Configurations>
+    <RootNamespace>EBank.Domain</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EBank.Domain.Shared\EBank.Domain.Shared.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Core\MDA.Domain\MDA.Domain.csproj" />
   </ItemGroup>
 
 </Project>
