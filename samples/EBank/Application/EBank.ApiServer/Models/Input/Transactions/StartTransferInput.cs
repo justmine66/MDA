@@ -5,7 +5,7 @@ namespace EBank.ApiServer.Models.Input.Transactions
     /// <summary>
     /// 发起转账
     /// </summary>
-    public class StartTransfer
+    public class StartTransferInput
     {
         /// <summary>
         /// 源账户

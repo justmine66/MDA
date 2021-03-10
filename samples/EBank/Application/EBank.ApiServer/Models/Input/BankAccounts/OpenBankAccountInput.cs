@@ -1,23 +1,14 @@
 ﻿using EBank.ApiServer.Infrastructure.ModelValidations;
 using EBank.Domain.Models.Accounts;
-using EBank.Domain.Models.Depositing;
 using System.ComponentModel.DataAnnotations;
 
-namespace EBank.ApiServer.Models.Input.Transactions
+namespace EBank.ApiServer.Models.Input.BankAccounts
 {
     /// <summary>
-    /// 发起存款
+    /// 开户
     /// </summary>
-    public class StartDeposit
+    public class OpenBankAccountInput
     {
-        /// <summary>
-        /// 账户号
-        /// </summary>
-        /// <example>5392026437095184</example>
-        [Required]
-        [GreaterThanAndEqual(BankAccount.Id.Range.Minimum)]
-        public long AccountId { get; set; }
-
         /// <summary>
         /// 账户名
         /// </summary>
@@ -37,12 +28,10 @@ namespace EBank.ApiServer.Models.Input.Transactions
         public string Bank { get; set; }
 
         /// <summary>
-        /// 金额
+        /// 初始余额
         /// </summary>
-        /// <example>100</example>
-        [Required]
-        [GreaterThan(DepositTransaction.Amount.Range.Minimum)]
-        [LessThan(DepositTransaction.Amount.Range.Maximum)]
-        public decimal Amount { get; set; }
+        /// <example>1000</example>
+        [GreaterThanAndEqual(BankAccount.InitialBalance.Range.Minimum)]
+        public decimal InitialBalance { get; set; }
     }
 }

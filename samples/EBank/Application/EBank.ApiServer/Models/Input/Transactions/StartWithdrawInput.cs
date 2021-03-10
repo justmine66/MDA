@@ -1,20 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using EBank.ApiServer.Infrastructure.ModelValidations;
-using EBank.Domain.Models.Accounts;
 
-namespace EBank.ApiServer.Models.Input.BankAccounts
+namespace EBank.ApiServer.Models.Input.Transactions
 {
     /// <summary>
-    /// 重命名
+    /// 发起取款
     /// </summary>
-    public class ChangeAccountName
+    public class StartWithdrawInput
     {
         /// <summary>
         /// 账户号
         /// </summary>
         /// <example>5392026437095184</example>
         [Required]
-        [GreaterThanAndEqual(BankAccount.Id.Range.Minimum)]
         public long AccountId { get; set; }
 
         /// <summary>
@@ -22,8 +19,20 @@ namespace EBank.ApiServer.Models.Input.BankAccounts
         /// </summary>
         /// <example>张三</example>
         [Required]
-        [MinLength(BankAccount.Name.Length.Minimum)]
-        [MaxLength(BankAccount.Name.Length.Maximum)]
         public string AccountName { get; set; }
+
+        /// <summary>
+        /// 开户行
+        /// </summary>
+        /// <example>招商银行</example>
+        [Required]
+        public string Bank { get; set; }
+
+        /// <summary>
+        /// 金额
+        /// </summary>
+        /// <example>1000</example>
+        [Required]
+        public decimal Amount { get; set; }
     }
 }

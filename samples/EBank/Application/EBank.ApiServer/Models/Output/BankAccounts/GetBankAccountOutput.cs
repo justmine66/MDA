@@ -1,6 +1,9 @@
-﻿namespace EBank.ApiServer.Application.Querying.Models
+﻿namespace EBank.ApiServer.Models.Output.BankAccounts
 {
-    public class BankAccountView
+    /// <summary>
+    /// 获取银行账户的输出
+    /// </summary>
+    public class GetBankAccountOutput
     {
         /// <summary>
         /// 账户号

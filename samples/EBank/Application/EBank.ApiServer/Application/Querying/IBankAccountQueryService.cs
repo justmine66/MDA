@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using EBank.ApiServer.Application.Querying.Models;
+using EBank.ApiServer.Models.Output.BankAccounts;
 
 namespace EBank.ApiServer.Application.Querying
 {
@@ -9,7 +9,7 @@ namespace EBank.ApiServer.Application.Querying
     /// </summary>
     public interface IBankAccountQueryService
     {
-        Task<BankAccountView> GetAccountAsync(long accountId, CancellationToken token = default);
+        Task<GetBankAccountOutput> GetAccountAsync(long accountId, CancellationToken token = default);
 
         Task<bool> HasAccountAsync(long accountId, CancellationToken token = default);
     }

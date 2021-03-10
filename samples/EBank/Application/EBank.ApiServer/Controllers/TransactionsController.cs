@@ -48,14 +48,14 @@ namespace EBank.ApiServer.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [Produces(MediaTypeNames.Application.Json)]
 #endif
-        public async Task<IActionResult> DepositAsync(StartDeposit dto)
+        public async Task<IActionResult> DepositAsync(StartDepositInput dto)
         {
             if (!await _accountQueryService.HasAccountAsync(dto.AccountId))
             {
                 return NotFound("The bank account does not exist.");
             }
 
-            var command = ObjectPortMapper<StartDeposit, StartDepositApplicationCommand>.Map(dto);
+            var command = ObjectPortMapper<StartDepositInput, StartDepositApplicationCommand>.Map(dto);
 
             await _eBankApplicationService.DepositedFundsAsync(command);
 
@@ -81,14 +81,14 @@ namespace EBank.ApiServer.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [Produces(MediaTypeNames.Application.Json)]
 #endif
-        public async Task<IActionResult> WithdrawAsync(StartWithdraw dto)
+        public async Task<IActionResult> WithdrawAsync(StartWithdrawInput dto)
         {
             if (!await _accountQueryService.HasAccountAsync(dto.AccountId))
             {
                 return NotFound("The bank account does not exist.");
             }
 
-            var command = ObjectPortMapper<StartWithdraw, StartWithdrawApplicationCommand>.Map(dto);
+            var command = ObjectPortMapper<StartWithdrawInput, StartWithdrawApplicationCommand>.Map(dto);
 
             await _eBankApplicationService.WithdrawFundsAsync(command);
 
@@ -114,7 +114,7 @@ namespace EBank.ApiServer.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [Produces(MediaTypeNames.Application.Json)]
 #endif
-        public async Task<IActionResult> TransferAsync(StartTransfer dto)
+        public async Task<IActionResult> TransferAsync(StartTransferInput dto)
         {
             var source = dto.SourceAccount;
             if (!await _accountQueryService.HasAccountAsync(source.Id))
@@ -131,8 +131,8 @@ namespace EBank.ApiServer.Controllers
             var command = new StartTransferApplicationCommand()
             {
                 Amount = dto.Amount,
-                SourceAccount = ObjectPortMapper<StartTransfer.TransferAccount, StartTransferApplicationCommand.TransferAccount>.Map(source),
-                SinkAccount = ObjectPortMapper<StartTransfer.TransferAccount, StartTransferApplicationCommand.TransferAccount>.Map(sink)
+                SourceAccount = ObjectPortMapper<StartTransferInput.TransferAccount, StartTransferApplicationCommand.TransferAccount>.Map(source),
+                SinkAccount = ObjectPortMapper<StartTransferInput.TransferAccount, StartTransferApplicationCommand.TransferAccount>.Map(sink)
             };
 
             await _eBankApplicationService.TransferFundsAsync(command);
