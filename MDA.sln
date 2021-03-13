@@ -58,11 +58,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MDA.Domain.Shared", "src\Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBank.DomainServer", "samples\EBank\Application\EBank.DomainServer\EBank.DomainServer.csproj", "{A2C70031-8D5C-4388-B4BE-22D073DD4955}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBank.Application.Contracts", "samples\EBank\Application\EBank.Application.Contracts\EBank.Application.Contracts.csproj", "{6F4158B3-FACB-4D92-B2CB-D1E6B4FD1A87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBank.Application.Contracts", "samples\EBank\Application\EBank.Application.Contracts\EBank.Application.Contracts.csproj", "{6F4158B3-FACB-4D92-B2CB-D1E6B4FD1A87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBank.Domain.Shared", "samples\EBank\Domain\EBank.Domain.Shared\EBank.Domain.Shared.csproj", "{027608E9-6C44-4A80-80B4-6020BB8CBA3D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBank.Domain.Shared", "samples\EBank\Domain\EBank.Domain.Shared\EBank.Domain.Shared.csproj", "{027608E9-6C44-4A80-80B4-6020BB8CBA3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBank.Domain.MySql", "samples\EBank\Domain\EBank.Domain.MySql\EBank.Domain.MySql.csproj", "{7CF8190E-8A70-4BD1-A081-A741D2BB9C9A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBank.Domain.MySql", "samples\EBank\Domain\EBank.Domain.MySql\EBank.Domain.MySql.csproj", "{7CF8190E-8A70-4BD1-A081-A741D2BB9C9A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EBank.UI", "samples\EBank\UI\EBank.UI\EBank.UI.csproj", "{63DA5B20-6075-4002-8AA7-AA2E181781BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -173,6 +175,12 @@ Global
 		{7CF8190E-8A70-4BD1-A081-A741D2BB9C9A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7CF8190E-8A70-4BD1-A081-A741D2BB9C9A}.Staging|Any CPU.ActiveCfg = Debug|Any CPU
 		{7CF8190E-8A70-4BD1-A081-A741D2BB9C9A}.Staging|Any CPU.Build.0 = Debug|Any CPU
+		{63DA5B20-6075-4002-8AA7-AA2E181781BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63DA5B20-6075-4002-8AA7-AA2E181781BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63DA5B20-6075-4002-8AA7-AA2E181781BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63DA5B20-6075-4002-8AA7-AA2E181781BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63DA5B20-6075-4002-8AA7-AA2E181781BC}.Staging|Any CPU.ActiveCfg = Debug|Any CPU
+		{63DA5B20-6075-4002-8AA7-AA2E181781BC}.Staging|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -203,6 +211,7 @@ Global
 		{6F4158B3-FACB-4D92-B2CB-D1E6B4FD1A87} = {292875E8-0D2C-4D02-B372-2E2A42E59955}
 		{027608E9-6C44-4A80-80B4-6020BB8CBA3D} = {9275BA93-9268-4BF0-830C-BB768C34A866}
 		{7CF8190E-8A70-4BD1-A081-A741D2BB9C9A} = {9275BA93-9268-4BF0-830C-BB768C34A866}
+		{63DA5B20-6075-4002-8AA7-AA2E181781BC} = {CEB6A9B8-DC88-4AD1-B5F5-536D11B3AD4E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DC9D9D4F-2190-4530-B529-2F3497D51EA0}
