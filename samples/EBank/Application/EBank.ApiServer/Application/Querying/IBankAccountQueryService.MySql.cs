@@ -1,9 +1,9 @@
-﻿using MDA.Infrastructure.Utils;
+﻿using EBank.ApiServer.Models.Output.BankAccounts;
+using MDA.Infrastructure.Utils;
 using MDA.StateBackend.RDBMS.Shared;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using EBank.ApiServer.Application.Querying.Models;
 
 namespace EBank.ApiServer.Application.Querying
 {
@@ -16,11 +16,11 @@ namespace EBank.ApiServer.Application.Querying
             _db = db.CreateRelationalDbStorage(DatabaseScheme.ReadDb);
         }
 
-        public async Task<BankAccountView> GetAccountAsync(long accountId, CancellationToken token = default)
+        public async Task<GetBankAccountOutput> GetAccountAsync(long accountId, CancellationToken token = default)
         {
             var sql = $"SELECT `Id`,`Name`,`Bank`,`Balance` FROM {Tables.BankAccounts} WHERE `Id`=@Id";
 
-            var records = await _db.ReadAsync<BankAccountView>(sql, new
+            var records = await _db.ReadAsync<GetBankAccountOutput>(sql, new
             {
                 Id = accountId
             }, token);

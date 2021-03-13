@@ -1,4 +1,4 @@
-﻿using EBank.ApiServer.Application.Querying.Models;
+﻿using EBank.ApiServer.Models.Output.BankAccounts;
 using EBank.Application.Commands.Accounts;
 using System;
 using System.Net;
@@ -28,7 +28,7 @@ namespace MDA.FunctionalTest.Controllers
 
             while (true)
             {
-                var account = await Client.GetAsync<BankAccountView>($"api/v1/BankAccounts?AccountId={command.AccountId}");
+                var account = await Client.GetAsync<GetBankAccountOutput>($"api/v1/BankAccounts?AccountId={command.AccountId}");
                 if (account == null)
                 {
                     await Task.Delay(TimeSpan.FromSeconds(2));
