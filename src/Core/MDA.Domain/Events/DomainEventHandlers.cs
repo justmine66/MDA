@@ -1,5 +1,4 @@
-﻿using MDA.Domain.Shared.Events;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
 namespace MDA.Domain.Events

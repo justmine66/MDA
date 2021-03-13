@@ -1,5 +1,5 @@
 ﻿using MDA.Domain;
-using MDA.Domain.Shared;
+using MDA.Domain;
 using MDA.MessageBus;
 
 namespace MDA.Application.Commands

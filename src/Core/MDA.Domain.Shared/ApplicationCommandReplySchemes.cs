@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MDA.Domain.Shared
+namespace MDA.Domain
 {
     /// <summary>
     /// 应用层命令回复方案

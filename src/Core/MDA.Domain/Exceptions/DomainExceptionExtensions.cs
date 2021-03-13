@@ -1,7 +1,6 @@
-﻿using MDA.Domain.Shared.Commands;
-using MDA.Domain.Shared.Events;
-using MDA.Domain.Shared.Exceptions;
-using MDA.Domain.Shared.Notifications;
+﻿using MDA.Domain.Commands;
+using MDA.Domain.Events;
+using MDA.Domain.Notifications;
 
 namespace MDA.Domain.Exceptions
 {

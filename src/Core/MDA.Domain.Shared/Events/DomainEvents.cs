@@ -1,7 +1,7 @@
 ﻿using MDA.MessageBus;
 using System;
 
-namespace MDA.Domain.Shared.Events
+namespace MDA.Domain.Events
 {
     /// <summary>
     /// 表示一个领域事件

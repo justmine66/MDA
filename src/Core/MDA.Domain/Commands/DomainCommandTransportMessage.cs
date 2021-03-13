@@ -1,5 +1,4 @@
-﻿using MDA.Domain.Shared.Commands;
-using MDA.MessageBus;
+﻿using MDA.MessageBus;
 
 namespace MDA.Domain.Commands
 {

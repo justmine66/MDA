@@ -1,4 +1,4 @@
-﻿using EBank.Domain.Repositories.MySql;
+﻿using EBank.Domain.Models.Accounts;
 using MDA.Application.DependencyInjection;
 using MDA.Domain.DependencyInjection;
 using MDA.Infrastructure.DependencyInjection;
@@ -11,6 +11,7 @@ using MDA.StateBackend.RDBMS.Shared.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
+using EBank.Domain.MySql;
 
 namespace EBank.DomainServer.Bootstrap
 {

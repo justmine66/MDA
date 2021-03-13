@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\Core\MDA.Domain\MDA.Domain.csproj" />
+    <ProjectReference Include="..\EBank.Domain.Shared\EBank.Domain.Shared.csproj" />
   </ItemGroup>
 
 </Project>

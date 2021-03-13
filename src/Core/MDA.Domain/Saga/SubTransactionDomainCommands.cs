@@ -1,5 +1,5 @@
-﻿using MDA.Domain.Shared.Commands;
-using MDA.Domain.Shared.Models;
+﻿using MDA.Domain.Commands;
+using MDA.Domain.Models;
 
 namespace MDA.Domain.Saga
 {

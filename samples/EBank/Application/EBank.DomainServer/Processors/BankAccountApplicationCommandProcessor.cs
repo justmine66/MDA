@@ -1,7 +1,6 @@
-﻿using EBank.Application.Commanding.Accounts;
+﻿using EBank.Application.Commands.Accounts;
 using EBank.Domain.Commands.Accounts;
 using EBank.Domain.Models.Accounts;
-using EBank.Domain.Repositories.MySql;
 using MDA.Application.Commands;
 using System.Threading;
 using System.Threading.Tasks;

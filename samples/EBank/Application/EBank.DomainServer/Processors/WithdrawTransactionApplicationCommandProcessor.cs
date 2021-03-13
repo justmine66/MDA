@@ -1,4 +1,4 @@
-﻿using EBank.Application.Commanding.Withdrawing;
+﻿using EBank.Application.Commands.Withdrawing;
 using EBank.Domain.Commands.Withdrawing;
 using MDA.Application.Commands;
 using MDA.Infrastructure.Utils;

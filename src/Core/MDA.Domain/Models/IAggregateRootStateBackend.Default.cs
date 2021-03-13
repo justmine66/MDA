@@ -1,6 +1,4 @@
 ﻿using MDA.Domain.Events;
-using MDA.Domain.Shared.Events;
-using MDA.Domain.Shared.Models;
 using MDA.Infrastructure.Scheduling;
 using MDA.Infrastructure.Utils;
 using Microsoft.Extensions.Logging;

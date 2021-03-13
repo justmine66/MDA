@@ -2,7 +2,7 @@
 using EBank.ApiServer.Application.Querying;
 using EBank.ApiServer.Models.Input.BankAccounts;
 using EBank.ApiServer.Models.Output;
-using EBank.Application.Commanding.Accounts;
+using EBank.Application.Commands.Accounts;
 using MDA.Infrastructure.Mappers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -46,9 +46,9 @@ namespace EBank.ApiServer.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [Produces(MediaTypeNames.Application.Json)]
 #endif
-        public async Task<IActionResult> OpenAsync([FromBody] OpenBankAccount dto)
+        public async Task<IActionResult> OpenAsync([FromBody] OpenBankAccountInput dto)
         {
-            var command = ObjectPortMapper<OpenBankAccount, OpenBankAccountApplicationCommand>.Map(dto);
+            var command = ObjectPortMapper<OpenBankAccountInput, OpenBankAccountApplicationCommand>.Map(dto);
 
             var result = await _eBankApplicationService.OpenAccountAsync(command);
 
@@ -74,14 +74,14 @@ namespace EBank.ApiServer.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [Produces(MediaTypeNames.Application.Json)]
 #endif
-        public async Task<IActionResult> ChangeNameAsync(ChangeAccountName dto)
+        public async Task<IActionResult> ChangeNameAsync(ChangeAccountNameInput dto)
         {
             if (!await _accountQueryService.HasAccountAsync(dto.AccountId))
             {
                 return NotFound("The bank account does not exist.");
             }
 
-            var command = ObjectPortMapper<ChangeAccountName, ChangeAccountNameApplicationCommand>.Map(dto);
+            var command = ObjectPortMapper<ChangeAccountNameInput, ChangeAccountNameApplicationCommand>.Map(dto);
 
             await _eBankApplicationService.ChangeAccountNameAsync(command);
 

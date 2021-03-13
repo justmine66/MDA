@@ -1,5 +1,4 @@
-﻿using MDA.Domain.Shared.Models;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 

@@ -1,9 +1,9 @@
-﻿using MDA.Domain.Shared;
-using MDA.Domain.Shared.Commands;
-using MDA.Domain.Shared.Events;
-using MDA.Domain.Shared.Exceptions;
-using MDA.Domain.Shared.Notifications;
-using MDA.Domain.Shared.Saga;
+﻿using MDA.Domain;
+using MDA.Domain.Commands;
+using MDA.Domain.Events;
+using MDA.Domain.Exceptions;
+using MDA.Domain.Notifications;
+using MDA.Domain.Saga;
 using MDA.Infrastructure.Scheduling;
 using MDA.MessageBus;
 using MDA.MessageBus.DependencyInjection;

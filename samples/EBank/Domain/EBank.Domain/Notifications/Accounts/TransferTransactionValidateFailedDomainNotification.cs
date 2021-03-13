@@ -1,5 +1,4 @@
-﻿using EBank.Domain.Models.Accounts.Primitives;
-using EBank.Domain.Models.Transferring;
+﻿using EBank.Domain.Models.Transferring;
 using EBank.Domain.Models.Transferring.Primitives;
 using MDA.Domain.Saga;
 

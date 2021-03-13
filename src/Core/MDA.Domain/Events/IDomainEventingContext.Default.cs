@@ -1,10 +1,6 @@
 ﻿using MDA.Domain.Commands;
 using MDA.Domain.Exceptions;
 using MDA.Domain.Notifications;
-using MDA.Domain.Shared.Commands;
-using MDA.Domain.Shared.Events;
-using MDA.Domain.Shared.Exceptions;
-using MDA.Domain.Shared.Notifications;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
