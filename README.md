@@ -30,8 +30,8 @@
 QQ: 689418285
 
 # 架构
-## Application Flow
-![](./ApplicationFlow.jpg)
+## Architecture Overview
+![](./MDA.jpg)
 
 ## Message Stream
 ![](./MessageStream.jpg)
